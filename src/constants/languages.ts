@@ -1,78 +1,99 @@
+import LanguageIcons from "@/components/global/language-icons";
+
 export const SUPPORTED_LANGUAGES = [
     {
         name: "JavaScript",
-        code: "JS"
+        code: "JS",
+        icon: LanguageIcons.javascript
     },
     {
         name: "Python",
-        code: "PY"
+        code: "PY",
+        icon: LanguageIcons.python
     },
     {
         name: "Java",
-        code: "JAVA"
+        code: "JAVA",
+        icon: LanguageIcons.java
     },
     {
         name: "C++",
-        code: "CPP"
+        code: "CPP",
+        icon: LanguageIcons.cpp
     },
     {
         name: "TypeScript",
-        code: "TS"
+        code: "TS",
+        icon: LanguageIcons.typescript
     },
     {
         name: "PHP",
-        code: "PHP"
+        code: "PHP",
+        icon: LanguageIcons.php
     },
     {
         name: "C#",
-        code: "C#"
+        code: "C#",
+        icon: LanguageIcons.csharp
     },
     {
         name: "Swift",
-        code: "SWIFT"
+        code: "SWIFT",
+        icon: LanguageIcons.swift
     },
     {
         name: "Go",
-        code: "GO"
+        code: "GO",
+        icon: LanguageIcons.go
     },
     {
         name: "Ruby",
-        code: "RB"
+        code: "RB",
+        icon: LanguageIcons.ruby
     },
     {
         name: "Rust",
-        code: "RUST"
+        code: "RUST",
+        icon: LanguageIcons.rust
     },
     {
         name: "Kotlin",
-        code: "KT"
+        code: "KT",
+        icon: LanguageIcons.kotlin
     },
     {
         name: "HTML",
-        code: "HTML"
+        code: "HTML",
+        icon: LanguageIcons.html
     },
     {
         name: "CSS",
-        code: "CSS"
+        code: "CSS",
+        icon: LanguageIcons.css
     },
     {
         name: "SQL",
-        code: "SQL"
+        code: "SQL",
+        icon: LanguageIcons.sql
     },
     {
         name: "Solidity",
-        code: "SOL"
+        code: "SOL",
+        icon: LanguageIcons.solidity
     },
     {
         name: "Shell",
-        code: "SH"
+        code: "SH",
+        icon: LanguageIcons.shell
     },
     {
         name: "R",
-        code: "R"
+        code: "R",
+        icon: LanguageIcons.r
     },
     {
         name: "Perl",
-        code: "PL"
+        code: "PL",
+        icon: LanguageIcons.perl
     }
 ]; 
