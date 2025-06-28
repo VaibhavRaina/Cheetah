@@ -26,18 +26,24 @@ export default function PricingPage() {
             </Container>
 
             <div className="max-w-7xl mx-auto mt-16">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
-                    {PLANS.map((plan) => (
+                <div className="flex flex-col md:flex-row gap-6 px-4 items-stretch">
+                    {PLANS.map((plan, idx) => (
                         <div
                             key={plan.id}
-                            className="flex flex-col rounded-2xl border border-foreground/10 bg-background overflow-hidden"
+                            className={cn(
+                                "flex flex-col rounded-2xl border border-foreground/10 bg-background overflow-hidden flex-1 relative",
+                                idx === 1 ? "md:-mt-8 md:mb-8 z-10 shadow-lg" : "md:mt-8"
+                            )}
                         >
-                            <div className="p-6 pb-0">
+                            <div className="p-6">
                                 <h3 className="uppercase font-medium text-sm text-foreground/70">
-                                    {plan.id === "community" ? "Community" : plan.id === "developer" ? "Developer" : "Teams"}
+                                    {plan.id === "community" ? "COMMUNITY" : plan.id === "developer" ? "DEVELOPER" : "TEAMS"}
                                 </h3>
                                 <div className="mt-4 flex items-baseline">
-                                    <h2 className="font-heading text-4xl font-medium">
+                                    <h2 className={cn(
+                                        "font-heading text-4xl font-medium",
+                                        idx === 1 && "text-5xl"
+                                    )}>
                                         {plan.id === "community"
                                             ? "Free"
                                             : plan.id === "developer"
@@ -47,34 +53,37 @@ export default function PricingPage() {
                                     {plan.id === "developer" && <span className="ml-2 text-base">/month</span>}
                                 </div>
                                 <p className="mt-2 text-sm text-foreground/70">{plan.desc}</p>
-                            </div>
 
-                            <div className="p-6 space-y-6 flex-1 flex flex-col">
+                                <div className="h-px w-full bg-foreground/10 my-6"></div>
+
                                 <div>
-                                    <h4 className="font-medium">Plan Highlights</h4>
-                                    <ul className="mt-4 space-y-3">
+                                    <h4 className="uppercase font-medium text-sm text-foreground/70 mb-4">
+                                        {idx === 1 ? "Plan Highlights" : "Plan Highlights"}
+                                    </h4>
+                                    <ul className="space-y-3">
                                         {plan.features.map((feature, index) => (
                                             <li key={index} className="flex items-start gap-3">
-                                                <CheckIcon className="h-5 w-5 flex-shrink-0 text-primary" />
+                                                <CheckIcon className="h-5 w-5 flex-shrink-0 text-primary mt-0.5" />
                                                 <span className="text-sm">{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                                <div className="mt-auto pt-6">
-                                    <Button
-                                        variant={plan.id === "developer" ? "accent" : "outline"}
-                                        size="lg"
-                                        className="w-full"
-                                    >
-                                        {plan.buttonText}
-                                    </Button>
-                                    {plan.id === "developer" && (
-                                        <p className="text-xs text-center mt-3 text-muted-foreground">
-                                            Need more messages? See plans below.
-                                        </p>
-                                    )}
-                                </div>
+                            </div>
+
+                            <div className="mt-auto p-6 pt-8">
+                                <Button
+                                    variant={plan.id === "developer" ? "accent" : "outline"}
+                                    size="lg"
+                                    className="w-full"
+                                >
+                                    {plan.buttonText}
+                                </Button>
+                                {plan.id === "developer" && (
+                                    <p className="text-xs text-center mt-3 text-muted-foreground">
+                                        Need more messages? See plans below.
+                                    </p>
+                                )}
                             </div>
                         </div>
                     ))}
