@@ -9,12 +9,12 @@ import { Button } from "../ui/button";
 import Ripple from "../ui/ripple";
 
 const SOCIAL_PLATFORMS = [
-    { icon: Icons.linkedin, position: "left-3", size: "small", iconSize: "small", className: "hidden lg:flex" },
-    { icon: Icons.tiktok, position: "left-2", size: "medium", iconSize: "medium" },
-    { icon: Icons.insta, position: "left-1", size: "large", iconSize: "large" },
-    { icon: Icons.youtube, position: "right-1", size: "large", iconSize: "large" },
-    { icon: Icons.x, position: "right-2", size: "medium", iconSize: "medium" },
-    { icon: Icons.facebook, position: "right-3", size: "small", iconSize: "small", className: "hidden lg:flex" }
+    { icon: Icons.figma, position: "left-3", size: "small", iconSize: "small", className: "hidden lg:flex" },
+    { icon: Icons.notion, position: "left-2", size: "medium", iconSize: "medium" },
+    { icon: Icons.vercel, position: "left-1", size: "large", iconSize: "large" },
+    { icon: Icons.linear, position: "right-1", size: "large", iconSize: "large" },
+    { icon: Icons.webflow, position: "right-2", size: "medium", iconSize: "medium" },
+    { icon: Icons.vscode, position: "right-3", size: "small", iconSize: "small", className: "hidden lg:flex" }
 ];
 
 const Integration = () => {
