@@ -1,7 +1,7 @@
 import { base, heading } from "./fonts";
 import { PLANS } from "./plans";
 import { NAV_LINKS } from "./links";
-import { SUPPORTED_LANGUAGES } from "./countries";
+import { SUPPORTED_LANGUAGES } from "./languages";
 import { FEATURES } from "./features";
 
 export {
