@@ -143,6 +143,11 @@ export default {
 						"opacity": "1",
 					},
 				},
+				"scroll": {
+					to: {
+						transform: "translateX(-50%)",
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -154,6 +159,7 @@ export default {
 				ripple: "ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite",
 				blob: "blob 7s infinite",
 				"image-glow": "image-glow 6s ease-out 0.6s forwards",
+				"scroll": "scroll 40s linear infinite",
 			},
 			spacing: {
 				"1/8": "12.5%",
