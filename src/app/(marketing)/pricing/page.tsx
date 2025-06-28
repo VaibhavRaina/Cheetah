@@ -26,13 +26,15 @@ export default function PricingPage() {
             </Container>
 
             <div className="max-w-7xl mx-auto mt-16">
-                <div className="flex flex-col md:flex-row gap-6 px-4 items-stretch">
+                <div className="flex flex-col md:flex-row gap-6 px-4">
                     {PLANS.map((plan, idx) => (
                         <div
                             key={plan.id}
                             className={cn(
-                                "flex flex-col rounded-2xl border border-foreground/10 bg-background overflow-hidden flex-1 relative",
-                                idx === 1 ? "md:-mt-8 md:mb-8 z-10 shadow-lg" : "md:mt-8"
+                                "flex flex-col rounded-2xl border bg-background overflow-hidden flex-1 relative w-full",
+                                idx === 1
+                                    ? "border-accent shadow-lg shadow-accent/20 md:-translate-y-8"
+                                    : "border-foreground/10"
                             )}
                         >
                             <div className="p-6">
@@ -58,7 +60,7 @@ export default function PricingPage() {
 
                                 <div>
                                     <h4 className="uppercase font-medium text-sm text-foreground/70 mb-4">
-                                        {idx === 1 ? "Plan Highlights" : "Plan Highlights"}
+                                        Plan Highlights
                                     </h4>
                                     <ul className="space-y-3">
                                         {plan.features.map((feature, index) => (
