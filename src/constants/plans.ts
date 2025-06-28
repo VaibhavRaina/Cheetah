@@ -12,94 +12,91 @@ export type PLAN = {
 
 export const PLANS: PLAN[] = [
     {
-        id: "standard",
-        title: "Standard",
-        desc: "Perfect for solopreneurs and small teams looking to automate their content creation and social media with AI tools.",
-        monthlyPrice: 29,
-        annuallyPrice: 306,
-        buttonText: "Upgrade to Standard",
+        id: "community",
+        title: "Free",
+        desc: "Perfect for getting started with essential features.",
+        monthlyPrice: 0,
+        annuallyPrice: 0,
+        buttonText: "Download",
         features: [
-            "AI content (1,000 words/mo)",
-            "3 social media channels",
-            "Basic post scheduling",
-            "Content calendar",
-            "Basic analytics dashboard",
-            "2 team members",
-            "Email support"
+            "Up to 50 user messages",
+            "Context Engine",
+            "MCP & Native Tools",
+            "Unlimited Next Edits & Completions",
+            "Community support",
+            "Additional user messages $20/300",
+            "AI training allowed"
         ],
         link: "#"
     },
     {
-        id: "mastermind",
-        title: "Mastermind",
-        desc: "Ideal for growing businesses and agencies who need advanced AI capabilities and automation to scale their marketing.",
-        monthlyPrice: 79,
-        annuallyPrice: 834,
-        badge: "Most Popular",
-        buttonText: "Upgrade to Mastermind",
+        id: "developer",
+        title: "$50",
+        desc: "For individuals or small teams that want to ship to production, fast.",
+        monthlyPrice: 50,
+        annuallyPrice: 500,
+        buttonText: "Start free trial",
         features: [
-            "AI content (10,000 words/mo)",
-            "Advanced AI copywriting",
-            "Multi-language content generation",
-            "Custom brand voice training",
-            "Custom workflow automation",
-            "Priority 24/7 support",
-            "Up to 10 team members"
+            "Everything in community",
+            "Up to 600 user messages",
+            "Team management, up to 100 users",
+            "SOC 2 type II",
+            "Additional user messages $30/300",
+            "No AI training allowed"
         ],
         link: "#"
     },
-    // {
-    //     id: "enterprise",
-    //     title: "Enterprise",
-    //     desc: "Full-scale AI marketing solution for large organizations",
-    //     monthlyPrice: 199,
-    //     annuallyPrice: 2101,
-    //     badge: "Custom AI Solutions",
-    //     buttonText: "Contact Sales",
-    //     features: [
-    //         "Unlimited AI content",
-    //         "Custom AI model training",
-    //         "Advanced automation workflows",
-    //         "Multi-brand management",
-    //         "API access",
-    //         "Unlimited team members",
-    //         "24/7 priority support",
-    //         "Dedicated success manager",
-    //     ],
-    //     link: "https://stripe.com/enterprise-plan-link"
-    // }
+    {
+        id: "enterprise",
+        title: "Enterprise",
+        desc: "For enterprise teams with high volume, security, or support needs.",
+        monthlyPrice: 0,
+        annuallyPrice: 0,
+        buttonText: "Contact sales",
+        features: [
+            "Custom user pricing",
+            "Bespoke user message limit",
+            "Slack integration",
+            "Volume based annual discounts",
+            "SSO, OIDC, & SCIM support",
+            "SOC 2 & Security Reports",
+            "Dedicated support",
+            "No AI training allowed"
+        ],
+        link: "#"
+    },
 ];
 
 export const PLANS_FAQ = [
     {
         id: 1,
-        question: "How does the AI content generation work?",
-        answer: "Our AI generates high-quality marketing content across various formats including social media posts, email campaigns, and blog articles, while maintaining your brand voice."
+        question: "How does the Context Engine work?",
+        answer: "Our Context Engine continuously tracks your workspace changes, file edits, and codebase structure to provide real-time context for smarter code completions and suggestions."
     },
     {
         id: 2,
-        question: "Can I manage multiple brands or clients?",
-        answer: "Yes! The Scale Pro plan supports up to 5 brands, while Enterprise offers unlimited brand management capabilities."
+        question: "Can I use Cheetah AI with multiple projects?",
+        answer: "Yes! The Pro plan supports unlimited workspaces, while Starter is limited to a single workspace."
     },
     {
         id: 3,
         question: "Is there a discount for annual billing?",
-        answer: "Yes, you can save 15% by choosing annual billing over monthly billing for any of our plans."
+        answer: "Yes, you can save approximately 15% by choosing annual billing over monthly billing for any of our plans."
     },
     {
         id: 4,
-        question: "Do you offer special pricing for contractors?",
-        answer: "Yes, we offer special rates for independent contractors and small construction firms. Contact our sales team for more information."
+        question: "Do you offer special pricing for open source projects?",
+        answer: "Yes, we offer special rates for open source maintainers and contributors. Contact our team for more information."
     },
     {
         id: 5,
-        question: "How does the BIM integration work?",
-        answer: "Our Enterprise plan includes full BIM integration, allowing you to view and manage 3D models, coordinate with team members, and track changes in real-time."
+        question: "How does the IDE integration work?",
+        answer: "Cheetah AI integrates with popular IDEs like VS Code, JetBrains, and more through extensions that connect to our Context Engine."
     },
     {
         id: 6,
         question: "What kind of support do you provide?",
-        answer: "We offer email support for Starter plans, priority support for Professional plans, and 24/7 dedicated support with a personal account manager for Enterprise plans."
+        answer: "We offer community support for Starter plans, priority support for Pro plans, and 24/7 dedicated support with a personal success engineer for Enterprise plans."
     },
     {
         id: 7,
@@ -108,13 +105,13 @@ export const PLANS_FAQ = [
     },
     {
         id: 8,
-        question: "Is mobile access available?",
-        answer: "Yes, all plans include access to our mobile app for iOS and Android, allowing you to manage projects on the go."
+        question: "Is offline mode available?",
+        answer: "Yes, Pro and Enterprise plans include offline capabilities that allow you to work with cached context when disconnected from the internet."
     },
     {
         id: 9,
         question: "What security measures do you have in place?",
-        answer: "We offer industry-standard security for all plans, with additional features like SSO, audit logs, and custom security policies available in the Enterprise plan."
+        answer: "We offer industry-standard security for all plans, with additional features like SSO, RBAC, audit logs, and on-premises deployment available in the Enterprise plan."
     }
 ];
 
