@@ -2,6 +2,7 @@ import { PLANS } from "@/constants";
 import Container from "@/components/global/container";
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "lucide-react";
+import { cn } from "@/lib";
 
 export const metadata = {
     title: "Pricing | Cheetah AI",
@@ -77,6 +78,259 @@ export default function PricingPage() {
                             </div>
                         </div>
                     ))}
+                </div>
+            </div>
+
+            {/* Pricing Comparison Table */}
+            <div className="mt-24 mb-12 w-full mx-auto lg:max-w-screen-xl lg:mx-auto px-4 md:px-12">
+                <h2 className="text-2xl font-heading font-medium mb-8 text-center">Compare Plans</h2>
+                <div className="w-full overflow-x-auto rounded-xl border border-foreground/10">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="text-center bg-foreground/5">
+                                <th className="p-4 border-b border-foreground/10"></th>
+                                <th className="p-4 border-b border-foreground/10">
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-xl font-medium">$0</span>
+                                        <span className="text-sm text-muted-foreground">/month</span>
+                                        <span className="uppercase text-xs font-semibold mt-2 tracking-wider text-muted-foreground">Community</span>
+                                    </div>
+                                </th>
+                                <th className="p-4 border-b border-foreground/10 relative">
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-xl font-medium">$50</span>
+                                        <span className="text-sm text-muted-foreground">/month</span>
+                                        <span className="uppercase text-xs font-semibold mt-2 tracking-wider text-muted-foreground">Developer</span>
+                                        <div className="absolute -top-6 left-0 right-0 mx-auto">
+                                            <div className="bg-blue-600/80 text-white text-xs py-1 px-3 rounded-sm text-center mx-auto w-max">
+                                                14 DAY FREE TRIAL
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th className="p-4 border-b border-foreground/10">
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-xl font-medium">$100</span>
+                                        <span className="text-sm text-muted-foreground">/month</span>
+                                        <span className="uppercase text-xs font-semibold mt-2 tracking-wider text-muted-foreground">Pro</span>
+                                    </div>
+                                </th>
+                                <th className="p-4 border-b border-foreground/10">
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-xl font-medium">$250</span>
+                                        <span className="text-sm text-muted-foreground">/month</span>
+                                        <span className="uppercase text-xs font-semibold mt-2 tracking-wider text-muted-foreground">Max</span>
+                                    </div>
+                                </th>
+                                <th className="p-4 border-b border-foreground/10">
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-xl font-medium">Custom</span>
+                                        <span className="uppercase text-xs font-semibold mt-2 tracking-wider text-muted-foreground">Enterprise</span>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>Included User Messages</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">50</td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">600</td>
+                                <td className="p-4 border-b border-foreground/10">1500</td>
+                                <td className="p-4 border-b border-foreground/10">4500</td>
+                                <td className="p-4 border-b border-foreground/10">Unlimited</td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>Additional User Messages</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">$30/300</td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">$30/300</td>
+                                <td className="p-4 border-b border-foreground/10">$30/300</td>
+                                <td className="p-4 border-b border-foreground/10">$30/300</td>
+                                <td className="p-4 border-b border-foreground/10">Custom</td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>Chat & Agents</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>Context Engine</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>MCP & Native Tools</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>Next Edits & Completions</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>Team Management</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <span className="inline-flex items-center justify-center w-5 h-5 mx-auto text-muted-foreground">✕</span>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>SOC 2 Type II</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>Support</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">Community</td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">Community</td>
+                                <td className="p-4 border-b border-foreground/10">Community & email</td>
+                                <td className="p-4 border-b border-foreground/10">Community & email</td>
+                                <td className="p-4 border-b border-foreground/10">Dedicated</td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>AI Training</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">Allowed</td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">Never</td>
+                                <td className="p-4 border-b border-foreground/10">Never</td>
+                                <td className="p-4 border-b border-foreground/10">Never</td>
+                                <td className="p-4 border-b border-foreground/10">Never</td>
+                            </tr>
+                            <tr className="text-center">
+                                <td className="p-4"></td>
+                                <td className="p-4 py-6">
+                                    <Button variant="outline" className="w-full">Install now</Button>
+                                </td>
+                                <td className="p-4 py-6 bg-foreground/[0.01]">
+                                    <Button variant="blue" className="w-full">Install now</Button>
+                                </td>
+                                <td className="p-4 py-6">
+                                    <Button variant="outline" className="w-full">Install now</Button>
+                                </td>
+                                <td className="p-4 py-6">
+                                    <Button variant="outline" className="w-full">Install now</Button>
+                                </td>
+                                <td className="p-4 py-6">
+                                    <Button variant="outline" className="w-full">Contact sales</Button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
