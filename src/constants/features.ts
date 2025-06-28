@@ -8,32 +8,32 @@ import {
 
 export const FEATURES = [
     {
-        title: "Enhance User Experience",
-        description: "Efficiently manage user data and interactions with advanced AI tools",
+        title: "Context Engine",
+        description: "Real-time, persistent awareness of your workspace, edits and frameworks.",
+        icon: DatabaseIcon,
+        image: "/images/feature-one.svg",
+    },
+    {
+        title: "Semantic Memories",
+        description: "Deep code understanding & lightning-fast retrieval for intelligent editing.",
         icon: WandSparklesIcon,
         image: "/images/feature-two.svg",
     },
     {
-        title: "Comprehensive Insights",
-        description: "Gain deep insights into your audience and campaign performance",
+        title: "Framework Detection",
+        description: "Automatic scanning to detect frameworks, dependencies and usage patterns.",
         icon: ChartColumnBigIcon,
-        image: "/images/feature-one.svg",
-    },
-    {
-        title: "Data Management",
-        description: "Manage your data with ease and efficiency",
-        icon: DatabaseIcon,
         image: "/images/feature-three.svg",
     },
     {
-        title: "Real-Time Analytics",
-        description: "Track and analyze your marketing performance in real-time",
+        title: "Knowledge Graph",
+        description: "Links files, symbols and configs into an always up-to-date knowledge graph.",
         icon: TrendingUpIcon,
         image: "/images/feature-four.svg",
     },
     {
-        title: "Dynamic Optimization",
-        description: "AI-powered optimization for smarter marketing",
+        title: "Incremental Updates",
+        description: "Only changed files are re-analyzed, keeping context and search blazing fast.",
         icon: ZapIcon,
         image: "/images/feature-five.svg",
     }

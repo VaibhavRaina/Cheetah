@@ -57,16 +57,16 @@ const Hero = () => {
                     </Container>
                     <Container delay={0.15}>
                         <h1 className="text-4xl md:text-4xl lg:text-7xl font-bold text-center !leading-tight max-w-4xl mx-auto">
-                            Transform your {" "}
+                            Ship code at {" "}
                             <span className="">
-                                marketing {" "}
+                                Cheetah&nbsp;speed {" "}
                             </span>
-                            with AI Precision
+                            with AI precision
                         </h1>
                     </Container>
                     <Container delay={0.2}>
                         <p className="max-w-xl mx-auto mt-2 text-base lg:text-lg text-center text-muted-foreground">
-                            AI-powered automation and insights to maximize your campaigns and grow your brand.
+                            Cheetah&nbsp;AI accelerates your workflow with real-time context and semantic understanding of your entire codebase.
                         </p>
                     </Container>
                     <Container delay={0.25} className="z-20">

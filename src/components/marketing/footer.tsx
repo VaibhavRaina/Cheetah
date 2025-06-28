@@ -11,11 +11,11 @@ const Footer = () => {
                         <div className="flex items-center gap-2">
                             <Icons.icon className="w-auto h-5" />
                             <span className="text-base md:text-lg font-medium text-foreground">
-                                Vetra
+                                Cheetah&nbsp;AI
                             </span>
                         </div>
                         <p className="text-muted-foreground mt-4 text-sm text-start">
-                            AI-powered platform that transforms your marketing workflow in seconds.
+                            AI-powered platform that accelerates your development workflow.
                         </p>
                     </div>
                 </Container>
@@ -133,7 +133,7 @@ const Footer = () => {
             <Container delay={0.5} className="w-full relative mt-12 lg:mt-20">
                 <div className="mt-8 md:flex md:items-center justify-center footer w-full">
                     <p className="text-sm text-muted-foreground mt-8 md:mt-0">
-                        &copy; {new Date().getFullYear()} Vetra. All rights reserved.
+                        &copy; {new Date().getFullYear()} Cheetah AI. All rights reserved.
                     </p>
                 </div>
             </Container>
