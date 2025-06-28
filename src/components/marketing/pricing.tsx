@@ -39,7 +39,7 @@ const Pricing = () => {
                     <div className="flex items-center justify-center space-x-4 mt-6">
                         <span className="text-base font-medium">Monthly</span>
                         <button onClick={handleSwitch} className="relative rounded-full focus:outline-none">
-                            <div className="w-12 h-6 transition rounded-full shadow-md outline-none bg-blue-500"></div>
+                            <div className="w-12 h-6 transition rounded-full shadow-md outline-none bg-accent"></div>
                             <div
                                 className={cn(
                                     "absolute inline-flex items-center justify-center w-4 h-4 transition-all duration-500 ease-in-out top-1 left-1 rounded-full bg-white",
@@ -67,10 +67,10 @@ const Plan = ({ plan, billPlan }: { plan: PLAN, billPlan: Plan }) => {
     return (
         <div className={cn(
             "flex flex-col relative rounded-2xl lg:rounded-3xl transition-all bg-background/ items-start w-full border border-foreground/10 overflow-hidden",
-            plan.title === "Mastermind" && "border-blue-500"
+            plan.title === "Mastermind" && "border-accent"
         )}>
             {plan.title === "Mastermind" && (
-                <div className="absolute top-1/2 inset-x-0 mx-auto h-12 -rotate-45 w-full bg-blue-600 rounded-2xl lg:rounded-3xl blur-[8rem] -z-10"></div>
+                <div className="absolute top-1/2 inset-x-0 mx-auto h-12 -rotate-45 w-full bg-accent/70 rounded-2xl lg:rounded-3xl blur-[8rem] -z-10"></div>
             )}
 
             <div className="p-4 md:p-8 flex rounded-t-2xl lg:rounded-t-3xl flex-col items-start w-full relative">
@@ -96,7 +96,7 @@ const Plan = ({ plan, billPlan }: { plan: PLAN, billPlan: Plan }) => {
                 </p>
             </div>
             <div className="flex flex-col items-start w-full px-4 py-2 md:px-8">
-                <Button size="lg" variant={plan.title === "Mastermind" ? "blue" : "white"} className="w-full">
+                <Button size="lg" variant={plan.title === "Mastermind" ? "default" : "outline"} className={cn("w-full", plan.title === "Mastermind" && "bg-accent hover:bg-accent/80 text-accent-foreground")}>
                     {plan.buttonText}
                 </Button>
                 <div className="h-8 overflow-hidden w-full mx-auto">
@@ -120,7 +120,7 @@ const Plan = ({ plan, billPlan }: { plan: PLAN, billPlan: Plan }) => {
             </div>
             <div className="flex flex-col items-start w-full p-5 mb-4 ml-1 gap-y-2">
                 <span className="text-base text-left mb-2">
-                    Includes: 
+                    Includes:
                 </span>
                 {plan.features.map((feature, index) => (
                     <div key={index} className="flex items-center justify-start gap-2">

@@ -40,40 +40,74 @@
   }
 
   :root {
-    --background: 240 10% 4%;
-    /* --background: 240 2% 8%; */
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    /* Cheetah body colors - tan/golden background with dark accents */
+    --background: 43 70% 90%;
+    /* Light tan background */
+    --foreground: 20 20% 10%;
+    /* Dark brown text */
+    --card: 40 60% 95%;
+    /* Slightly lighter card background */
+    --card-foreground: 20 20% 10%;
+    /* Dark brown text */
+    --popover: 40 60% 95%;
+    /* Matching card */
+    --popover-foreground: 20 20% 10%;
+    /* Dark brown text */
+    --primary: 20 20% 10%;
+    /* Dark brown primary */
+    --primary-foreground: 43 70% 90%;
+    /* Light tan text on dark */
+    --secondary: 35 80% 85%;
+    /* Lighter golden secondary */
+    --secondary-foreground: 20 20% 10%;
+    /* Dark text */
+    --muted: 35 30% 80%;
+    /* Muted golden */
+    --muted-foreground: 20 20% 30%;
+    /* Muted dark text */
+    --accent: 30 85% 60%;
+    /* Golden accent */
+    --accent-foreground: 20 20% 10%;
+    /* Dark text */
     --destructive: 0 62.8% 30.6%;
+    /* Keep destructive */
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    /* Keep destructive text */
+    --border: 35 30% 70%;
+    /* Tan border */
+    --input: 35 30% 80%;
+    /* Light golden input */
+    --ring: 30 85% 60%;
+    /* Golden ring */
     --radius: 0.6rem;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Chart colors inspired by cheetah spots and coloration */
+    --chart-1: 30 85% 60%;
+    /* Golden */
+    --chart-2: 20 70% 40%;
+    /* Brown */
+    --chart-3: 35 80% 50%;
+    /* Tan */
+    --chart-4: 15 60% 25%;
+    /* Dark brown */
+    --chart-5: 45 90% 65%;
+    /* Light golden */
+    /* Sidebar with cheetah spot-inspired colors */
+    --sidebar-background: 20 20% 15%;
+    /* Dark brown background */
+    --sidebar-foreground: 43 70% 90%;
+    /* Light tan text */
+    --sidebar-primary: 30 85% 60%;
+    /* Golden primary */
+    --sidebar-primary-foreground: 20 20% 10%;
+    /* Dark brown text */
+    --sidebar-accent: 25 40% 25%;
+    /* Dark accent */
+    --sidebar-accent-foreground: 43 70% 90%;
+    /* Light tan text */
+    --sidebar-border: 25 40% 25%;
+    /* Dark border */
+    --sidebar-ring: 30 85% 60%;
+    /* Golden ring */
   }
 }
 
@@ -125,7 +159,7 @@ img {
   height: 1px;
   width: 100%;
   color: rgb(48, 48, 48);
-  background: radial-gradient(50% 56400% at 50% 100%, rgb(34, 41, 57) 0%, rgba(169, 163, 194, 0) 100%);
+  background: radial-gradient(50% 56400% at 50% 100%, hsl(30 60% 30%) 0%, rgba(169, 163, 194, 0) 100%);
 }
 
 .companies::after {
@@ -138,16 +172,16 @@ img {
   width: 70%;
   border-radius: 100%;
   filter: blur(6rem);
-  background: rgb(85, 145, 243);
+  background: hsl(30 85% 60%);
 }
 
 .footer::before {
-  background: radial-gradient(50% 56400% at 50% 100%, rgb(34, 44, 57) 0%, rgba(169, 163, 194, 0) 100%);
+  background: radial-gradient(50% 56400% at 50% 100%, hsl(30 60% 30%) 0%, rgba(169, 163, 194, 0) 100%);
   top: 0;
   content: "";
   height: 1px;
   left: 0;
   position: absolute;
   width: 100%;
-  color: rgb(23, 23, 23);
+  color: hsl(35 30% 80%);
 }

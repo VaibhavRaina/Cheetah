@@ -9,10 +9,10 @@ const Features = () => {
         <div className="relative flex flex-col items-center justify-center w-full py-20">
             <Container>
                 <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-heading font-medium !leading-snug mt-6">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-heading font-medium !leading-snug mt-6 text-foreground">
                         Cheetah&nbsp;AI <br /> makes <span className="font-subheading italic">coding&nbsp;simple</span>
                     </h2>
-                    <p className="text-base md:text-lg text-center text-accent-foreground/80 mt-6">
+                    <p className="text-base md:text-lg text-center text-foreground mt-6 font-medium">
                         Unlock real-time context and deep semantic search to build software at lightning speed.
                     </p>
                 </div>
@@ -27,18 +27,18 @@ const Features = () => {
                         index === 2 && "md:col-span-2 lg:col-span-1",
                     )}>
                         <MagicCard
-                            gradientFrom="#38bdf8"
-                            gradientTo="#3b82f6"
+                            gradientFrom="hsl(30 85% 60%)"
+                            gradientTo="hsl(35 80% 50%)"
                             className="p-4 lg:p-6 lg:rounded-3xl"
-                            gradientColor="rgba(59,130,246,0.1)"
+                            gradientColor="hsla(30, 85%, 60%, 0.1)"
                         >
                             <div className="flex items-center space-x-4 mb-4">
-                                <h3 className="text-xl font-semibold flex items-center gap-2">
+                                <h3 className="text-xl font-semibold flex items-center gap-2 text-foreground">
                                     <feature.icon className="size-5 text-primary" />
                                     {feature.title}
                                 </h3>
                             </div>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-foreground font-medium">
                                 {feature.description}
                             </p>
 

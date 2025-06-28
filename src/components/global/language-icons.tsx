@@ -138,13 +138,13 @@ const LanguageIcons = {
     ),
     r: (props: LucideProps) => (
         <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="50" fill="#276DC3" />
+            <circle cx="50" cy="50" r="50" fill="hsl(30 85% 60%)" />
             <path d="M50 25H75V37.5H62.5V50H75L50 75V62.5H62.5V50H50V25Z" fill="white" />
         </svg>
     ),
     perl: (props: LucideProps) => (
         <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 0L100 50L50 100L0 50L50 0Z" fill="#0073A2" />
+            <path d="M50 0L100 50L50 100L0 50L50 0Z" fill="hsl(30 85% 60%)" />
             <path d="M50 4L96 50L50 96L4 50L50 4Z" stroke="white" stroke-width="2" />
             <path d="M50 25L75 50L50 75L25 50L50 25Z" fill="white" />
         </svg>

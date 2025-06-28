@@ -63,7 +63,7 @@ export default function PricingPage() {
                                 </div>
                                 <div className="mt-auto pt-6">
                                     <Button
-                                        variant={plan.id === "developer" ? "default" : "outline"}
+                                        variant={plan.id === "developer" ? "accent" : "outline"}
                                         size="lg"
                                         className="w-full"
                                     >
@@ -102,7 +102,7 @@ export default function PricingPage() {
                                         <span className="text-sm text-muted-foreground">/month</span>
                                         <span className="uppercase text-xs font-semibold mt-2 tracking-wider text-muted-foreground">Developer</span>
                                         <div className="absolute -top-6 left-0 right-0 mx-auto">
-                                            <div className="bg-blue-600/80 text-white text-xs py-1 px-3 rounded-sm text-center mx-auto w-max">
+                                            <div className="bg-accent/80 text-accent-foreground text-xs py-1 px-3 rounded-sm text-center mx-auto w-max">
                                                 14 DAY FREE TRIAL
                                             </div>
                                         </div>
@@ -317,7 +317,7 @@ export default function PricingPage() {
                                     <Button variant="outline" className="w-full">Install now</Button>
                                 </td>
                                 <td className="p-4 py-6 bg-foreground/[0.01]">
-                                    <Button variant="blue" className="w-full">Install now</Button>
+                                    <Button variant="accent" className="w-full">Install now</Button>
                                 </td>
                                 <td className="p-4 py-6">
                                     <Button variant="outline" className="w-full">Install now</Button>
@@ -376,6 +376,19 @@ export default function PricingPage() {
                     </div>
                 </div>
             </Container>
+
+            <div className="mt-20 max-w-3xl mx-auto">
+                <h2 className="text-2xl font-heading font-medium mb-8">VSCode Extension</h2>
+                <div className="space-y-6">
+                    <div className="pb-6 border-b border-foreground/10">
+                        <h3 className="mt-3 text-lg font-semibold">VSCode Extension</h3>
+                        <p className="mt-1 text-sm text-muted-foreground">Add support to your favorite IDE</p>
+                    </div>
+                    <div className="mt-8">
+                        <Button variant="accent" className="w-full">Install now</Button>
+                    </div>
+                </div>
+            </div>
         </section>
     );
 } 

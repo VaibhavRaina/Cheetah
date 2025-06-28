@@ -17,7 +17,7 @@ const NotFoundPage = () => {
             <Wrapper>
                 <Container className="flex flex-col items-center justify-center mx-auto py-16">
                     <div className="flex items-center justify-center h-full flex-col">
-                        <span className="text-sm px-3.5 py-1 rounded-md bg-gradient-to-br from-sky-400 to-blue-600 text-neutral-50 custom-shadow">
+                        <span className="text-sm px-3.5 py-1 rounded-md bg-gradient-to-br from-accent/80 to-accent text-accent-foreground custom-shadow">
                             404
                         </span>
                         <h1 className="text-3xl md:text-5xl font-bold mt-5">
@@ -27,7 +27,7 @@ const NotFoundPage = () => {
                             This page doesn&apos;t exist. Please check the URL and try again.
                         </p>
                         <Link href="/">
-                            <Button variant="subtle" className="mt-8">
+                            <Button variant="accent" className="mt-8">
                                 <ArrowLeftIcon className="size-4" />
                                 Back
                             </Button>

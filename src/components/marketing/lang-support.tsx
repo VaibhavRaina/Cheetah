@@ -7,26 +7,26 @@ const LanguageSupport = () => {
         <div className="relative flex flex-col items-center justify-center max-w-5xl py-20 mx-auto">
             <Container>
                 <div className="flex flex-col items-center justify-center w-full max-w-3xl mx-auto text-center">
-                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-heading font-medium !leading-snug">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-heading font-medium !leading-snug text-foreground">
                         Generate code snippets in 60+ <br /> <span className="font-subheading italic">languages</span>
                     </h2>
                 </div>
             </Container>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-12 gap-y-8 items-start justify-start max-w-4xl mx-auto pt-16 relative w-full">
-                <div className="absolute top-1/2 -translate-y-1/2 right-1/4 w-3/5 h-14 lg:h-20 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full -rotate-12 blur-[10rem] -z-10"></div>
+                <div className="absolute top-1/2 -translate-y-1/2 right-1/4 w-3/5 h-14 lg:h-20 bg-gradient-to-r from-accent/70 to-accent rounded-full -rotate-12 blur-[10rem] -z-10"></div>
 
                 {SUPPORTED_LANGUAGES.map((language, idx) => (
                     <Container
                         key={language.code}
                         delay={0.05 * idx}
-                        className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-primary transition-colors h-auto"
+                        className="flex items-center space-x-2 text-sm text-foreground hover:text-primary transition-colors h-auto"
                     >
                         <language.icon className="w-6 h-6" />
-                        <span className="text-base lg:text-lg">{language.name}</span>
+                        <span className="text-base lg:text-lg font-medium">{language.name}</span>
                     </Container>
                 ))}
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <div className="flex items-center space-x-2 text-sm text-foreground font-medium">
                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-muted">
                         <Plus size={14} />
                     </span>
