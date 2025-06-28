@@ -4,15 +4,15 @@ export const NAV_LINKS = [
         href: "/pricing"
     },
     {
-        name: "Features",
-        href: "#"
+        name: "About",
+        href: "/about"
     },
     {
         name: "Blog",
-        href: "#"
+        href: "/blog"
     },
     {
         name: "Contact",
-        href: "#"
+        href: "/contact"
     },
 ];
