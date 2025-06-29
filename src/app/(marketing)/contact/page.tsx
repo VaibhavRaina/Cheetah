@@ -1,6 +1,6 @@
 "use client";
 
-import Container from "@/components/global/container";
+import Wrapper from "@/components/global/wrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,31 +22,34 @@ const ContactPage = () => {
     };
 
     return (
-        <div className="min-h-screen py-20">
-            <Container>
-                <div className="flex flex-col items-center justify-center">
-                    <motion.h1
-                        className="text-5xl md:text-6xl font-bold text-center"
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        Get in Touch
-                    </motion.h1>
-                    <Separator className="my-8 w-24 bg-primary/40" />
-                    <motion.p
-                        className="text-xl text-center max-w-2xl text-muted-foreground"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                    >
-                        We'd love to hear from you. Whether you have a question about our product, need help,
-                        or want to share feedback, our team is ready to assist.
-                    </motion.p>
-                </div>
-            </Container>
+        <Wrapper className="py-20 relative">
+            <div className="flex flex-col items-center justify-center">
+                <motion.h1
+                    className="text-5xl md:text-6xl font-bold text-center"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                >
+                    Get in Touch
+                </motion.h1>
+                <Separator className="my-8 w-24 bg-primary/40" />
+                <motion.p
+                    className="text-xl text-center max-w-2xl text-muted-foreground"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                    We'd love to hear from you. Whether you have a question about our product, need help,
+                    or want to share feedback, our team is ready to assist.
+                </motion.p>
+            </div>
 
-            <Container delay={0.1} className="mt-16">
+            <motion.div
+                className="mt-16"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+            >
                 <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     {/* Contact Info */}
                     <div className="space-y-8">
@@ -200,16 +203,16 @@ const ContactPage = () => {
                         )}
                     </motion.div>
                 </div>
-            </Container>
+            </motion.div>
 
             {/* Map Integration */}
-            <Container delay={0.4} className="mt-24 mb-12">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className="w-full h-64 md:h-96 rounded-xl overflow-hidden border border-border"
-                >
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="mt-24 mb-12"
+            >
+                <div className="w-full h-64 md:h-96 rounded-xl overflow-hidden border border-border">
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50470.56851978834!2d-122.43130174684274!3d37.75890275569452!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80859a6d00690021%3A0x4a501367f076adff!2sSan%20Francisco%2C%20CA!5e0!3m2!1sen!2sus!4v1718971941633!5m2!1sen!2sus"
                         width="100%"
@@ -219,9 +222,9 @@ const ContactPage = () => {
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
                     ></iframe>
-                </motion.div>
-            </Container>
-        </div>
+                </div>
+            </motion.div>
+        </Wrapper>
     );
 };
 

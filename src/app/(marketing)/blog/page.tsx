@@ -1,6 +1,6 @@
 "use client";
 
-import Container from "@/components/global/container";
+import Wrapper from "@/components/global/wrapper";
 import { MagicCard } from "@/components/ui/magic-card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -58,52 +58,55 @@ const categories = [
 
 const BlogPage = () => {
     return (
-        <div className="min-h-screen py-20">
+        <Wrapper className="py-20 relative">
             {/* Hero Section */}
-            <Container>
-                <div className="flex flex-col items-center justify-center">
-                    <motion.h1
-                        className="text-5xl md:text-6xl font-bold text-center bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent"
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        The Cheetah Blog
-                    </motion.h1>
-                    <Separator className="my-8 w-24 bg-blue-500/40" />
-                    <motion.p
-                        className="text-xl text-center max-w-3xl text-muted-foreground"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                    >
-                        Insights, tutorials, and updates from the world of AI-powered development.
-                        Stay current with the latest trends, best practices, and Cheetah product news.
-                    </motion.p>
+            <div className="flex flex-col items-center justify-center">
+                <motion.h1
+                    className="text-5xl md:text-6xl font-bold text-center bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    The Cheetah Blog
+                </motion.h1>
+                <Separator className="my-8 w-24 bg-blue-500/40" />
+                <motion.p
+                    className="text-xl text-center max-w-3xl text-muted-foreground"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                    Insights, tutorials, and updates from the world of AI-powered development.
+                    Stay current with the latest trends, best practices, and Cheetah product news.
+                </motion.p>
 
-                    {/* Search Bar */}
-                    <motion.div
-                        className="mt-12 w-full max-w-2xl"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
-                    >
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search articles..."
-                                className="pl-10 py-6 rounded-full border-blue-500/20"
-                            />
-                            <Button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full">
-                                Search
-                            </Button>
-                        </div>
-                    </motion.div>
-                </div>
-            </Container>
+                {/* Search Bar */}
+                <motion.div
+                    className="mt-12 w-full max-w-2xl"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search articles..."
+                            className="pl-10 py-6 rounded-full border-blue-500/20"
+                        />
+                        <Button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full">
+                            Search
+                        </Button>
+                    </div>
+                </motion.div>
+            </div>
 
             {/* Categories */}
-            <Container delay={0.1} className="mt-16">
+            <motion.div
+                className="mt-16"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+            >
                 <div className="flex flex-wrap justify-center gap-3">
                     {categories.map((category, index) => (
                         <motion.div
@@ -121,60 +124,63 @@ const BlogPage = () => {
                         </motion.div>
                     ))}
                 </div>
-            </Container>
+            </motion.div>
 
             {/* Featured Post */}
-            <Container delay={0.2} className="mt-16">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.5 }}
-                    className="relative"
-                >
-                    <MagicCard className="w-full">
-                        <div className="relative w-full rounded-xl overflow-hidden group">
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent z-10" />
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.5 }}
+                className="relative mt-16"
+            >
+                <MagicCard className="w-full">
+                    <div className="relative w-full rounded-xl overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent z-10" />
 
-                            <img
-                                src="https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
-                                alt="Featured Blog Post"
-                                className="w-full h-[500px] object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
+                        <img
+                            src="https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
+                            alt="Featured Blog Post"
+                            className="w-full h-[500px] object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
 
-                            <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
-                                <Badge className="mb-3" variant="secondary">Featured</Badge>
-                                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                                    The Evolution of Developer Experience in 2023
-                                </h2>
-                                <p className="text-white/80 mb-6 max-w-3xl">
-                                    How AI-powered tools like Cheetah are transforming the way developers work,
-                                    collaborate, and solve complex problems in modern software engineering.
-                                </p>
-                                <div className="flex flex-wrap gap-4 text-white/70 mb-6">
-                                    <div className="flex items-center">
-                                        <Calendar className="h-4 w-4 mr-2" />
-                                        <span>June 12, 2023</span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <BookOpen className="h-4 w-4 mr-2" />
-                                        <span>By Thomas Wright</span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <Clock className="h-4 w-4 mr-2" />
-                                        <span>10 min read</span>
-                                    </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
+                            <Badge className="mb-3" variant="secondary">Featured</Badge>
+                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                                The Evolution of Developer Experience in 2023
+                            </h2>
+                            <p className="text-white/80 mb-6 max-w-3xl">
+                                How AI-powered tools like Cheetah are transforming the way developers work,
+                                collaborate, and solve complex problems in modern software engineering.
+                            </p>
+                            <div className="flex flex-wrap gap-4 text-white/70 mb-6">
+                                <div className="flex items-center">
+                                    <Calendar className="h-4 w-4 mr-2" />
+                                    <span>June 12, 2023</span>
                                 </div>
-                                <Button size="lg">
-                                    Read Article <ChevronRight className="ml-2 h-4 w-4" />
-                                </Button>
+                                <div className="flex items-center">
+                                    <BookOpen className="h-4 w-4 mr-2" />
+                                    <span>By Thomas Wright</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <Clock className="h-4 w-4 mr-2" />
+                                    <span>10 min read</span>
+                                </div>
                             </div>
+                            <Button size="lg">
+                                Read Article <ChevronRight className="ml-2 h-4 w-4" />
+                            </Button>
                         </div>
-                    </MagicCard>
-                </motion.div>
-            </Container>
+                    </div>
+                </MagicCard>
+            </motion.div>
 
             {/* Blog Grid */}
-            <Container delay={0.3} className="mt-24">
+            <motion.div
+                className="mt-24"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+            >
                 <h2 className="text-3xl font-bold mb-12">Latest Articles</h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {blogPosts.map((post, index) => (
@@ -234,16 +240,16 @@ const BlogPage = () => {
                         Load More Articles
                     </Button>
                 </div>
-            </Container>
+            </motion.div>
 
             {/* Newsletter */}
-            <Container delay={0.4} className="mt-32 mb-16">
-                <motion.div
-                    className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-8 md:p-12"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.8 }}
-                >
+            <motion.div
+                className="mt-32 mb-16"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+            >
+                <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-8 md:p-12">
                     <div className="grid md:grid-cols-2 gap-8 items-center">
                         <div>
                             <h2 className="text-2xl md:text-3xl font-bold mb-4">Stay in the Loop</h2>
@@ -263,9 +269,9 @@ const BlogPage = () => {
                             </Button>
                         </div>
                     </div>
-                </motion.div>
-            </Container>
-        </div>
+                </div>
+            </motion.div>
+        </Wrapper>
     );
 };
 
