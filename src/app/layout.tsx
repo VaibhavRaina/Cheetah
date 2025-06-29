@@ -15,6 +15,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
+                suppressHydrationWarning
                 className={cn(
                     "min-h-screen bg-background text-foreground antialiased font-heading overflow-x-hidden !scrollbar-hide",
                     base.variable,
@@ -22,8 +23,8 @@ export default function RootLayout({
                     subheading.variable,
                 )}
             >
-                    <Toaster richColors theme="dark" position="top-right" />
-                    {children}
+                <Toaster richColors theme="dark" position="top-right" />
+                {children}
             </body>
         </html>
     );

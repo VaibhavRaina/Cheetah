@@ -20,112 +20,134 @@ const Footer = () => {
                     </div>
                 </Container>
 
-                <div className="grid-cols-2 gap-8 grid mt-16 xl:col-span-2 xl:mt-0">
-                    <div className="md:grid md:grid-cols-2 md:gap-8">
-                        <Container delay={0.1} className="h-auto">
-                            <h3 className="text-base font-medium text-foreground">
-                                Product
-                            </h3>
-                            <ul className="mt-4 text-sm text-muted-foreground space-y-4">
-                                <li className="mt-2">
-                                    <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                        Features
-                                    </Link>
-                                </li>
-                                <li className="mt-2">
-                                    <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                        Pricing
-                                    </Link>
-                                </li>
-                                <li className="mt-2">
-                                    <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                        Testimonials
-                                    </Link>
-                                </li>
-                                <li className="mt-2">
-                                    <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                        Supported Languages
-                                    </Link>
-                                </li>
-                            </ul>
-                        </Container>
-                        <Container delay={0.2} className="h-auto">
-                            <div className="mt-10 md:mt-0 flex flex-col">
-                                <h3 className="text-base font-medium text-foreground">
-                                    Solutions
-                                </h3>
-                                <ul className="mt-4 text-sm text-muted-foreground space-y-4">
-                                    <li>
-                                        <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                            Content Creators
-                                        </Link>
-                                    </li>
-                                    <li className="mt-2">
-                                        <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                            Businesses
-                                        </Link>
-                                    </li>
-                                    <li className="mt-2">
-                                        <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                            Education
-                                        </Link>
-                                    </li>
-                                    <li className="mt-2">
-                                        <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                            Enterprise
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                        </Container>
+                <div className="md:grid md:grid-cols-2 md:gap-8">
+                    <Container delay={0.1} className="h-auto">
+                        <h3 className="text-base font-medium text-foreground">
+                            Product
+                        </h3>
+                        <ul className="mt-4 text-sm text-muted-foreground space-y-4">
+                            <li className="mt-2">
+                                <Link href="/agent" className="link hover:text-foreground transition-all duration-300">
+                                    Agent
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/chat" className="link hover:text-foreground transition-all duration-300">
+                                    Chat
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/next-edit" className="link hover:text-foreground transition-all duration-300">
+                                    Next Edit
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/completions" className="link hover:text-foreground transition-all duration-300">
+                                    Completions
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/slack" className="link hover:text-foreground transition-all duration-300">
+                                    Slack
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/pricing" className="link hover:text-foreground transition-all duration-300">
+                                    Pricing
+                                </Link>
+                            </li>
+                        </ul>
+                    </Container>
+
+                    <div className="mt-10 md:mt-0 flex flex-col">
+                        <h3 className="text-base font-medium text-foreground">
+                            Resources
+                        </h3>
+                        <ul className="mt-4 text-sm text-muted-foreground space-y-4">
+                            <li className="mt-2">
+                                <Link href="/docs" className="link hover:text-foreground transition-all duration-300">
+                                    Docs
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/blog" className="link hover:text-foreground transition-all duration-300">
+                                    Blog
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/privacy-security" className="link hover:text-foreground transition-all duration-300">
+                                    Privacy & Security
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/trust-center" className="link hover:text-foreground transition-all duration-300">
+                                    Trust Center
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/status-page" className="link hover:text-foreground transition-all duration-300">
+                                    Status Page
+                                </Link>
+                            </li>
+                        </ul>
                     </div>
-                    <div className="md:grid md:grid-cols-2 md:gap-8">
-                        <Container delay={0.3} className="h-auto">
-                            <h3 className="text-base font-medium text-foreground">
-                                Resources
-                            </h3>
-                            <ul className="mt-4 text-sm text-muted-foreground space-y-4">
-                                <li className="mt-2">
-                                    <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                        Blog
-                                    </Link>
-                                </li>
-                                <li className="mt-2">
-                                    <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                        Translation Guides
-                                    </Link>
-                                </li>
-                                <li className="mt-2">
-                                    <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                        Support
-                                    </Link>
-                                </li>
-                            </ul>
-                        </Container>
-                        <Container delay={0.4} className="h-auto">
-                            <div className="mt-10 md:mt-0 flex flex-col">
-                                <h3 className="text-base font-medium text-foreground">
-                                    Company
-                                </h3>
-                                <ul className="mt-4 text-sm text-muted-foreground space-y-4">
-                                    <li>
-                                        <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                            About Us
-                                        </Link>
-                                    </li>
-                                    <li className="mt-2">
-                                        <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                            Privacy Policy
-                                        </Link>
-                                    </li>
-                                    <li className="mt-2">
-                                        <Link href="#" className="link hover:text-foreground transition-all duration-300">
-                                            Terms & Conditions
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                        </Container>
+                </div>
+
+                <div className="md:grid md:grid-cols-2 md:gap-8">
+                    <Container delay={0.3} className="h-auto">
+                        <h3 className="text-base font-medium text-foreground">
+                            Company
+                        </h3>
+                        <ul className="mt-4 text-sm text-muted-foreground space-y-4">
+                            <li className="mt-2">
+                                <Link href="/careers" className="link hover:text-foreground transition-all duration-300">
+                                    Careers
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/press-inquiries" className="link hover:text-foreground transition-all duration-300">
+                                    Press Inquiries
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/contact" className="link hover:text-foreground transition-all duration-300">
+                                    Contact Sales
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/contact" className="link hover:text-foreground transition-all duration-300">
+                                    Contact Support
+                                </Link>
+                            </li>
+                        </ul>
+                    </Container>
+
+                    <div className="mt-10 md:mt-0 flex flex-col">
+                        <h3 className="text-base font-medium text-foreground">
+                            Legal
+                        </h3>
+                        <ul className="mt-4 text-sm text-muted-foreground space-y-4">
+                            <li className="mt-2">
+                                <Link href="/cookie-policy" className="link hover:text-foreground transition-all duration-300">
+                                    Cookie Policy
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/privacy-policy" className="link hover:text-foreground transition-all duration-300">
+                                    Privacy Policy
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/community-terms-of-service" className="link hover:text-foreground transition-all duration-300">
+                                    Community Terms of Service
+                                </Link>
+                            </li>
+                            <li className="mt-2">
+                                <Link href="/professional-terms-of-service" className="link hover:text-foreground transition-all duration-300">
+                                    Professional Terms of Service
+                                </Link>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -138,7 +160,7 @@ const Footer = () => {
                 </div>
             </Container>
         </footer>
-    )
+    );
 };
 
-export default Footer
+export default Footer;
