@@ -1,121 +1,118 @@
 import { LucideProps } from "lucide-react";
 
 const LanguageIcons = {
+    // File System icon
     javascript: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="#F7DF1E" />
-            <text x="30" y="70" fontSize="50" fill="black">JS</text>
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#4285F4" />
+            <path d="M5 5v14h14V5H5zm12 12H7V7h10v10z" fill="white" />
+            <path d="M9 9h6v2H9V9zm0 4h6v2H9v-2z" fill="white" />
         </svg>
     ),
+    // Browser Tools icon
     python: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="#FFD43B" />
-            <path d="M20 20 Q40 10, 60 20 Q80 30, 90 50 Q80 70, 60 80 Q40 90, 20 80 Q10 70, 20 50 Z" fill="#3776AB" />
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#34A853" />
+            <path d="M4 6h16v2H4V6z" fill="white" />
+            <path d="M4 9h16v10H4V9z" fill="white" />
+            <path d="M6 11h12v6H6v-6z" fill="#34A853" />
         </svg>
     ),
+    // Context7 icon
     java: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="#ED8B00" />
-            <text x="20" y="60" fontSize="30" fill="white">Java</text>
-            <circle cx="70" cy="70" r="10" fill="black" />
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#9C27B0" />
+            <path d="M7 7h10v10H7V7z" fill="white" />
+            <path d="M9 9h6v2H9V9zm0 4h6v2H9v-2z" fill="#9C27B0" />
         </svg>
     ),
+    // Sequential Thinking icon
     cpp: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="40" fill="#00599C" />
-            <text x="35" y="60" fontSize="30" fill="white">C++</text>
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#F44336" />
+            <path d="M5 12l7-7 7 7-7 7-7-7z" fill="white" />
+            <path d="M12 9v6M9 12h6" stroke="#F44336" strokeWidth="2" />
         </svg>
     ),
+    // Git Tools icon
     typescript: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="#3178C6" />
-            <text x="35" y="70" fontSize="50" fill="white">TS</text>
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#F05032" />
+            <path d="M12 6v12M6 12h12" stroke="white" strokeWidth="2" />
+            <circle cx="12" cy="12" r="3" fill="white" />
         </svg>
     ),
+    // Fetch icon
     php: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="50" fill="#777BB4" />
-            <text x="35" y="60" fontSize="30" fill="white">PHP</text>
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#00BCD4" />
+            <path d="M5 8h14v8H5V8z" fill="white" />
+            <path d="M7 10l5 4 5-4" stroke="#00BCD4" strokeWidth="2" />
         </svg>
     ),
+    // Playwright icon
     csharp: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="#68217A" />
-            <path d="M30 40 L40 60 L30 80 M60 40 L70 60 L60 80" stroke="#FFFFFF" strokeWidth="10" />
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#2E7D32" />
+            <path d="M5 5l14 7-14 7V5z" fill="white" />
         </svg>
     ),
-    swift: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" rx="20" fill="#F05138" />
-            <path d="M70 30 L50 70 L30 50 L50 30 Z" fill="white" />
-        </svg>
-    ),
+    // Browser Use icon
     go: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="#00ADD8" />
-            <path d="M30 30 Q40 20, 50 30 Q60 20, 70 30 Q80 40, 70 50 Q80 60, 70 70 Q60 80, 50 70 Q40 80, 30 70 Q20 60, 30 50 Z" fill="white" /> {/* Simplified gopher silhouette */}
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#1976D2" />
+            <path d="M4 6h16v12H4V6z" fill="white" />
+            <path d="M6 8h12v2H6V8zm0 4h12v2H6v-2z" fill="#1976D2" />
         </svg>
     ),
-    ruby: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="50 10, 90 30, 90 70, 50 90, 10 70, 10 30" fill="#CC342D" />
-            <polygon points="50 20, 80 40, 80 60, 50 80, 20 60, 20 40" fill="white" />
-        </svg>
-    ),
+    // FireCrawl icon
     rust: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="50" fill="#000000" />
-            <path d="M40 40 L60 40 L70 50 L60 60 L40 60 L30 50 Z" fill="#DE3B26" />
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#FF5722" />
+            <path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2" />
+            <path d="M8 8l8 8M8 16l8-8" stroke="white" strokeWidth="2" />
         </svg>
     ),
+    // Puppeteer icon
     kotlin: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="50" height="50" fill="#1ABCFE" />
-            <rect x="50" width="50" height="50" fill="#B125EA" />
-            <rect y="50" width="50" height="50" fill="#F0931D" />
-            <text x="35" y="70" fontSize="40" fill="white">K</text>
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#673AB7" />
+            <path d="M5 5v14h14V5H5z" fill="white" />
+            <path d="M8 8h8v8H8V8z" fill="#673AB7" />
         </svg>
     ),
-    html: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 0 L0 90 L45 100 L90 90 L80 0 H10 Z" fill="#E34F26" />
-            <text x="30" y="60" fontSize="30" fill="white">HTML</text>
+    // Brave Search icon
+    dart: (props: LucideProps) => (
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#FB8C00" />
+            <path d="M12 5l7 7-7 7-7-7 7-7z" fill="white" />
+            <circle cx="12" cy="12" r="2" fill="#FB8C00" />
         </svg>
     ),
-    css: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 0 L0 90 L45 100 L90 90 L80 0 H10 Z" fill="#264DE4" />
-            <text x="30" y="60" fontSize="30" fill="white">CSS</text>
+    // Figma icon
+    swift: (props: LucideProps) => (
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#0097A7" />
+            <circle cx="8" cy="8" r="3" fill="white" />
+            <circle cx="8" cy="16" r="3" fill="white" />
+            <circle cx="16" cy="8" r="3" fill="white" />
+            <circle cx="16" cy="16" r="3" fill="white" />
         </svg>
     ),
-    sql: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="20" width="60" height="60" rx="10" fill="#00758F" />
-            <rect x="30" y="30" width="40" height="40" rx="5" fill="#FFFFFF" />
+    // Time icon
+    ruby: (props: LucideProps) => (
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#607D8B" />
+            <circle cx="12" cy="12" r="7" fill="white" />
+            <path d="M12 7v5h5" stroke="#607D8B" strokeWidth="2" />
         </svg>
     ),
-    solidity: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="50 10, 80 30, 80 70, 50 90, 20 70, 20 30" fill="#363636" />
-            <polygon points="50 20, 70 40, 70 60, 50 80, 30 60, 30 40" fill="white" />
-        </svg>
-    ),
-    shell: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100" height="100" fill="#4EAA25" />
-            <text x="40" y="70" fontSize="50" fill="white">{'>'}</text>
-        </svg>
-    ),
+    // Sequential Thinking icon
     r: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="50" fill="#276DC3" />
-            <text x="40" y="70" fontSize="50" fill="white">R</text>
-        </svg>
-    ),
-    perl: (props: LucideProps) => (
-        <svg {...props} width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="50 10, 90 50, 50 90, 10 50" fill="#39457E" />
-            <text x="30" y="60" fontSize="20" fill="white">Perl</text>
+        <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#3F51B5" />
+            <path d="M5 5h14v6h-7v8h-7V5z" fill="white" />
+            <path d="M12 11l7 8" stroke="white" strokeWidth="2" />
         </svg>
     ),
 };

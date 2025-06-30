@@ -5,7 +5,7 @@ import CTA from "@/components/marketing/cta";
 import Features from "@/components/marketing/features";
 import Hero from "@/components/marketing/hero";
 import Integration from "@/components/marketing/integration";
-import LanguageSupport from "@/components/marketing/lang-support";
+import ServerSupport from "@/components/marketing/server-support";
 
 const HomePage = () => {
     return (
@@ -15,7 +15,7 @@ const HomePage = () => {
             <Features />
             <Analysis />
             <Integration />
-            <LanguageSupport />
+            <ServerSupport />
             <CTA />
         </Wrapper>
     )

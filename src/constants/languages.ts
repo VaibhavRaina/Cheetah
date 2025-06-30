@@ -1,99 +1,97 @@
-import LanguageIcons from "@/components/global/language-icons";
-
-export const SUPPORTED_LANGUAGES = [
+export const MCP_SERVERS = [
     {
-        name: "JavaScript",
-        code: "JS",
-        icon: LanguageIcons.javascript
+        name: "AWS",
+        code: "AWS",
+        image: "/images/mcp-servers/aws.png"
     },
     {
-        name: "Python",
-        code: "PY",
-        icon: LanguageIcons.python
+        name: "Azure",
+        code: "AZ",
+        image: "/images/mcp-servers/azure.png"
     },
     {
-        name: "Java",
-        code: "JAVA",
-        icon: LanguageIcons.java
+        name: "Brave",
+        code: "BRAVE",
+        image: "/images/mcp-servers/brave.png"
     },
     {
-        name: "C++",
-        code: "CPP",
-        icon: LanguageIcons.cpp
+        name: "Browser Tools",
+        code: "BT",
+        image: "/images/mcp-servers/browsetools.png"
     },
     {
-        name: "TypeScript",
-        code: "TS",
-        icon: LanguageIcons.typescript
+        name: "Cloudflare",
+        code: "CF",
+        image: "/images/mcp-servers/cloudflare.png"
     },
     {
-        name: "PHP",
-        code: "PHP",
-        icon: LanguageIcons.php
+        name: "Discord",
+        code: "DISC",
+        image: "/images/mcp-servers/discord.png"
     },
     {
-        name: "C#",
-        code: "C#",
-        icon: LanguageIcons.csharp
+        name: "GitHub",
+        code: "GH",
+        image: "/images/mcp-servers/github.png"
     },
     {
-        name: "Swift",
-        code: "SWIFT",
-        icon: LanguageIcons.swift
+        name: "GitLab",
+        code: "GL",
+        image: "/images/mcp-servers/gitlab.png"
     },
     {
-        name: "Go",
-        code: "GO",
-        icon: LanguageIcons.go
+        name: "HyperBrowser",
+        code: "HB",
+        image: "/images/mcp-servers/hyperbrowser.png"
     },
     {
-        name: "Ruby",
-        code: "RB",
-        icon: LanguageIcons.ruby
+        name: "Kubernetes",
+        code: "K8S",
+        image: "/images/mcp-servers/kubernetes.png"
     },
     {
-        name: "Rust",
-        code: "RUST",
-        icon: LanguageIcons.rust
+        name: "PayPal",
+        code: "PP",
+        image: "/images/mcp-servers/paypal.png"
     },
     {
-        name: "Kotlin",
-        code: "KT",
-        icon: LanguageIcons.kotlin
+        name: "Shopify",
+        code: "SHOP",
+        image: "/images/mcp-servers/shopify.png"
     },
     {
-        name: "HTML",
-        code: "HTML",
-        icon: LanguageIcons.html
+        name: "Spotify",
+        code: "SPOT",
+        image: "/images/mcp-servers/spotify.png"
     },
     {
-        name: "CSS",
-        code: "CSS",
-        icon: LanguageIcons.css
+        name: "Stripe",
+        code: "STRP",
+        image: "/images/mcp-servers/stripe.png"
     },
     {
-        name: "SQL",
-        code: "SQL",
-        icon: LanguageIcons.sql
+        name: "Supabase",
+        code: "SB",
+        image: "/images/mcp-servers/supabase.png"
     },
     {
-        name: "Solidity",
-        code: "SOL",
-        icon: LanguageIcons.solidity
+        name: "WhatsApp",
+        code: "WA",
+        image: "/images/mcp-servers/whatsapp.png"
     },
     {
-        name: "Shell",
-        code: "SH",
-        icon: LanguageIcons.shell
+        name: "YouTube",
+        code: "YT",
+        image: "/images/mcp-servers/youtube.png"
     },
     {
-        name: "R",
-        code: "R",
-        icon: LanguageIcons.r
+        name: "Google Drive",
+        code: "googledrive",
+        image: "/images/mcp-servers/google drive.png"
     },
     {
-        name: "Perl",
-        code: "PL",
-        icon: LanguageIcons.perl
+        name: "Figma",
+        code: "figma",
+        image: "/images/mcp-servers/figma.png"
     }
 ]; 
