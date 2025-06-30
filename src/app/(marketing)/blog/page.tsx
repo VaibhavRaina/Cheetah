@@ -56,7 +56,7 @@ const categories = [
     "Tutorials"
 ];
 
-const BlogPage = () => {
+function BlogComponent() {
     return (
         <Wrapper className="py-20 relative">
             {/* Hero Section */}
@@ -186,10 +186,14 @@ const BlogPage = () => {
                     {blogPosts.map((post, index) => (
                         <motion.div
                             key={post.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.6 + (index * 0.1) }}
                             className="group"
+                            variants={fadeInAnimationVariants}
+                            initial="initial"
+                            whileInView="animate"
+                            viewport={{
+                                once: true,
+                            }}
+                            custom={index}
                         >
                             <div className="rounded-xl overflow-hidden border border-border h-full flex flex-col">
                                 <div className="relative h-48 overflow-hidden">
@@ -249,25 +253,17 @@ const BlogPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
             >
-                <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-8 md:p-12">
-                    <div className="grid md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <h2 className="text-2xl md:text-3xl font-bold mb-4">Stay in the Loop</h2>
-                            <p className="text-muted-foreground mb-6">
-                                Subscribe to our newsletter to get the latest articles, product updates,
-                                and exclusive content delivered straight to your inbox.
-                            </p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <Input
-                                placeholder="Your email address"
-                                type="email"
-                                className="flex-grow"
-                            />
-                            <Button>
-                                Subscribe
-                            </Button>
-                        </div>
+                <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="max-w-xl">
+                        <h3 className="text-2xl font-bold">Stay Ahead of the Curve</h3>
+                        <p className="text-muted-foreground mt-2">
+                            Subscribe to our newsletter for the latest insights on AI development,
+                            exclusive content, and product updates.
+                        </p>
+                    </div>
+                    <div className="w-full max-w-md flex gap-2">
+                        <Input placeholder="Enter your email" className="py-6" />
+                        <Button>Subscribe</Button>
                     </div>
                 </div>
             </motion.div>
@@ -275,4 +271,20 @@ const BlogPage = () => {
     );
 };
 
-export default BlogPage; 
+const fadeInAnimationVariants = {
+    initial: {
+        opacity: 0,
+        y: 100
+    },
+    animate: (index: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+            delay: 0.05 * index,
+        }
+    })
+}
+
+export default function BlogPage() {
+    return <BlogComponent />
+}; 

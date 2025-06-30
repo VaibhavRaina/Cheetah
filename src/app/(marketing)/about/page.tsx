@@ -29,7 +29,7 @@ const teamMembers = [
     }
 ];
 
-const AboutPage = () => {
+function AboutComponent() {
     return (
         <div className="min-h-screen py-20">
             {/* Hero Section */}
@@ -117,9 +117,13 @@ const AboutPage = () => {
                     {teamMembers.map((member, index) => (
                         <motion.div
                             key={member.name}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.5 + (index * 0.1) }}
+                            variants={fadeInAnimationVariants}
+                            initial="initial"
+                            whileInView="animate"
+                            viewport={{
+                                once: true,
+                            }}
+                            custom={index}
                         >
                             <MagicCard className="h-full">
                                 <div className="relative flex flex-col h-full overflow-hidden rounded-xl p-4">
@@ -144,4 +148,20 @@ const AboutPage = () => {
     );
 };
 
-export default AboutPage; 
+const fadeInAnimationVariants = {
+    initial: {
+        opacity: 0,
+        y: 100
+    },
+    animate: (index: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+            delay: 0.05 * index,
+        }
+    })
+}
+
+export default function AboutPage() {
+    return <AboutComponent />
+}; 
