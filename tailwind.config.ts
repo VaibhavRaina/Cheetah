@@ -144,10 +144,10 @@ export default {
 					},
 				},
 				"scroll": {
-					"0%": {
+					"from": {
 						transform: "translateX(0)",
 					},
-					"100%": {
+					"to": {
 						transform: "translateX(-50%)",
 					},
 				},
@@ -162,7 +162,7 @@ export default {
 				ripple: "ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite",
 				blob: "blob 7s infinite",
 				"image-glow": "image-glow 6s ease-out 0.6s forwards",
-				"scroll": "scroll 30s linear infinite",
+				"scroll": "scroll 40s linear infinite",
 			},
 			spacing: {
 				"1/8": "12.5%",
