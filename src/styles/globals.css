@@ -175,6 +175,21 @@ img {
   background: hsl(30 85% 60%);
 }
 
+/* Add custom scrolling animation to ensure seamless looping */
+@keyframes seamless-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-seamless-scroll {
+  animation: seamless-scroll 30s linear infinite;
+}
+
 .footer::before {
   background: radial-gradient(50% 56400% at 50% 100%, hsl(30 60% 30%) 0%, rgba(169, 163, 194, 0) 100%);
   top: 0;
