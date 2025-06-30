@@ -85,7 +85,7 @@ export default function SignUpClient() {
                             size="lg"
                         >
                             <Image
-                                src="/images/mcp-servers/google drive.png"
+                                src="/icons/google.svg"
                                 alt="Google"
                                 width={20}
                                 height={20}
