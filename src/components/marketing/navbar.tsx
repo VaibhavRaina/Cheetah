@@ -7,7 +7,7 @@ import MobileMenu from "./mobile-menu";
 
 const Navbar = () => {
     return (
-        <header className="sticky top-0 w-full h-16 bg-background/80 backdrop-blur-sm z-50">
+        <header className="sticky top-0 w-full h-16 bg-background/80 backdrop-blur-sm z-50 text-black">
             <Wrapper className="h-full">
                 <div className="flex items-center justify-between h-full">
                     <div className="flex items-center">

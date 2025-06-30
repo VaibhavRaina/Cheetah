@@ -111,6 +111,12 @@
   }
 }
 
+body,
+html {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+}
+
 ::-webkit-scrollbar {
   width: 4px;
 }
