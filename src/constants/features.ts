@@ -11,7 +11,7 @@ export const FEATURES = [
         title: "Context Engine",
         description: "Real-time, persistent awareness of your workspace, edits and frameworks.",
         icon: DatabaseIcon,
-        image: "/images/feature-one.svg",
+        image: "/images/feature-one.png",
     },
     {
         title: "Semantic Memories",
