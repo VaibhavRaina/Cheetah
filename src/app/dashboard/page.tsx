@@ -39,6 +39,17 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import Container from "@/components/global/container";
 import Icons from "@/components/global/icons";
 import { cn } from "@/lib";
@@ -295,9 +306,34 @@ export default function DashboardPage() {
                                 <div className="space-y-6">
                                     <div className="flex items-center justify-between">
                                         <h3 className="text-lg font-semibold text-foreground">{currentPlanData.title === "Free" ? "Community Plan" : currentPlanData.title}</h3>
-                                        <button className="text-sm text-red-600 hover:underline">
-                                            Cancel subscription
-                                        </button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <button className="text-sm text-red-600 hover:underline">
+                                                    Cancel subscription
+                                                </button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Cancel your subscription?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        If you cancel your subscription:
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <div className="space-y-2 text-sm text-muted-foreground px-6 pb-6">
+                                                    <ul className="list-disc pl-5 space-y-1">
+                                                        <li>You will lose access to premium features</li>
+                                                        <li>Your subscription will remain active until the end of your billing period</li>
+                                                        <li>You won't be charged again after your current billing period</li>
+                                                    </ul>
+                                                </div>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Close</AlertDialogCancel>
+                                                    <AlertDialogAction className="bg-red-600 hover:bg-red-700">
+                                                        Continue
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </div>
 
                                     <div className="space-y-3">
