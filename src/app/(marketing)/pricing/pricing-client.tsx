@@ -320,7 +320,29 @@ export function PricingComponent() {
                             <tr className="text-center hover:bg-foreground/[0.02]">
                                 <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
                                     <div className="flex items-center gap-2">
-                                        <span>Advanced Code Analysis</span>
+                                        <span>Team Management</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <span className="text-2xl">✕</span>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                </td>
+                            </tr>
+                            <tr className="text-center hover:bg-foreground/[0.02]">
+                                <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>SOC 2 Type II</span>
                                     </div>
                                 </td>
                                 <td className="p-4 border-b border-foreground/10">
@@ -342,32 +364,74 @@ export function PricingComponent() {
                             <tr className="text-center hover:bg-foreground/[0.02]">
                                 <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
                                     <div className="flex items-center gap-2">
-                                        <span>Self-Serve Deployment</span>
+                                        <span>Support</span>
                                     </div>
                                 </td>
-                                <td className="p-4 border-b border-foreground/10"></td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <span className="text-xs text-muted-foreground">Community</span>
+                                </td>
                                 <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
-                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                    <span className="text-xs text-muted-foreground">Community</span>
                                 </td>
                                 <td className="p-4 border-b border-foreground/10">
-                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                    <span className="text-xs text-muted-foreground">Community & email</span>
                                 </td>
                                 <td className="p-4 border-b border-foreground/10">
-                                    <CheckIcon className="h-5 w-5 mx-auto text-primary" />
+                                    <span className="text-xs text-muted-foreground">Community & email</span>
                                 </td>
-                                <td className="p-4 border-b border-foreground/10">Custom</td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <span className="text-xs text-muted-foreground">Dedicated</span>
+                                </td>
                             </tr>
                             <tr className="text-center hover:bg-foreground/[0.02]">
                                 <td className="p-4 border-b border-foreground/10 text-left font-medium text-sm">
                                     <div className="flex items-center gap-2">
-                                        <span>SOC-2 & Enterprise Security</span>
+                                        <span>AI Training</span>
                                     </div>
                                 </td>
-                                <td className="p-4 border-b border-foreground/10"></td>
-                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]"></td>
-                                <td className="p-4 border-b border-foreground/10"></td>
-                                <td className="p-4 border-b border-foreground/10"></td>
-                                <td className="p-4 border-b border-foreground/10">Custom</td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <span className="text-xs text-muted-foreground">Allowed</span>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10 bg-foreground/[0.01]">
+                                    <span className="text-xs text-muted-foreground">Never</span>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <span className="text-xs text-muted-foreground">Never</span>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <span className="text-xs text-muted-foreground">Never</span>
+                                </td>
+                                <td className="p-4 border-b border-foreground/10">
+                                    <span className="text-xs text-muted-foreground">Never</span>
+                                </td>
+                            </tr>
+                            <tr className="text-center">
+                                <td className="p-4 text-left font-medium text-sm"></td>
+                                <td className="p-4">
+                                    <Button variant="outline" size="sm" className="w-full max-w-[120px]">
+                                        Install now
+                                    </Button>
+                                </td>
+                                <td className="p-4 bg-foreground/[0.01]">
+                                    <Button variant="default" size="sm" className="w-full max-w-[120px]">
+                                        Install now
+                                    </Button>
+                                </td>
+                                <td className="p-4">
+                                    <Button variant="outline" size="sm" className="w-full max-w-[120px]">
+                                        Install now
+                                    </Button>
+                                </td>
+                                <td className="p-4">
+                                    <Button variant="outline" size="sm" className="w-full max-w-[120px]">
+                                        Install now
+                                    </Button>
+                                </td>
+                                <td className="p-4">
+                                    <Button variant="outline" size="sm" className="w-full max-w-[120px]">
+                                        Contact sales
+                                    </Button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
