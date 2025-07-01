@@ -1,0 +1,467 @@
+const express = require('express');
+const { body } = require('express-validator');
+const User = require('../models/User');
+const { authenticate, authorize } = require('../middleware/auth');
+const { handleValidationErrors } = require('../middleware/validation');
+const {
+  formatUserResponse,
+  createResponse,
+  sanitizeInput,
+  paginate,
+  generatePaginationMeta
+} = require('../utils/helpers');
+
+const router = express.Router();
+
+// @route   GET /api/user/profile
+// @desc    Get user profile
+// @access  Private
+router.get('/profile', authenticate, (req, res) => {
+  try {
+    const userResponse = formatUserResponse(req.user);
+    
+    res.json(
+      createResponse(
+        true,
+        'Profile retrieved successfully',
+        { user: userResponse }
+      )
+    );
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error retrieving profile')
+    );
+  }
+});
+
+// @route   PUT /api/user/profile
+// @desc    Update user profile
+// @access  Private
+router.put('/profile', [
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Name must be between 2 and 50 characters')
+    .matches(/^[a-zA-Z\s]+$/)
+    .withMessage('Name can only contain letters and spaces'),
+  body('avatar')
+    .optional()
+    .isURL()
+    .withMessage('Avatar must be a valid URL'),
+  body('preferences.emailNotifications')
+    .optional()
+    .isBoolean()
+    .withMessage('Email notifications preference must be a boolean'),
+  body('preferences.marketingEmails')
+    .optional()
+    .isBoolean()
+    .withMessage('Marketing emails preference must be a boolean'),
+  body('preferences.theme')
+    .optional()
+    .isIn(['light', 'dark', 'system'])
+    .withMessage('Theme must be light, dark, or system')
+], handleValidationErrors, authenticate, async (req, res) => {
+  try {
+    const { name, avatar, preferences } = req.body;
+    const user = req.user;
+
+    // Update fields if provided
+    if (name) {
+      user.name = sanitizeInput(name);
+    }
+    
+    if (avatar) {
+      user.avatar = sanitizeInput(avatar);
+    }
+    
+    if (preferences) {
+      if (preferences.emailNotifications !== undefined) {
+        user.preferences.emailNotifications = preferences.emailNotifications;
+      }
+      if (preferences.marketingEmails !== undefined) {
+        user.preferences.marketingEmails = preferences.marketingEmails;
+      }
+      if (preferences.theme !== undefined) {
+        user.preferences.theme = preferences.theme;
+      }
+    }
+
+    await user.save();
+
+    const userResponse = formatUserResponse(user);
+
+    res.json(
+      createResponse(
+        true,
+        'Profile updated successfully',
+        { user: userResponse }
+      )
+    );
+
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error updating profile')
+    );
+  }
+});
+
+// @route   GET /api/user/usage
+// @desc    Get user usage statistics
+// @access  Private
+router.get('/usage', authenticate, (req, res) => {
+  try {
+    const user = req.user;
+    const planLimits = user.getPlanLimits();
+    
+    const usageData = {
+      plan: user.plan,
+      messages: {
+        used: user.usage.messagesUsed,
+        limit: planLimits.messages === -1 ? 'unlimited' : planLimits.messages,
+        remaining: planLimits.messages === -1 ? 'unlimited' : Math.max(0, planLimits.messages - user.usage.messagesUsed),
+        resetDate: user.usage.resetDate,
+        percentage: planLimits.messages === -1 ? 0 : Math.min(100, (user.usage.messagesUsed / planLimits.messages) * 100)
+      },
+      features: planLimits.features,
+      subscription: {
+        status: user.subscription.status,
+        currentPeriodStart: user.subscription.currentPeriodStart,
+        currentPeriodEnd: user.subscription.currentPeriodEnd,
+        cancelAtPeriodEnd: user.subscription.cancelAtPeriodEnd
+      }
+    };
+
+    res.json(
+      createResponse(
+        true,
+        'Usage data retrieved successfully',
+        usageData
+      )
+    );
+
+  } catch (error) {
+    console.error('Get usage error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error retrieving usage data')
+    );
+  }
+});
+
+// @route   POST /api/user/increment-message-usage
+// @desc    Increment user message usage
+// @access  Private
+router.post('/increment-message-usage', authenticate, async (req, res) => {
+  try {
+    const user = req.user;
+
+    // Check if user has messages remaining
+    if (!user.hasMessagesRemaining()) {
+      const limits = user.getPlanLimits();
+      return res.status(429).json(
+        createResponse(
+          false,
+          'Message limit exceeded for your current plan',
+          {
+            usage: {
+              used: user.usage.messagesUsed,
+              limit: limits.messages,
+              resetDate: user.usage.resetDate
+            },
+            upgradeRequired: true
+          }
+        )
+      );
+    }
+
+    // Increment usage
+    await user.incrementMessageUsage();
+
+    const planLimits = user.getPlanLimits();
+    const usageData = {
+      used: user.usage.messagesUsed,
+      limit: planLimits.messages === -1 ? 'unlimited' : planLimits.messages,
+      remaining: planLimits.messages === -1 ? 'unlimited' : Math.max(0, planLimits.messages - user.usage.messagesUsed),
+      resetDate: user.usage.resetDate
+    };
+
+    res.json(
+      createResponse(
+        true,
+        'Message usage incremented successfully',
+        usageData
+      )
+    );
+
+  } catch (error) {
+    console.error('Increment usage error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error incrementing usage')
+    );
+  }
+});
+
+// @route   DELETE /api/user/account
+// @desc    Delete user account
+// @access  Private
+router.delete('/account', [
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required to delete account'),
+  body('confirmation')
+    .equals('DELETE')
+    .withMessage('Please type DELETE to confirm account deletion')
+], handleValidationErrors, authenticate, async (req, res) => {
+  try {
+    const { password } = req.body;
+    
+    // Get user with password
+    const user = await User.findById(req.user._id).select('+password');
+    
+    // Verify password
+    const isPasswordValid = await user.comparePassword(password);
+    
+    if (!isPasswordValid) {
+      return res.status(400).json(
+        createResponse(false, 'Incorrect password')
+      );
+    }
+
+    // Instead of deleting, deactivate the account
+    user.isActive = false;
+    user.email = `deleted_${Date.now()}_${user.email}`;
+    await user.save();
+
+    res.json(
+      createResponse(true, 'Account deleted successfully')
+    );
+
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error deleting account')
+    );
+  }
+});
+
+// Admin routes
+
+// @route   GET /api/user/admin/users
+// @desc    Get all users (admin only)
+// @access  Private/Admin
+router.get('/admin/users', authenticate, authorize('admin'), async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search, plan, status } = req.query;
+    const { skip, limit: limitNum, page: pageNum } = paginate(page, limit);
+
+    // Build query
+    const query = {};
+    
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    if (plan) {
+      query.plan = plan;
+    }
+    
+    if (status) {
+      query.isActive = status === 'active';
+    }
+
+    // Get users
+    const users = await User.find(query)
+      .select('-password -emailVerificationToken -passwordResetToken')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum);
+
+    const total = await User.countDocuments(query);
+    const paginationMeta = generatePaginationMeta(total, pageNum, limitNum);
+
+    res.json(
+      createResponse(
+        true,
+        'Users retrieved successfully',
+        users,
+        paginationMeta
+      )
+    );
+
+  } catch (error) {
+    console.error('Get users error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error retrieving users')
+    );
+  }
+});
+
+// @route   GET /api/user/admin/users/:id
+// @desc    Get user by ID (admin only)
+// @access  Private/Admin
+router.get('/admin/users/:id', authenticate, authorize('admin'), async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .select('-password -emailVerificationToken -passwordResetToken');
+
+    if (!user) {
+      return res.status(404).json(
+        createResponse(false, 'User not found')
+      );
+    }
+
+    res.json(
+      createResponse(
+        true,
+        'User retrieved successfully',
+        { user }
+      )
+    );
+
+  } catch (error) {
+    console.error('Get user by ID error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error retrieving user')
+    );
+  }
+});
+
+// @route   PUT /api/user/admin/users/:id
+// @desc    Update user (admin only)
+// @access  Private/Admin
+router.put('/admin/users/:id', [
+  body('plan')
+    .optional()
+    .isIn(['community', 'developer', 'pro', 'max', 'enterprise'])
+    .withMessage('Invalid plan'),
+  body('isActive')
+    .optional()
+    .isBoolean()
+    .withMessage('isActive must be a boolean'),
+  body('role')
+    .optional()
+    .isIn(['user', 'admin'])
+    .withMessage('Role must be user or admin')
+], handleValidationErrors, authenticate, authorize('admin'), async (req, res) => {
+  try {
+    const { plan, isActive, role, subscription } = req.body;
+    
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      return res.status(404).json(
+        createResponse(false, 'User not found')
+      );
+    }
+
+    // Update fields if provided
+    if (plan !== undefined) {
+      user.plan = plan;
+      
+      // Update usage limits based on new plan
+      const planLimits = user.getPlanLimits();
+      user.usage.messagesLimit = planLimits.messages === -1 ? 999999 : planLimits.messages;
+    }
+    
+    if (isActive !== undefined) {
+      user.isActive = isActive;
+    }
+    
+    if (role !== undefined) {
+      user.role = role;
+    }
+    
+    if (subscription) {
+      if (subscription.status !== undefined) {
+        user.subscription.status = subscription.status;
+      }
+      if (subscription.currentPeriodEnd !== undefined) {
+        user.subscription.currentPeriodEnd = new Date(subscription.currentPeriodEnd);
+      }
+    }
+
+    await user.save();
+
+    const userResponse = formatUserResponse(user);
+
+    res.json(
+      createResponse(
+        true,
+        'User updated successfully',
+        { user: userResponse }
+      )
+    );
+
+  } catch (error) {
+    console.error('Update user error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error updating user')
+    );
+  }
+});
+
+// @route   GET /api/user/admin/stats
+// @desc    Get user statistics (admin only)
+// @access  Private/Admin
+router.get('/admin/stats', authenticate, authorize('admin'), async (req, res) => {
+  try {
+    const [
+      totalUsers,
+      activeUsers,
+      verifiedUsers,
+      planStats,
+      recentUsers
+    ] = await Promise.all([
+      User.countDocuments({}),
+      User.countDocuments({ isActive: true }),
+      User.countDocuments({ isEmailVerified: true }),
+      User.aggregate([
+        {
+          $group: {
+            _id: '$plan',
+            count: { $sum: 1 }
+          }
+        }
+      ]),
+      User.find({})
+        .select('name email plan createdAt')
+        .sort({ createdAt: -1 })
+        .limit(10)
+    ]);
+
+    const stats = {
+      users: {
+        total: totalUsers,
+        active: activeUsers,
+        verified: verifiedUsers,
+        inactive: totalUsers - activeUsers
+      },
+      plans: planStats.reduce((acc, item) => {
+        acc[item._id] = item.count;
+        return acc;
+      }, {}),
+      recent: recentUsers
+    };
+
+    res.json(
+      createResponse(
+        true,
+        'User statistics retrieved successfully',
+        stats
+      )
+    );
+
+  } catch (error) {
+    console.error('Get user stats error:', error);
+    res.status(500).json(
+      createResponse(false, 'Server error retrieving user statistics')
+    );
+  }
+});
+
+module.exports = router;
