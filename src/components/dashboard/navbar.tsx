@@ -6,8 +6,7 @@ import {
     Settings,
     LogOut,
     Bell,
-    HelpCircle,
-    CreditCard
+    HelpCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,29 +19,81 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NAV_LINKS } from "@/constants";
+import { PLANS } from "@/constants/plans";
 import Icons from "@/components/global/icons";
 import Wrapper from "@/components/global/wrapper";
+import DashboardMobileMenu from "./mobile-menu";
 
 const DashboardNavbar = () => {
+    // This would typically come from user context/state management
+    // For demo purposes, you can change this to "developer" or "enterprise" to see different plans
+    const userPlanId = "community"; // This should come from actual user data/context
+    const currentPlan = PLANS.find(plan => plan.id === userPlanId) || PLANS[0];
+
+    // Get plan display name and styling based on plan type
+    const getPlanDisplay = (plan: typeof currentPlan) => {
+        switch (plan.id) {
+            case "community":
+                return {
+                    name: "Community Plan",
+                    bgColor: "bg-gradient-to-r from-green-50 to-emerald-50",
+                    textColor: "text-green-700",
+                    borderColor: "border-green-200",
+                    dotColor: "bg-green-500"
+                };
+            case "developer":
+                return {
+                    name: "Developer Plan",
+                    bgColor: "bg-gradient-to-r from-blue-50 to-indigo-50",
+                    textColor: "text-blue-700",
+                    borderColor: "border-blue-200",
+                    dotColor: "bg-blue-500"
+                };
+            case "enterprise":
+                return {
+                    name: "Enterprise Plan",
+                    bgColor: "bg-gradient-to-r from-purple-50 to-violet-50",
+                    textColor: "text-purple-700",
+                    borderColor: "border-purple-200",
+                    dotColor: "bg-purple-500"
+                };
+            default:
+                return {
+                    name: "Free Plan",
+                    bgColor: "bg-gradient-to-r from-gray-50 to-slate-50",
+                    textColor: "text-gray-700",
+                    borderColor: "border-gray-200",
+                    dotColor: "bg-gray-500"
+                };
+        }
+    };
+
+    const planDisplay = getPlanDisplay(currentPlan);
+
     return (
         <header className="sticky top-0 w-full h-16 bg-background/80 backdrop-blur-sm z-50 text-black">
-            <Wrapper className="h-full">
-                <div className="flex items-center justify-between h-full">
-                    {/* Logo */}
-                    <div className="flex items-center">
+            <div className="w-full mx-auto lg:max-w-screen-xl lg:mx-auto px-4 md:px-6 lg:px-8 h-full">
+                <div className="flex items-center h-full relative">
+                    {/* Logo and Plan Badge */}
+                    <div className="flex items-center mr-auto">
                         <Link href="/" className="flex items-center gap-2">
                             <Icons.icon className="w-6" />
-                            <span className="text-xl font-semibold hidden lg:block">
+                            <span className="text-xl font-semibold hidden sm:block">
                                 Cheetah&nbsp;AI
                             </span>
                         </Link>
+                        {/* Plan Badge */}
+                        <div className={`ml-3 px-3 py-1.5 ${planDisplay.bgColor} ${planDisplay.textColor} text-xs font-medium rounded-lg border ${planDisplay.borderColor} hidden md:flex items-center gap-2 shadow-sm`}>
+                            <div className={`w-2 h-2 ${planDisplay.dotColor} rounded-full`}></div>
+                            <span>{planDisplay.name}</span>
+                        </div>
                     </div>
 
-                    {/* Navigation Links */}
-                    <div className="hidden lg:flex items-center gap-4">
+                    {/* Navigation Links - Absolutely Centered */}
+                    <div className="hidden lg:flex items-center absolute left-1/2 transform -translate-x-1/2">
                         <ul className="flex items-center gap-8">
                             {NAV_LINKS.map((link, index) => (
-                                <li key={index} className="text-sm font-medium -1 link">
+                                <li key={index} className="text-sm font-medium hover:text-primary transition-colors">
                                     <Link href={link.href}>
                                         {link.name}
                                     </Link>
@@ -51,13 +102,24 @@ const DashboardNavbar = () => {
                         </ul>
                     </div>
 
-                    {/* Right side - Notifications and User Menu */}
-                    <div className="flex items-center gap-4">
+                    {/* Right side - Notifications and User Menu (Desktop) */}
+                    <div className="hidden lg:flex items-center gap-4">
                         {/* Notifications */}
-                        <Button variant="ghost" size="icon" className="relative">
-                            <Bell className="h-5 w-5" />
-                            <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="relative">
+                                    <Bell className="h-5 w-5" />
+                                    <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-80" align="end">
+                                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <div className="p-4 text-sm text-muted-foreground">
+                                    No new notifications
+                                </div>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
                         {/* User Profile Dropdown */}
                         <DropdownMenu>
@@ -82,18 +144,6 @@ const DashboardNavbar = () => {
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/dashboard/profile">
-                                        <User className="mr-2 h-4 w-4" />
-                                        <span>Profile</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/dashboard/billing">
-                                        <CreditCard className="mr-2 h-4 w-4" />
-                                        <span>Billing</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href="/dashboard/settings">
                                         <Settings className="mr-2 h-4 w-4" />
                                         <span>Settings</span>
@@ -115,8 +165,11 @@ const DashboardNavbar = () => {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
+
+                    {/* Mobile Menu */}
+                    <DashboardMobileMenu />
                 </div>
-            </Wrapper>
+            </div>
         </header>
     );
 };
