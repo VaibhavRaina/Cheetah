@@ -44,7 +44,7 @@ A robust Node.js/Express backend with MongoDB for the Cheetah AI application, fe
 ## Project Structure
 
 ```
-bacxkend/
+backend/
 ├── middleware/
 │   ├── auth.js          # Authentication middleware
 │   └── validation.js    # Validation & error handling
@@ -67,7 +67,7 @@ bacxkend/
 
 1. **Clone the repository**
    ```bash
-   cd bacxkend
+   cd backend
    ```
 
 2. **Install dependencies**
