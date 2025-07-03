@@ -55,7 +55,7 @@ const ProductCTA = () => {
 
                                 <div className="mt-8 pt-8 border-t border-border">
                                     <p className="text-sm text-muted-foreground">
-                                        No credit card required • Free 14-day trial • Cancel anytime
+                                        No credit card required • Try for free • Cancel anytime
                                     </p>
                                 </div>
                             </motion.div>

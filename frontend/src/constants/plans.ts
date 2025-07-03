@@ -35,7 +35,7 @@ export const PLANS: PLAN[] = [
         desc: "For individuals or small teams that want to ship to production, fast.",
         monthlyPrice: 50,
         annuallyPrice: 500,
-        buttonText: "Start Coding",
+        buttonText: "Try For Free",
         features: [
             "Everything in community",
             "Up to 600 user messages",

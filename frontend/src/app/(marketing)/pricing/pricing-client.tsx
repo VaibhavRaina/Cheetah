@@ -40,14 +40,6 @@ const faqItems = [
         answer: "You can purchase additional message packs at any time. These are automatically added to your account and will be available immediately."
     },
     {
-        question: "What is the free trial of Cheetah?",
-        answer: "Our free trial gives you 14 days to test out all the features of our Developer plan, including up to 600 user messages. No credit card is required to start."
-    },
-    {
-        question: "What happens at the end of the trial?",
-        answer: "At the end of your trial, you will be automatically moved to our free Community plan. You can choose to upgrade to a paid plan at any time to retain access to premium features."
-    },
-    {
         question: "Do you train on my data on a paid plan?",
         answer: "Never. For Developer, Pro, Max, and Enterprise plans, we never train on your data, ensuring your code and intellectual property remain completely private."
     },
@@ -182,7 +174,7 @@ export function PricingComponent() {
                                         <span className="uppercase text-xs font-semibold mt-2 tracking-wider text-muted-foreground">Developer</span>
                                         <div className="absolute -top-6 left-0 right-0 mx-auto">
                                             <div className="bg-accent/80 text-accent-foreground text-xs py-1 px-3 rounded-sm text-center mx-auto w-max">
-                                                14 DAY FREE TRIAL
+                                                TRY NOW
                                             </div>
                                         </div>
                                     </div>
