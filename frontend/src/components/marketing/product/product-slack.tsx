@@ -63,18 +63,18 @@ const ProductSlack = () => {
                             </div>
 
                             {/* Slack Messages */}
-                            <div className="p-6 space-y-6 bg-white dark:bg-slate-900">
+                            <div className="p-8 space-y-6 bg-white dark:bg-gray-50">
                                 {/* Message 1 */}
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-start gap-4">
                                     <div className="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
                                         A
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="font-medium text-foreground">Alex Chen</span>
-                                            <span className="text-xs text-muted-foreground">2:34 PM</span>
+                                            <span className="font-medium text-gray-900">Alex Chen</span>
+                                            <span className="text-xs text-gray-500">2:34 PM</span>
                                         </div>
-                                        <p className="text-foreground">
+                                        <p className="text-gray-900">
                                             Hey team, can someone help me understand how the new authentication flow works?
                                             I'm trying to integrate it into the mobile app.
                                         </p>
@@ -82,21 +82,21 @@ const ProductSlack = () => {
                                 </div>
 
                                 {/* Cheetah AI Response */}
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-start gap-4">
                                     <div className="w-8 h-8 rounded bg-accent flex items-center justify-center">
                                         <span className="text-xs font-bold text-background">AI</span>
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="font-medium text-foreground">Cheetah AI</span>
-                                            <Badge variant="outline" className="text-xs">BOT</Badge>
-                                            <span className="text-xs text-muted-foreground">2:34 PM</span>
+                                            <span className="font-medium text-gray-900">Cheetah AI</span>
+                                            <Badge variant="outline" className="text-xs border-gray-300 text-gray-600">BOT</Badge>
+                                            <span className="text-xs text-gray-500">2:34 PM</span>
                                         </div>
                                         <div className="space-y-3">
-                                            <p className="text-foreground">
+                                            <p className="text-gray-900">
                                                 I can help with that! The new authentication flow uses JWT tokens with refresh token rotation. Here's how it works:
                                             </p>
-                                            <div className="bg-muted/50 rounded-lg p-3 border border-border">
+                                            <div className="bg-gray-100 rounded-lg p-3 border border-gray-200">
                                                 <div className="font-mono text-sm space-y-1">
                                                     <div className="text-green-600">✓ POST /api/auth/login</div>
                                                     <div className="text-blue-600">→ Returns access_token + refresh_token</div>
@@ -104,38 +104,38 @@ const ProductSlack = () => {
                                                     <div className="text-orange-600">→ Use refresh token to get new access token</div>
                                                 </div>
                                             </div>
-                                            <p className="text-sm text-muted-foreground">
-                                                📁 Check out <code className="bg-muted px-1 rounded">src/auth/mobile-integration.md</code> for mobile-specific implementation details.
+                                            <p className="text-sm text-gray-600">
+                                                📁 Check out <code className="bg-gray-100 px-1 rounded text-gray-800">src/auth/mobile-integration.md</code> for mobile-specific implementation details.
                                             </p>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Follow-up message */}
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-start gap-4">
                                     <div className="w-8 h-8 rounded bg-green-500 flex items-center justify-center text-white text-sm font-medium">
                                         S
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="font-medium text-foreground">Sarah Kim</span>
-                                            <span className="text-xs text-muted-foreground">2:36 PM</span>
+                                            <span className="font-medium text-gray-900">Sarah Kim</span>
+                                            <span className="text-xs text-gray-500">2:36 PM</span>
                                         </div>
-                                        <p className="text-foreground">
+                                        <p className="text-gray-900">
                                             Perfect! That's exactly what I needed. The mobile integration docs are super helpful 🙌
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Reaction bar */}
-                                <div className="flex items-center gap-2 ml-11">
-                                    <div className="flex items-center gap-1 bg-muted/50 rounded-full px-2 py-1 text-xs">
+                                <div className="flex items-center gap-2 ml-12">
+                                    <div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-xs">
                                         <span>👍</span>
-                                        <span className="text-muted-foreground">3</span>
+                                        <span className="text-gray-600">3</span>
                                     </div>
-                                    <div className="flex items-center gap-1 bg-muted/50 rounded-full px-2 py-1 text-xs">
+                                    <div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1 text-xs">
                                         <span>🚀</span>
-                                        <span className="text-muted-foreground">2</span>
+                                        <span className="text-gray-600">2</span>
                                     </div>
                                 </div>
                             </div>
