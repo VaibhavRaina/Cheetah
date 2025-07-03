@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
     MessageSquare,
     Calendar,
@@ -55,6 +56,9 @@ import Icons from "@/components/global/icons";
 import { cn } from "@/lib";
 import { PLANS } from "@/constants/plans";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/contexts/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import { dashboardAPI } from "@/lib/api";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -80,12 +84,67 @@ const itemVariants = {
 };
 
 export default function DashboardPage() {
+    const { user, loading, logout } = useAuth();
+    const { toast } = useToast();
+    const router = useRouter();
     const [selectedPlan, setSelectedPlan] = useState("community");
-    const [currentPlan, setCurrentPlan] = useState("community");
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [pendingPlan, setPendingPlan] = useState<string | null>(null);
     const [showMoreFeatures, setShowMoreFeatures] = useState(false);
     const [confirmChange, setConfirmChange] = useState(false);
+    const [dashboardData, setDashboardData] = useState<any>(null);
+
+    // Redirect if not authenticated
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/signup');
+        }
+    }, [user, loading, router]);
+
+    // Load dashboard data
+    const loadDashboardData = useCallback(async () => {
+        try {
+            const response = await dashboardAPI.getOverview();
+            if (response.success) {
+                setDashboardData(response.data);
+            }
+        } catch (error) {
+            console.error('Failed to load dashboard data:', error);
+            // Use toast directly inside the function, not as a dependency
+            toast({
+                title: "Error",
+                description: "Failed to load dashboard data",
+                variant: "destructive",
+            });
+        }
+    }, []); // Remove toast from dependencies
+
+    useEffect(() => {
+        if (user) {
+            loadDashboardData();
+        }
+    }, [user, loadDashboardData]);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            router.push('/signup');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
+    // Show loading if auth is initializing or user data is not available
+    if (loading || !user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading dashboard...</p>
+                </div>
+            </div>
+        );
+    }
 
     // Extended plans including the original ones from the dashboard
     const allPlans = [
@@ -165,7 +224,7 @@ export default function DashboardPage() {
 
     // Get current plan details
     const getCurrentPlan = () => {
-        return allPlans.find(plan => plan.id === currentPlan) || allPlans[0];
+        return allPlans.find(plan => plan.id === user?.plan) || allPlans[0];
     };
 
     // Get pending plan details for confirmation
@@ -175,7 +234,7 @@ export default function DashboardPage() {
 
     // Handle plan selection
     const handlePlanSelect = (planId: string) => {
-        if (planId !== currentPlan) {
+        if (planId !== user?.plan) {
             setPendingPlan(planId);
             setShowConfirmDialog(true);
         }
@@ -185,11 +244,10 @@ export default function DashboardPage() {
     // Handle plan change confirmation
     const handleConfirmPlanChange = () => {
         if (pendingPlan && confirmChange) {
-            setCurrentPlan(pendingPlan);
+            // Here you would typically make an API call to update the plan
             setShowConfirmDialog(false);
             setPendingPlan(null);
             setConfirmChange(false);
-            // Here you would typically make an API call to update the plan
         }
     };
 
@@ -198,7 +256,7 @@ export default function DashboardPage() {
         setShowConfirmDialog(false);
         setPendingPlan(null);
         setConfirmChange(false);
-        setSelectedPlan(currentPlan);
+        setSelectedPlan(user?.plan || 'community');
     };
 
     const currentPlanData = getCurrentPlan();
@@ -218,11 +276,22 @@ export default function DashboardPage() {
                         {/* Header */}
                         <motion.div variants={itemVariants}>
                             <h1 className="text-3xl font-semibold text-foreground mb-2">
-                                Dashboard
+                                Welcome, {user.name}
                             </h1>
                             <p className="text-muted-foreground">
                                 Manage your subscription and billing details.
                             </p>
+                            <div className="flex items-center gap-2 mt-2">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src={user.avatar || undefined} alt={user.name} />
+                                    <AvatarFallback>
+                                        {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="text-sm text-muted-foreground">
+                                    {user.email} • {user.plan.charAt(0).toUpperCase() + user.plan.slice(1)} Plan
+                                </div>
+                            </div>
                         </motion.div>
 
                         {/* User Messages Section */}
@@ -239,23 +308,39 @@ export default function DashboardPage() {
                                     <div className="flex items-center gap-3">
                                         <MessageSquare className="h-5 w-5 text-muted-foreground" />
                                         <div>
-                                            <div className="text-2xl font-semibold text-foreground">0.00 available</div>
-                                            <div className="text-sm text-muted-foreground">50 renew monthly</div>
+                                            <div className="text-2xl font-semibold text-foreground">
+                                                {Math.max(0, user.usage.messagesLimit - user.usage.messagesUsed)} available
+                                            </div>
+                                            <div className="text-sm text-muted-foreground">
+                                                {user.usage.messagesLimit === -1 ? 'Unlimited' : `${user.usage.messagesLimit} renew monthly`}
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Progress Bar */}
-                                    <div className="w-full bg-muted rounded-full h-2">
-                                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
-                                    </div>
+                                    {user.usage.messagesLimit !== -1 && (
+                                        <div className="w-full bg-muted rounded-full h-2">
+                                            <div
+                                                className="bg-blue-600 h-2 rounded-full"
+                                                style={{
+                                                    width: `${Math.min(100, (user.usage.messagesUsed / user.usage.messagesLimit) * 100)}%`
+                                                }}
+                                            ></div>
+                                        </div>
+                                    )}
 
                                     <p className="text-sm text-muted-foreground">
-                                        Used 50 of 50 this month
+                                        {user.usage.messagesLimit === -1
+                                            ? `Used ${user.usage.messagesUsed} messages this month`
+                                            : `Used ${user.usage.messagesUsed} of ${user.usage.messagesLimit} this month`
+                                        }
                                     </p>
 
-                                    <p className="text-sm text-muted-foreground mt-4">
-                                        Add a payment method to purchase additional user messages.
-                                    </p>
+                                    {user.plan === 'community' && (
+                                        <p className="text-sm text-muted-foreground mt-4">
+                                            Upgrade your plan to get more messages and advanced features.
+                                        </p>
+                                    )}
                                 </div>
                             </Card>
                         </motion.div>
@@ -274,23 +359,51 @@ export default function DashboardPage() {
                                     <div className="flex items-center gap-3">
                                         <Calendar className="h-5 w-5 text-muted-foreground" />
                                         <div>
-                                            <div className="text-lg font-semibold text-foreground">July 4, 2025</div>
-                                            <div className="text-sm text-muted-foreground">Next Billing Date</div>
+                                            <div className="text-lg font-semibold text-foreground">
+                                                {user.subscription.currentPeriodEnd
+                                                    ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })
+                                                    : 'No billing date'
+                                                }
+                                            </div>
+                                            <div className="text-sm text-muted-foreground">
+                                                {user.subscription.currentPeriodEnd ? 'Next Billing Date' : 'Free Plan'}
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div className="mt-6">
-                                        <p className="text-sm text-muted-foreground mb-4">
-                                            No payment method on file
-                                        </p>
-                                        <p className="text-sm text-muted-foreground mb-6">
-                                            Configure a payment method to enable automatic billing for your subscription.
-                                        </p>
+                                        {user.subscription.status === 'active' && user.plan !== 'community' ? (
+                                            <>
+                                                <p className="text-sm text-green-600 mb-4">
+                                                    ✓ Active subscription - {user.plan.charAt(0).toUpperCase() + user.plan.slice(1)} Plan
+                                                </p>
+                                                {user.subscription.cancelAtPeriodEnd && (
+                                                    <p className="text-sm text-yellow-600 mb-4">
+                                                        ⚠️ Your subscription will cancel at the end of the current period
+                                                    </p>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p className="text-sm text-muted-foreground mb-4">
+                                                    {user.plan === 'community' ? 'Currently on free Community plan' : 'No active subscription'}
+                                                </p>
+                                                <p className="text-sm text-muted-foreground mb-6">
+                                                    Upgrade to get more features and higher usage limits.
+                                                </p>
+                                            </>
+                                        )}
 
-                                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                                            <CreditCard className="h-4 w-4 mr-2" />
-                                            Add Payment Method
-                                        </Button>
+                                        {user.plan === 'community' && (
+                                            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                                                <CreditCard className="h-4 w-4 mr-2" />
+                                                Upgrade Plan
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             </Card>
@@ -411,7 +524,7 @@ export default function DashboardPage() {
                                                                     <h3 className="font-semibold text-black">
                                                                         {plan.title === "Free" ? "Community Plan" : plan.title}
                                                                     </h3>
-                                                                    {plan.id === currentPlan && (
+                                                                    {plan.id === user?.plan && (
                                                                         <Badge className="bg-green-100 text-green-700 border-green-200">
                                                                             Current
                                                                         </Badge>

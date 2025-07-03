@@ -4,6 +4,7 @@ import { generateMetadata } from "@/utils/metadata";
 import { base, heading, subheading } from "@/constants/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/contexts/auth-context";
 import React from "react";
 
 export const metadata = generateMetadata();
@@ -27,8 +28,10 @@ export default function RootLayout({
                 <ThemeProvider
                     attribute="class"
                 >
-                    <Toaster richColors theme="dark" position="top-right" />
-                    {children}
+                    <AuthProvider>
+                        <Toaster richColors theme="dark" position="top-right" />
+                        {children}
+                    </AuthProvider>
                 </ThemeProvider>
             </body>
         </html>

@@ -2,6 +2,7 @@ const express = require('express');
 const { body } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const passport = require('passport');
 const User = require('../models/User');
 const { authenticate, optionalAuth } = require('../middleware/auth');
 const { handleValidationErrors } = require('../middleware/validation');
@@ -518,6 +519,116 @@ router.post('/change-password', [
             createResponse(false, 'Server error changing password')
         );
     }
+});
+
+// OAuth Routes
+
+// @route   GET /api/auth/google
+// @desc    Initiate Google OAuth
+// @access  Public
+router.get('/google', (req, res, next) => {
+    // Check if Google strategy is configured
+    if (!process.env.GOOGLE_CLIENT_ID) {
+        return res.status(503).json(
+            createResponse(false, 'Google OAuth is not configured on this server')
+        );
+    }
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
+
+// @route   GET /api/auth/google/callback
+// @desc    Google OAuth callback
+// @access  Public
+router.get('/google/callback', (req, res, next) => {
+    // Check if Google strategy is configured
+    if (!process.env.GOOGLE_CLIENT_ID) {
+        const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?error=oauth_not_configured`;
+        return res.redirect(redirectUrl);
+    }
+
+    passport.authenticate('google', { session: false }, async (err, user) => {
+        if (err) {
+            console.error('Google OAuth callback error:', err);
+            const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?error=oauth_error`;
+            return res.redirect(redirectUrl);
+        }
+
+        if (!user) {
+            const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?error=oauth_cancelled`;
+            return res.redirect(redirectUrl);
+        }
+
+        try {
+            // Generate JWT token
+            const token = generateToken({ id: user._id });
+
+            // Update last login
+            user.lastLogin = new Date();
+            await user.save();
+
+            // Redirect to frontend with token
+            const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?token=${token}&success=true`;
+            res.redirect(redirectUrl);
+        } catch (error) {
+            console.error('Google OAuth callback error:', error);
+            const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?error=oauth_error`;
+            res.redirect(redirectUrl);
+        }
+    })(req, res, next);
+});
+
+// @route   GET /api/auth/github
+// @desc    Initiate GitHub OAuth
+// @access  Public
+router.get('/github', (req, res, next) => {
+    // Check if GitHub strategy is configured
+    if (!process.env.GITHUB_CLIENT_ID) {
+        return res.status(503).json(
+            createResponse(false, 'GitHub OAuth is not configured on this server')
+        );
+    }
+    passport.authenticate('github', { scope: ['user:email'] })(req, res, next);
+});
+
+// @route   GET /api/auth/github/callback
+// @desc    GitHub OAuth callback
+// @access  Public
+router.get('/github/callback', (req, res, next) => {
+    // Check if GitHub strategy is configured
+    if (!process.env.GITHUB_CLIENT_ID) {
+        const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?error=oauth_not_configured`;
+        return res.redirect(redirectUrl);
+    }
+
+    passport.authenticate('github', { session: false }, async (err, user) => {
+        if (err) {
+            console.error('GitHub OAuth callback error:', err);
+            const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?error=oauth_error`;
+            return res.redirect(redirectUrl);
+        }
+
+        if (!user) {
+            const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?error=oauth_cancelled`;
+            return res.redirect(redirectUrl);
+        }
+
+        try {
+            // Generate JWT token
+            const token = generateToken({ id: user._id });
+
+            // Update last login
+            user.lastLogin = new Date();
+            await user.save();
+
+            // Redirect to frontend with token
+            const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?token=${token}&success=true`;
+            res.redirect(redirectUrl);
+        } catch (error) {
+            console.error('GitHub OAuth callback error:', error);
+            const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?error=oauth_error`;
+            res.redirect(redirectUrl);
+        }
+    })(req, res, next);
 });
 
 module.exports = router;

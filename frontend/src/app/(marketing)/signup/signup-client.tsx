@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth-context";
+import { authAPI } from "@/lib/api";
 import { Check } from "lucide-react";
 import Container from "@/components/global/container";
 import { motion } from "framer-motion";
@@ -60,16 +63,35 @@ export default function SignUpClient() {
     const [email, setEmail] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (!loading && user) {
+            router.push('/dashboard');
+        }
+    }, [user, loading, router]);
+
+    const handleGoogleLogin = () => {
+        setIsLoading(true);
+        authAPI.googleLogin();
+    };
+
+    const handleGitHubLogin = () => {
+        setIsLoading(true);
+        authAPI.githubLogin();
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            // Add your signup logic here
+            // For now, just show a message about traditional signup coming soon
             toast({
-                title: "Success",
-                description: "Check your email for verification link.",
+                title: "Coming Soon",
+                description: "Traditional email signup will be available soon. Please use Google or GitHub for now.",
             });
         } catch (error) {
             toast({
@@ -81,6 +103,18 @@ export default function SignUpClient() {
             setIsLoading(false);
         }
     };
+
+    // Show loading if auth is initializing
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background">
@@ -173,6 +207,8 @@ export default function SignUpClient() {
                                         variant="outline"
                                         className="w-full hover:bg-accent/10 hover:text-accent-foreground transition-colors duration-200 h-11"
                                         size="lg"
+                                        onClick={handleGoogleLogin}
+                                        disabled={isLoading}
                                     >
                                         <Image
                                             src="/icons/google.svg"
@@ -189,6 +225,8 @@ export default function SignUpClient() {
                                         variant="outline"
                                         className="w-full hover:bg-accent/10 hover:text-accent-foreground transition-colors duration-200 h-11"
                                         size="lg"
+                                        onClick={handleGitHubLogin}
+                                        disabled={isLoading}
                                     >
                                         <Image
                                             src="/images/mcp-servers/github.png"

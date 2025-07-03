@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
     User,
     Settings,
@@ -20,15 +21,40 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NAV_LINKS } from "@/constants";
 import { PLANS } from "@/constants/plans";
+import { useAuth } from "@/contexts/auth-context";
+import { useToast } from "@/hooks/use-toast";
 import Icons from "@/components/global/icons";
 import Wrapper from "@/components/global/wrapper";
 import DashboardMobileMenu from "./mobile-menu";
 
 const DashboardNavbar = () => {
-    // This would typically come from user context/state management
-    // For demo purposes, you can change this to "developer" or "enterprise" to see different plans
-    const userPlanId = "community"; // This should come from actual user data/context
-    const currentPlan = PLANS.find(plan => plan.id === userPlanId) || PLANS[0];
+    const { user, logout } = useAuth();
+    const { toast } = useToast();
+    const router = useRouter();
+
+    if (!user) {
+        return null; // or a loading skeleton
+    }
+
+    const currentPlan = PLANS.find(plan => plan.id === user.plan) || PLANS[0];
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            toast({
+                title: "Logged out",
+                description: "You have been successfully logged out.",
+            });
+            router.push('/signup');
+        } catch (error) {
+            console.error('Logout error:', error);
+            toast({
+                title: "Error",
+                description: "Failed to logout. Please try again.",
+                variant: "destructive",
+            });
+        }
+    };
 
     // Get plan display name and styling based on plan type
     const getPlanDisplay = (plan: typeof currentPlan) => {
@@ -126,19 +152,30 @@ const DashboardNavbar = () => {
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                                     <Avatar className="h-10 w-10">
-                                        <AvatarImage src="https://github.com/shadcn.png" alt="@user" />
+                                        <AvatarImage src={user.avatar || undefined} alt={user.name} />
                                         <AvatarFallback className="bg-accent text-accent-foreground">
-                                            JD
+                                            {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="end" forceMount>
-                                <DropdownMenuLabel>My Profile</DropdownMenuLabel>
+                                <DropdownMenuLabel>
+                                    <div className="flex flex-col space-y-1">
+                                        <p className="text-sm font-medium leading-none">{user.name}</p>
+                                        <p className="text-xs leading-none text-muted-foreground">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>
                                     <User className="mr-2 h-4 w-4" />
-                                    <span>john.doe@example.com</span>
+                                    <span>Profile</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    <span>Settings</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="cursor-pointer" asChild>
                                     <Link href="/support">
@@ -147,11 +184,12 @@ const DashboardNavbar = () => {
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600" asChild>
-                                    <Link href="/logout">
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Log out</span>
-                                    </Link>
+                                <DropdownMenuItem
+                                    className="cursor-pointer text-red-600 focus:text-red-600"
+                                    onClick={handleLogout}
+                                >
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <span>Log out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
