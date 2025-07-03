@@ -239,10 +239,6 @@ const BillingPage = () => {
                             <h1 className="text-3xl font-bold text-foreground mb-2">Billing & Usage</h1>
                             <p className="text-muted-foreground">Manage your account billing and view usage history</p>
                         </div>
-                        <Badge variant="outline" className="bg-accent/10 text-accent border-accent/20">
-                            <CreditCard className="w-4 h-4 mr-1" />
-                            Cheetah AI
-                        </Badge>
                     </div>
                 </motion.div>
 
