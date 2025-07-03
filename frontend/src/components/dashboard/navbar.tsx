@@ -169,21 +169,6 @@ const DashboardNavbar = () => {
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <User className="mr-2 h-4 w-4" />
-                                    <span>Profile</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Settings className="mr-2 h-4 w-4" />
-                                    <span>Settings</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/contact">
-                                        <HelpCircle className="mr-2 h-4 w-4" />
-                                        <span>Support</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                     className="cursor-pointer text-red-600 focus:text-red-600"
                                     onClick={handleLogout}
