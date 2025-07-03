@@ -300,9 +300,9 @@ export default function DashboardPage() {
                             <Card className="p-6">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-xl font-semibold text-foreground">User Messages</h2>
-                                    <button className="text-sm text-blue-600 hover:underline">
+                                    <Link href="/dashboard/billing" className="text-sm text-blue-600 hover:underline">
                                         View usage
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 <div className="space-y-4">
@@ -351,9 +351,9 @@ export default function DashboardPage() {
                             <Card className="p-6">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-xl font-semibold text-foreground">Billing</h2>
-                                    <button className="text-sm text-blue-600 hover:underline">
+                                    <Link href="/dashboard/billing" className="text-sm text-blue-600 hover:underline">
                                         Payment history
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 <div className="space-y-4">
@@ -393,18 +393,9 @@ export default function DashboardPage() {
                                                 <p className="text-sm text-muted-foreground mb-4">
                                                     {user.plan === 'community' ? 'Currently on free Community plan' : 'No active subscription'}
                                                 </p>
-                                                <p className="text-sm text-muted-foreground mb-6">
-                                                    Upgrade to get more features and higher usage limits.
-                                                </p>
                                             </>
                                         )}
 
-                                        {user.plan === 'community' && (
-                                            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                                                <CreditCard className="h-4 w-4 mr-2" />
-                                                Upgrade Plan
-                                            </Button>
-                                        )}
                                     </div>
                                 </div>
                             </Card>

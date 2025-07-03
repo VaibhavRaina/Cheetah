@@ -139,4 +139,34 @@ export const subscriptionAPI = {
     },
 };
 
+// Billing API functions
+export const billingAPI = {
+    getBillingOverview: async () => {
+        const response = await api.get('/billing/overview');
+        return response.data;
+    },
+
+    getUsageStats: async (period: 'daily' | 'weekly' | 'monthly' = 'daily') => {
+        const response = await api.get(`/billing/usage/${period}`);
+        return response.data;
+    },
+
+    getInvoice: async (invoiceId: string) => {
+        const response = await api.get(`/billing/invoices/${invoiceId}`);
+        return response.data;
+    },
+
+    downloadInvoice: async (invoiceId: string) => {
+        const response = await api.get(`/billing/invoices/${invoiceId}/download`, {
+            responseType: 'blob'
+        });
+        return response.data;
+    },
+
+    recordUsage: async (messageCount: number = 1) => {
+        const response = await api.post('/billing/usage/record', { messageCount });
+        return response.data;
+    },
+};
+
 export default api;

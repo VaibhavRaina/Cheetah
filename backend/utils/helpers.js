@@ -230,6 +230,75 @@ const isSubscriptionActive = (subscription) => {
     return subscription.status === 'active' && endDate > now;
 };
 
+// Calculate usage statistics for different periods
+const calculateUsageStats = (usageHistory, period = 'daily') => {
+    const now = new Date();
+    let startDate;
+
+    switch (period) {
+        case 'weekly':
+            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+        case 'monthly':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+        default: // daily
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    }
+
+    const filteredUsage = usageHistory.filter(usage =>
+        new Date(usage.date) >= startDate
+    );
+
+    const totalMessages = filteredUsage.reduce((sum, day) => sum + day.messages, 0);
+    const averagePerDay = filteredUsage.length > 0 ? totalMessages / filteredUsage.length : 0;
+    const peakUsage = Math.max(...filteredUsage.map(day => day.messages), 0);
+
+    return {
+        period,
+        totalMessages,
+        averagePerDay: Math.round(averagePerDay),
+        peakUsage,
+        data: filteredUsage
+    };
+};
+
+// Generate invoice data structure
+const generateInvoiceData = (user, amount, items = []) => {
+    const invoiceId = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    return {
+        id: invoiceId,
+        date: new Date(),
+        amount,
+        status: 'pending',
+        customer: {
+            name: user.name,
+            email: user.email,
+            id: user._id
+        },
+        items,
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        currency: 'USD'
+    };
+};
+
+// Generate PDF invoice (placeholder - you'll need to implement actual PDF generation)
+const generateInvoicePDF = async (invoice, user) => {
+    // This is a placeholder. You'll need to implement actual PDF generation
+    // using libraries like puppeteer, pdfkit, or jsPDF
+    const content = `
+        Invoice: ${invoice.id}
+        Customer: ${user.name}
+        Email: ${user.email}
+        Amount: $${invoice.amount}
+        Date: ${invoice.date}
+        Status: ${invoice.status}
+    `;
+
+    return Buffer.from(content, 'utf8');
+};
+
 module.exports = {
     generateToken,
     generateRandomToken,
@@ -249,5 +318,8 @@ module.exports = {
     isValidUrl,
     generateUniqueFilename,
     calculateSubscriptionEndDate,
-    isSubscriptionActive
+    isSubscriptionActive,
+    calculateUsageStats,
+    generateInvoiceData,
+    generateInvoicePDF
 };

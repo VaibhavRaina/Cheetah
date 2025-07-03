@@ -87,10 +87,31 @@ const userSchema = new mongoose.Schema({
             enum: ['active', 'inactive', 'cancelled', 'past_due'],
             default: 'active'
         },
+        plan: {
+            type: String,
+            enum: ['community', 'developer', 'pro', 'max', 'enterprise'],
+            default: 'community'
+        },
         stripeCustomerId: String,
         stripeSubscriptionId: String,
         currentPeriodStart: Date,
         currentPeriodEnd: Date,
+        endDate: {
+            type: Date,
+            default: () => {
+                const now = new Date();
+                return new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+            }
+        },
+        billingCycle: {
+            type: String,
+            enum: ['monthly', 'yearly'],
+            default: 'monthly'
+        },
+        messagesRemaining: {
+            type: Number,
+            default: 50
+        },
         cancelAtPeriodEnd: {
             type: Boolean,
             default: false
@@ -113,6 +134,37 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    usageHistory: [{
+        date: {
+            type: Date,
+            required: true
+        },
+        messages: {
+            type: Number,
+            default: 0
+        }
+    }],
+    invoices: [{
+        id: {
+            type: String,
+            required: true
+        },
+        date: {
+            type: Date,
+            required: true
+        },
+        amount: {
+            type: Number,
+            required: true
+        },
+        status: {
+            type: String,
+            enum: ['paid', 'pending', 'overdue'],
+            default: 'pending'
+        },
+        downloadUrl: String,
+        stripeInvoiceId: String
+    }],
     preferences: {
         emailNotifications: {
             type: Boolean,

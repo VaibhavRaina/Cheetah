@@ -75,6 +75,7 @@ app.use('/api/auth', require('./routes/auth')); // authLimiter removed for testi
 app.use('/api/user', require('./routes/user'));
 app.use('/api/subscription', require('./routes/subscription'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/billing', require('./routes/billing'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
