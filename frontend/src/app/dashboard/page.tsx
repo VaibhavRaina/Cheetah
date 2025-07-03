@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
     MessageSquare,
     Calendar,
@@ -577,9 +578,11 @@ export default function DashboardPage() {
                                                                     dedicated support, and volume discounts.
                                                                 </p>
                                                             </div>
-                                                            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                                                                Contact Us
-                                                            </Button>
+                                                            <Link href="/contact-sales">
+                                                                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                                                                    Contact Us
+                                                                </Button>
+                                                            </Link>
                                                         </div>
                                                     </div>
                                                 </div>

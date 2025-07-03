@@ -16,7 +16,7 @@ export const NAV_LINKS = [
         href: "/blog"
     },
     {
-        name: "Contact",
+        name: "Support",
         href: "/contact"
     },
 ];
