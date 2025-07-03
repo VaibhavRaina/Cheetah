@@ -178,7 +178,7 @@ const DashboardNavbar = () => {
                                     <span>Settings</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="cursor-pointer" asChild>
-                                    <Link href="/support">
+                                    <Link href="/contact">
                                         <HelpCircle className="mr-2 h-4 w-4" />
                                         <span>Support</span>
                                     </Link>

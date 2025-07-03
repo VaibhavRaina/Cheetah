@@ -114,6 +114,16 @@ export const userAPI = {
         const response = await api.delete('/user/account');
         return response.data;
     },
+
+    updatePlan: async (planId: string) => {
+        const response = await api.put('/user/plan', { planId });
+        return response.data;
+    },
+
+    getProfile: async () => {
+        const response = await api.get('/user/profile');
+        return response.data;
+    },
 };
 
 // Subscription API functions

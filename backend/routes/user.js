@@ -464,4 +464,96 @@ router.get('/admin/stats', authenticate, authorize('admin'), async (req, res) =>
     }
 });
 
+// @route   PUT /api/user/plan
+// @desc    Update user plan and reset usage
+// @access  Private
+router.put('/plan', [
+    authenticate,
+    body('planId')
+        .isIn(['community', 'developer', 'pro', 'max', 'enterprise'])
+        .withMessage('Invalid plan ID'),
+    handleValidationErrors
+], async (req, res) => {
+    try {
+        const { planId } = req.body;
+        const user = await User.findById(req.user.id).select('+usage +subscription +usageHistory');
+
+        if (!user) {
+            return res.status(404).json(createResponse(false, 'User not found'));
+        }
+
+        // Get plan configuration
+        const getPlanConfig = (plan) => {
+            const PLAN_CONFIGS = {
+                community: { id: 'community', name: 'Community', messages: 50, price: 0 },
+                developer: { id: 'developer', name: 'Developer', messages: 600, price: 50 },
+                pro: { id: 'pro', name: 'Pro', messages: 1500, price: 100 },
+                max: { id: 'max', name: 'Max', messages: 4500, price: 250 },
+                enterprise: { id: 'enterprise', name: 'Enterprise', messages: -1, price: 'custom' }
+            };
+            return PLAN_CONFIGS[plan] || PLAN_CONFIGS.community;
+        };
+
+        const planConfig = getPlanConfig(planId);
+
+        // Update user plan
+        user.plan = planId;
+
+        // Reset usage tracking
+        if (!user.usage) {
+            user.usage = {};
+        }
+        user.usage.messagesUsed = 0;
+        user.usage.messagesLimit = planConfig.messages;
+        user.usage.resetDate = new Date();
+
+        // Update subscription
+        if (!user.subscription) {
+            user.subscription = {};
+        }
+        user.subscription.plan = planId;
+        user.subscription.status = 'active';
+
+        // Set billing cycle and end date
+        if (planId === 'community') {
+            user.subscription.billingCycle = 'monthly';
+            user.subscription.endDate = null; // Community plan never expires
+            user.subscription.messagesRemaining = planConfig.messages;
+        } else {
+            user.subscription.billingCycle = 'monthly';
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            user.subscription.endDate = nextMonth;
+            user.subscription.messagesRemaining = planConfig.messages;
+        }
+
+        // Clear usage history (optional - you might want to keep it for analytics)
+        user.usageHistory = [];
+
+        await user.save();
+
+        // Return updated user data
+        const updatedUser = formatUserResponse(user);
+
+        res.json(createResponse(
+            true,
+            `Plan successfully updated to ${planConfig.name}`,
+            {
+                user: updatedUser,
+                plan: {
+                    id: planConfig.id,
+                    name: planConfig.name,
+                    messagesLimit: planConfig.messages,
+                    messagesUsed: 0,
+                    messagesRemaining: planConfig.messages
+                }
+            }
+        ));
+
+    } catch (error) {
+        console.error('Update plan error:', error);
+        res.status(500).json(createResponse(false, 'Server error updating plan'));
+    }
+});
+
 module.exports = router;

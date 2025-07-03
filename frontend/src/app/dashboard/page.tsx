@@ -59,7 +59,7 @@ import { PLANS } from "@/constants/plans";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { dashboardAPI } from "@/lib/api";
+import { dashboardAPI, userAPI } from "@/lib/api";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -85,7 +85,7 @@ const itemVariants = {
 };
 
 export default function DashboardPage() {
-    const { user, loading, logout } = useAuth();
+    const { user, loading, logout, refreshUser } = useAuth();
     const { toast } = useToast();
     const router = useRouter();
     const [selectedPlan, setSelectedPlan] = useState("community");
@@ -243,12 +243,45 @@ export default function DashboardPage() {
     };
 
     // Handle plan change confirmation
-    const handleConfirmPlanChange = () => {
+    const handleConfirmPlanChange = async () => {
         if (pendingPlan && confirmChange) {
-            // Here you would typically make an API call to update the plan
-            setShowConfirmDialog(false);
-            setPendingPlan(null);
-            setConfirmChange(false);
+            try {
+                // Show loading state
+                toast({
+                    title: "Updating plan...",
+                    description: "Please wait while we update your plan.",
+                });
+
+                // Call API to update plan
+                const response = await userAPI.updatePlan(pendingPlan);
+
+                if (response.success) {
+                    // Refresh user data and dashboard data
+                    await refreshUser();
+                    await loadDashboardData();
+
+                    toast({
+                        title: "Plan updated successfully!",
+                        description: `Your plan has been changed to ${response.data.plan.name}. Usage has been reset.`,
+                    });
+                } else {
+                    throw new Error(response.message || 'Failed to update plan');
+                }
+
+                setShowConfirmDialog(false);
+                setPendingPlan(null);
+                setConfirmChange(false);
+            } catch (error) {
+                console.error('Plan update error:', error);
+                toast({
+                    title: "Error updating plan",
+                    description: error instanceof Error ? error.message : "Failed to update plan. Please try again.",
+                    variant: "destructive",
+                });
+
+                // Reset to current plan
+                setSelectedPlan(user?.plan || 'community');
+            }
         }
     };
 
@@ -300,7 +333,7 @@ export default function DashboardPage() {
                             <Card className="p-6">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-xl font-semibold text-foreground">User Messages</h2>
-                                    <Link href="/dashboard/billing" className="text-sm text-blue-600 hover:underline">
+                                    <Link href="/dashboard/billing" className="text-sm text-blue-500 hover:underline">
                                         View usage
                                     </Link>
                                 </div>
@@ -322,7 +355,7 @@ export default function DashboardPage() {
                                     {user.usage.messagesLimit !== -1 && (
                                         <div className="w-full bg-muted rounded-full h-2">
                                             <div
-                                                className="bg-blue-600 h-2 rounded-full"
+                                                className="bg-blue-500 h-2 rounded-full"
                                                 style={{
                                                     width: `${Math.min(100, (user.usage.messagesUsed / user.usage.messagesLimit) * 100)}%`
                                                 }}
@@ -351,7 +384,7 @@ export default function DashboardPage() {
                             <Card className="p-6">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-xl font-semibold text-foreground">Billing</h2>
-                                    <Link href="/dashboard/billing" className="text-sm text-blue-600 hover:underline">
+                                    <Link href="/dashboard/billing" className="text-sm text-blue-500 hover:underline">
                                         Payment history
                                     </Link>
                                 </div>
@@ -512,36 +545,59 @@ export default function DashboardPage() {
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-3">
-                                                                <div className="flex items-center gap-2">
-                                                                    <h3 className="font-semibold text-black">
-                                                                        {plan.title === "Free" ? "Community Plan" : plan.title}
-                                                                    </h3>
-                                                                    {plan.id === user?.plan && (
-                                                                        <Badge className="bg-green-100 text-green-700 border-green-200">
-                                                                            Current
-                                                                        </Badge>
-                                                                    )}
-                                                                    {plan.id !== "community" && (
-                                                                        <Badge className="bg-accent/20 text-accent-foreground border-accent/30">
-                                                                            <Users className="w-3 h-3 mr-1" />
-                                                                            Teams
-                                                                        </Badge>
-                                                                    )}
+                                                                <div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <h3 className={`font-semibold ${plan.id === user?.plan ? 'text-blue-500' : 'text-black'}`}>
+                                                                            {plan.title === "Free" ? "Community Plan" : plan.title}
+                                                                        </h3>
+                                                                        {plan.id === user?.plan && (
+                                                                            <Badge className="bg-blue-100/60 text-blue-500 border-blue-100">
+                                                                                ✓ Current
+                                                                            </Badge>
+                                                                        )}
+                                                                        {plan.id !== "community" && (
+                                                                            <Badge className="bg-green-100 text-green-600 border-green-200">
+                                                                                <Users className="w-3 h-3 mr-1" />
+                                                                                Teams
+                                                                            </Badge>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="text-sm font-medium text-foreground mt-1">
+                                                                        {plan.id === 'community'
+                                                                            ? '50 user messages/mo'
+                                                                            : plan.id === 'developer'
+                                                                                ? '600 user messages/mo'
+                                                                                : plan.id === 'pro'
+                                                                                    ? '1,500 user messages/mo'
+                                                                                    : '4,500 user messages/mo'
+                                                                        }
+                                                                        {plan.id === 'community' && (
+                                                                            <>
+                                                                                <span className="ml-2 inline-flex items-center">
+                                                                                    <span className="w-4 h-4 bg-blue-100/60 rounded-full flex items-center justify-center mr-1">
+                                                                                        <span className="text-xs text-blue-500">i</span>
+                                                                                    </span>
+                                                                                    <span className="text-blue-500 text-xs">AI Training</span>
+                                                                                </span>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="text-sm text-muted-foreground mt-1">
+                                                                        {plan.id === 'community'
+                                                                            ? 'Community Plan with 50 user messages per month.'
+                                                                            : plan.id === 'developer'
+                                                                                ? 'Developer Plan with 600 user messages per month.'
+                                                                                : plan.id === 'pro'
+                                                                                    ? 'Pro Plan with 1500 user messages per month.'
+                                                                                    : 'Max Plan with 4500 user messages per month.'
+                                                                        }
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <div className="text-right">
                                                                 <div className="text-lg font-semibold text-foreground">
                                                                     {plan.monthlyPrice === 0 ? "Free" : `$${plan.monthlyPrice.toFixed(2)}/mo`}
                                                                 </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="mt-2">
-                                                            <div className="text-sm font-medium text-foreground">
-                                                                {plan.features[0]}
-                                                            </div>
-                                                            <div className="text-sm text-muted-foreground mt-1">
-                                                                {plan.desc}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -611,7 +667,7 @@ export default function DashboardPage() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="flex items-center gap-2">
-                                            <h3 className="font-semibold text-accent">
+                                            <h3 className="font-semibold text-blue-500">
                                                 {pendingPlanData.title === "Free" ? "Community Plan" : pendingPlanData.title}
                                             </h3>
                                             {pendingPlanData.id !== "community" && (
