@@ -141,8 +141,13 @@ export function PricingComponent() {
                                     variant={plan.id === "developer" ? "accent" : "outline"}
                                     size="lg"
                                     className="w-full"
+                                    asChild={plan.buttonText === "Contact sales"}
                                 >
-                                    {plan.buttonText}
+                                    {plan.buttonText === "Contact sales" ? (
+                                        <a href={plan.link}>{plan.buttonText}</a>
+                                    ) : (
+                                        plan.buttonText
+                                    )}
                                 </Button>
                                 {plan.id === "developer" && (
                                     <p className="text-xs text-center mt-3 text-muted-foreground">
@@ -428,8 +433,8 @@ export function PricingComponent() {
                                     </Button>
                                 </td>
                                 <td className="p-4">
-                                    <Button variant="outline" size="sm" className="w-full max-w-[120px]">
-                                        Contact sales
+                                    <Button variant="outline" size="sm" className="w-full max-w-[120px]" asChild>
+                                        <a href="/contact-sales">Contact sales</a>
                                     </Button>
                                 </td>
                             </tr>

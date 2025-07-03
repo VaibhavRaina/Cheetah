@@ -24,7 +24,7 @@ export const PLANS: PLAN[] = [
             "MCP & Native Tools",
             "Unlimited Next Edits & Completions",
             "Community support",
-            "Additional user messages $20/300",
+            "Additional user messages $10/100",
             "AI training allowed"
         ],
         link: "#"
@@ -41,7 +41,7 @@ export const PLANS: PLAN[] = [
             "Up to 600 user messages",
             "Team management, up to 100 users",
             "SOC 2 type II",
-            "Additional user messages $30/300",
+            "Additional user messages $10/100",
             "No AI training allowed"
         ],
         link: "#"
@@ -63,7 +63,7 @@ export const PLANS: PLAN[] = [
             "Dedicated support",
             "No AI training allowed"
         ],
-        link: "#"
+        link: "/contact-sales"
     },
 ];
 
@@ -169,6 +169,7 @@ export const PLANS_TABLE = [
         priceMonthly: '$199',
         priceYearly: "$1990",
         buttonText: 'Contact sales',
+        link: '/contact-sales',
         usage: {
             members: 'Unlimited',
             contentGeneration: 'Unlimited',
