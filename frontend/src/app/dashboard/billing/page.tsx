@@ -30,8 +30,9 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { billingAPI } from "@/lib/api";
+import { billingAPI, userAPI } from "@/lib/api";
 import Cookies from 'js-cookie';
+import { useToast } from "@/hooks/use-toast";
 
 interface BillingData {
     customer: {
@@ -64,6 +65,7 @@ interface BillingData {
 
 const BillingPage = () => {
     const router = useRouter();
+    const { toast } = useToast();
     const [billingData, setBillingData] = useState<BillingData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -102,8 +104,51 @@ const BillingPage = () => {
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
         } catch (err) {
-            console.error('Failed to download invoice:', err);
+            console.error('Error downloading invoice:', err);
+        }
+    };
+
+    // Handle subscription cancellation
+    const handleCancelSubscription = async () => {
+        if (billingData?.currentPlan.name === 'Community') {
+            toast({
+                title: "No subscription to cancel",
+                description: "You are already on the community plan.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        try {
+            // Show loading state
+            toast({
+                title: "Cancelling subscription...",
+                description: "Please wait while we process your cancellation.",
+            });
+
+            // Call API to cancel subscription
+            const response = await userAPI.cancelSubscription();
+
+            if (response.success) {
+                // Refresh billing data
+                await fetchBillingData();
+
+                toast({
+                    title: "Subscription cancelled successfully!",
+                    description: "You have been downgraded to the Community plan. You can upgrade again at any time.",
+                });
+            } else {
+                throw new Error(response.message || 'Failed to cancel subscription');
+            }
+        } catch (error) {
+            console.error('Cancel subscription error:', error);
+            toast({
+                title: "Error cancelling subscription",
+                description: error instanceof Error ? error.message : "Failed to cancel subscription. Please try again.",
+                variant: "destructive",
+            });
         }
     };
 

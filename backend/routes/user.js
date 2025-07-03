@@ -566,4 +566,76 @@ router.put('/plan', [
     }
 });
 
+// Cancel subscription and downgrade to community plan
+router.put('/cancel-subscription', authenticate, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json(createResponse(false, 'User not found'));
+        }
+
+        // Check if user has a paid plan to cancel
+        if (user.plan === 'community') {
+            return res.status(400).json(createResponse(false, 'You are already on the community plan'));
+        }
+
+        // Store current plan info for response
+        const currentPlan = user.plan;
+
+        // Downgrade to community plan
+        user.plan = 'community';
+
+        // Reset usage tracking to community limits
+        if (!user.usage) {
+            user.usage = {};
+        }
+        user.usage.messagesUsed = Math.min(user.usage.messagesUsed, 50); // Cap at community limit
+        user.usage.messagesLimit = 50;
+        user.usage.resetDate = new Date();
+
+        // Update subscription
+        if (!user.subscription) {
+            user.subscription = {};
+        }
+        user.subscription.plan = 'community';
+        user.subscription.status = 'inactive';
+        user.subscription.currentPeriodStart = null;
+        user.subscription.currentPeriodEnd = null;
+        user.subscription.endDate = null;
+        user.subscription.billingCycle = 'monthly';
+        user.subscription.messagesRemaining = 50;
+        user.subscription.cancelAtPeriodEnd = false;
+
+        // Clear any Stripe-related fields (if using Stripe)
+        user.subscription.stripeCustomerId = undefined;
+        user.subscription.stripeSubscriptionId = undefined;
+
+        await user.save();
+
+        // Return updated user data
+        const updatedUser = formatUserResponse(user);
+
+        res.json(createResponse(
+            true,
+            `Subscription cancelled successfully. You have been downgraded to the Community plan.`,
+            {
+                user: updatedUser,
+                previousPlan: currentPlan,
+                newPlan: {
+                    id: 'community',
+                    name: 'Community',
+                    messagesLimit: 50,
+                    messagesUsed: user.usage.messagesUsed,
+                    messagesRemaining: 50 - user.usage.messagesUsed
+                }
+            }
+        ));
+
+    } catch (error) {
+        console.error('Cancel subscription error:', error);
+        res.status(500).json(createResponse(false, 'Server error cancelling subscription'));
+    }
+});
+
 module.exports = router;

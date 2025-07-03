@@ -293,6 +293,49 @@ export default function DashboardPage() {
         setSelectedPlan(user?.plan || 'community');
     };
 
+    // Handle subscription cancellation
+    const handleCancelSubscription = async () => {
+        if (user?.plan === 'community') {
+            toast({
+                title: "No subscription to cancel",
+                description: "You are already on the community plan.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        try {
+            // Show loading state
+            toast({
+                title: "Cancelling subscription...",
+                description: "Please wait while we process your cancellation.",
+            });
+
+            // Call API to cancel subscription
+            const response = await userAPI.cancelSubscription();
+
+            if (response.success) {
+                // Refresh user data and dashboard data
+                await refreshUser();
+                await loadDashboardData();
+
+                toast({
+                    title: "Subscription cancelled successfully!",
+                    description: `You have been downgraded to the Community plan. You can upgrade again at any time.`,
+                });
+            } else {
+                throw new Error(response.message || 'Failed to cancel subscription');
+            }
+        } catch (error) {
+            console.error('Cancel subscription error:', error);
+            toast({
+                title: "Error cancelling subscription",
+                description: error instanceof Error ? error.message : "Failed to cancel subscription. Please try again.",
+                variant: "destructive",
+            });
+        }
+    };
+
     const currentPlanData = getCurrentPlan();
     const pendingPlanData = getPendingPlan();
 
@@ -487,28 +530,39 @@ export default function DashboardPage() {
                                         <h3 className="text-lg font-semibold text-foreground">{currentPlanData.title === "Free" ? "Community Plan" : currentPlanData.title}</h3>
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
-                                                <button className="text-sm text-red-600 hover:underline">
-                                                    Cancel subscription
+                                                <button
+                                                    className={`text-sm hover:underline transition-colors ${user.plan === 'community'
+                                                            ? 'text-muted-foreground cursor-not-allowed'
+                                                            : 'text-red-600 hover:text-red-700'
+                                                        }`}
+                                                    disabled={user.plan === 'community'}
+                                                >
+                                                    {user.plan === 'community' ? 'No subscription to cancel' : 'Cancel subscription'}
                                                 </button>
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
                                                 <AlertDialogHeader>
                                                     <AlertDialogTitle>Cancel your subscription?</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                        If you cancel your subscription:
+                                                        If you cancel your subscription, you will:
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <div className="space-y-2 text-sm text-muted-foreground px-6 pb-6">
                                                     <ul className="list-disc pl-5 space-y-1">
-                                                        <li>You will lose access to premium features</li>
-                                                        <li>Your subscription will remain active until the end of your billing period</li>
-                                                        <li>You won't be charged again after your current billing period</li>
+                                                        <li>Be downgraded to the Community plan immediately</li>
+                                                        <li>Lose access to premium features</li>
+                                                        <li>Have your message limit reduced to 50 per month</li>
+                                                        <li>Keep any unused messages up to the community limit</li>
+                                                        <li>No longer be charged for future billing periods</li>
                                                     </ul>
                                                 </div>
                                                 <AlertDialogFooter>
-                                                    <AlertDialogCancel>Close</AlertDialogCancel>
-                                                    <AlertDialogAction className="bg-red-600 hover:bg-red-700">
-                                                        Continue
+                                                    <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        className="bg-red-600 hover:bg-red-700"
+                                                        onClick={handleCancelSubscription}
+                                                    >
+                                                        Cancel Subscription
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>

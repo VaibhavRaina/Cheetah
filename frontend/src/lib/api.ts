@@ -120,6 +120,11 @@ export const userAPI = {
         return response.data;
     },
 
+    cancelSubscription: async () => {
+        const response = await api.put('/user/cancel-subscription');
+        return response.data;
+    },
+
     getProfile: async () => {
         const response = await api.get('/user/profile');
         return response.data;
