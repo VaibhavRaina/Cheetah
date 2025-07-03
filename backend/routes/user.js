@@ -514,17 +514,27 @@ router.put('/plan', [
         user.subscription.plan = planId;
         user.subscription.status = 'active';
 
-        // Set billing cycle and end date
+        // Set billing cycle and dates
+        const now = new Date();
+
         if (planId === 'community') {
             user.subscription.billingCycle = 'monthly';
+            user.subscription.currentPeriodStart = null;
+            user.subscription.currentPeriodEnd = null;
             user.subscription.endDate = null; // Community plan never expires
             user.subscription.messagesRemaining = planConfig.messages;
+            user.subscription.status = 'active'; // Community is always "active"
         } else {
             user.subscription.billingCycle = 'monthly';
-            const nextMonth = new Date();
+            user.subscription.currentPeriodStart = now;
+
+            // Set next billing date to same day next month
+            const nextMonth = new Date(now);
             nextMonth.setMonth(nextMonth.getMonth() + 1);
+            user.subscription.currentPeriodEnd = nextMonth;
             user.subscription.endDate = nextMonth;
             user.subscription.messagesRemaining = planConfig.messages;
+            user.subscription.status = 'active';
         }
 
         // Clear usage history (optional - you might want to keep it for analytics)

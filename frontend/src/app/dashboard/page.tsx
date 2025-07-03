@@ -394,17 +394,58 @@ export default function DashboardPage() {
                                         <Calendar className="h-5 w-5 text-muted-foreground" />
                                         <div>
                                             <div className="text-lg font-semibold text-foreground">
-                                                {user.subscription.currentPeriodEnd
-                                                    ? new Date(user.subscription.currentPeriodEnd).toLocaleDateString('en-US', {
-                                                        year: 'numeric',
-                                                        month: 'long',
-                                                        day: 'numeric'
-                                                    })
-                                                    : 'No billing date'
-                                                }
+                                                {(() => {
+                                                    if (user.subscription.currentPeriodEnd) {
+                                                        const endDate = new Date(user.subscription.currentPeriodEnd);
+                                                        const now = new Date();
+
+                                                        // Check if subscription has expired
+                                                        if (endDate <= now && user.plan !== 'community') {
+                                                            return 'Subscription Expired';
+                                                        }
+
+                                                        return endDate.toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        });
+                                                    }
+
+                                                    if (user.plan === 'community') {
+                                                        return '∞';
+                                                    }
+
+                                                    return 'No billing date';
+                                                })()}
                                             </div>
                                             <div className="text-sm text-muted-foreground">
-                                                {user.subscription.currentPeriodEnd ? 'Next Billing Date' : 'Free Plan'}
+                                                {(() => {
+                                                    if (user.plan === 'community') {
+                                                        return 'Community Plan';
+                                                    }
+
+                                                    if (user.subscription.currentPeriodEnd) {
+                                                        const endDate = new Date(user.subscription.currentPeriodEnd);
+                                                        const now = new Date();
+
+                                                        if (endDate <= now) {
+                                                            return 'Subscription Expired';
+                                                        }
+
+                                                        const timeDiff = endDate.getTime() - now.getTime();
+                                                        const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                                                        if (daysLeft === 1) {
+                                                            return 'Renews tomorrow';
+                                                        } else if (daysLeft <= 7) {
+                                                            return `Renews in ${daysLeft} days`;
+                                                        } else {
+                                                            return 'Next Billing Date';
+                                                        }
+                                                    }
+
+                                                    return 'No active subscription';
+                                                })()}
                                             </div>
                                         </div>
                                     </div>

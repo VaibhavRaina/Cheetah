@@ -45,7 +45,9 @@ interface BillingData {
         messagesUsed: number;
         price: number;
         billingCycle: string;
-        nextBillingDate: string;
+        nextBillingDate: string | null;
+        daysUntilRenewal: number | null;
+        status: string;
     };
     usageHistory: Array<{
         date: string;
@@ -257,12 +259,39 @@ const BillingPage = () => {
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm text-muted-foreground">Next Billing Date</span>
                                             <span className="font-medium text-foreground">
-                                                {billingData.currentPlan.name === 'Community' || !billingData.currentPlan.nextBillingDate ?
-                                                    '∞' :
-                                                    new Date(billingData.currentPlan.nextBillingDate).toLocaleDateString()
-                                                }
+                                                {(() => {
+                                                    if (billingData.currentPlan.name === 'Community' || !billingData.currentPlan.nextBillingDate) {
+                                                        return '∞';
+                                                    }
+
+                                                    const billingDate = new Date(billingData.currentPlan.nextBillingDate);
+                                                    const now = new Date();
+
+                                                    if (billingDate <= now) {
+                                                        return 'Expired';
+                                                    }
+
+                                                    return billingDate.toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    });
+                                                })()}
                                             </span>
                                         </div>
+
+                                        {/* Show subscription status for non-community plans */}
+                                        {billingData.currentPlan.name !== 'Community' && (
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-sm text-muted-foreground">Status</span>
+                                                <Badge
+                                                    variant={billingData.currentPlan.status === 'active' ? 'default' : 'destructive'}
+                                                    className={billingData.currentPlan.status === 'active' ? 'bg-green-100 text-green-700' : ''}
+                                                >
+                                                    {billingData.currentPlan.status === 'active' ? 'Active' : 'Inactive'}
+                                                </Badge>
+                                            </div>
+                                        )}
 
                                     </div>
                                 </Card>
@@ -326,10 +355,23 @@ const BillingPage = () => {
                                         <div>
                                             <p className="text-sm text-muted-foreground">Days Until Renewal</p>
                                             <p className="text-xl font-bold text-foreground">
-                                                {billingData.currentPlan.name === 'Community' || !billingData.currentPlan.nextBillingDate ?
-                                                    '∞' :
-                                                    Math.max(0, Math.ceil((new Date(billingData.currentPlan.nextBillingDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
-                                                }
+                                                {(() => {
+                                                    if (billingData.currentPlan.name === 'Community' || !billingData.currentPlan.nextBillingDate) {
+                                                        return '∞';
+                                                    }
+
+                                                    if (billingData.currentPlan.daysUntilRenewal !== null) {
+                                                        return billingData.currentPlan.daysUntilRenewal;
+                                                    }
+
+                                                    // Fallback calculation
+                                                    const billingDate = new Date(billingData.currentPlan.nextBillingDate);
+                                                    const now = new Date();
+                                                    const timeDiff = billingDate.getTime() - now.getTime();
+                                                    const daysLeft = Math.max(0, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)));
+
+                                                    return daysLeft;
+                                                })()}
                                             </p>
                                         </div>
                                     </div>
@@ -411,8 +453,8 @@ const BillingPage = () => {
                                                                             ease: [0.23, 1, 0.320, 1]
                                                                         }}
                                                                         className={`w-4 rounded-t-sm transition-all duration-200 ${hasData
-                                                                                ? 'bg-gradient-to-t from-accent to-accent/80 hover:from-accent/80 hover:to-accent shadow-sm'
-                                                                                : 'bg-muted/20'
+                                                                            ? 'bg-gradient-to-t from-accent to-accent/80 hover:from-accent/80 hover:to-accent shadow-sm'
+                                                                            : 'bg-muted/20'
                                                                             }`}
                                                                         style={{ minHeight: hasData ? '4px' : '2px' }}
                                                                     />

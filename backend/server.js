@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const passport = require('./config/passport');
 const { requestLogger, responseTime, errorHandler, notFound } = require('./middleware/validation');
+const { checkExpiredSubscriptions, checkUserSubscription } = require('./middleware/subscriptionChecker');
 require('dotenv').config();
 
 const app = express();
@@ -67,8 +68,31 @@ app.use(passport.session());
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cheetah')
-    .then(() => console.log('Connected to MongoDB'))
+    .then(() => {
+        console.log('Connected to MongoDB');
+
+        // Start periodic subscription check (every hour)
+        setInterval(async () => {
+            console.log('Running periodic subscription check...');
+            const result = await checkExpiredSubscriptions();
+            if (result.success) {
+                console.log(`Processed ${result.processedCount} expired subscriptions`);
+            } else {
+                console.error('Error in periodic subscription check:', result.error);
+            }
+        }, 60 * 60 * 1000); // Check every hour
+
+        // Run initial check
+        checkExpiredSubscriptions().then(result => {
+            if (result.success) {
+                console.log(`Initial subscription check: processed ${result.processedCount} expired subscriptions`);
+            }
+        });
+    })
     .catch(err => console.error('MongoDB connection error:', err));
+
+// Add subscription checker middleware to all routes
+app.use(checkUserSubscription);
 
 // Routes
 app.use('/api/auth', require('./routes/auth')); // authLimiter removed for testing

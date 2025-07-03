@@ -31,12 +31,26 @@ router.get('/overview', authenticate, async (req, res) => {
         const planConfig = getPlanConfig(user.subscription.plan);
         const messagesRemaining = planConfig.messages - actualMessagesUsed;
 
-        // Calculate next billing date (infinity for community plan)
+        // Calculate next billing date and days until renewal
         let nextBillingDate;
+        let daysUntilRenewal;
+
         if (planConfig.id === 'community') {
             nextBillingDate = null; // Community plan never expires
+            daysUntilRenewal = null; // Infinity symbol will be shown in frontend
         } else {
-            nextBillingDate = new Date(user.subscription.endDate);
+            // Use currentPeriodEnd instead of endDate for active subscriptions
+            const billingDate = user.subscription.currentPeriodEnd || user.subscription.endDate;
+            nextBillingDate = new Date(billingDate);
+
+            // Calculate days until renewal
+            const timeDiff = nextBillingDate.getTime() - currentDate.getTime();
+            daysUntilRenewal = Math.max(0, Math.ceil(timeDiff / (1000 * 3600 * 24)));
+
+            // If subscription has expired, set to null to trigger downgrade
+            if (daysUntilRenewal <= 0 && user.subscription.status === 'active') {
+                daysUntilRenewal = 0;
+            }
         }
 
         // Generate last 30 days of usage history
@@ -71,7 +85,9 @@ router.get('/overview', authenticate, async (req, res) => {
                 messagesUsed: actualMessagesUsed,
                 price: planConfig.price,
                 billingCycle: user.subscription.billingCycle || 'monthly',
-                nextBillingDate: nextBillingDate ? nextBillingDate.toISOString() : null
+                nextBillingDate: nextBillingDate ? nextBillingDate.toISOString() : null,
+                daysUntilRenewal: daysUntilRenewal,
+                status: user.subscription.status
             },
             usageHistory: usageHistory,
             invoices: invoices
