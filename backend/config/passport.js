@@ -60,7 +60,8 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
     passport.use(new GitHubStrategy({
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: "/api/auth/github/callback"
+        callbackURL: "/api/auth/github/callback",
+        scope: ['user:email'] // Request email access
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             // Check if user already exists with this GitHub ID
@@ -87,13 +88,23 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
             }
 
             // Create new user
-            user = new User({
+            const userData = {
                 name: profile.displayName || profile.username,
-                email: email,
                 githubId: profile.id,
                 avatar: profile.photos[0] ? profile.photos[0].value : null,
                 isEmailVerified: !!email // Only verified if email is provided
-            });
+            };
+
+            // Only add email if it exists (to avoid validation error)
+            if (email) {
+                userData.email = email;
+            } else {
+                // Generate a placeholder email for GitHub users without public email
+                userData.email = `github_${profile.id}@placeholder.local`;
+                userData.isEmailVerified = false;
+            }
+
+            user = new User(userData);
 
             await user.save();
             done(null, user);

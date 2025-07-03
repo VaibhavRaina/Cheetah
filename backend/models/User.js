@@ -10,13 +10,21 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, 'Email is required'],
+        required: function () {
+            // Email is required only for non-OAuth users or OAuth users with real emails
+            return !this.googleId && !this.githubId;
+        },
         unique: true,
+        sparse: true, // Allow multiple null/undefined values
         lowercase: true,
         trim: true,
         validate: {
             validator: function (email) {
-                return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
+                // Skip validation for placeholder emails
+                if (email && email.includes('@placeholder.local')) {
+                    return true;
+                }
+                return !email || /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
             },
             message: 'Please enter a valid email'
         }
