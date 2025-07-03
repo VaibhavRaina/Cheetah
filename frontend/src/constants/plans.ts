@@ -44,7 +44,7 @@ export const PLANS: PLAN[] = [
             "Additional user messages $10/100",
             "No AI training allowed"
         ],
-        link: "#"
+        link: "/dashboard"
     },
     {
         id: "enterprise",

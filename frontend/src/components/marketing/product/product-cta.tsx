@@ -39,7 +39,7 @@ const ProductCTA = () => {
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                    <Link href="/signup">
+                                    <Link href="/dashboard">
                                         <Button size="lg" variant="accent" className="group">
                                             Start Free Trial
                                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />

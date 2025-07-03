@@ -29,7 +29,7 @@ const MobileMenu = () => {
                         </Link>
                     ))}
                     <div className="pt-4 mt-4 border-t border-border">
-                        <Link href="/signup" className="w-full">
+                        <Link href="/dashboard" className="w-full">
                             <Button className="w-full" variant="accent">
                                 Get Started
                             </Button>

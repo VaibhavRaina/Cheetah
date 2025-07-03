@@ -141,9 +141,9 @@ export function PricingComponent() {
                                     variant={plan.id === "developer" ? "accent" : "outline"}
                                     size="lg"
                                     className="w-full"
-                                    asChild={plan.buttonText === "Contact sales"}
+                                    asChild={plan.buttonText === "Contact sales" || plan.buttonText === "Start free trial"}
                                 >
-                                    {plan.buttonText === "Contact sales" ? (
+                                    {plan.buttonText === "Contact sales" || plan.buttonText === "Start free trial" ? (
                                         <a href={plan.link}>{plan.buttonText}</a>
                                     ) : (
                                         plan.buttonText
@@ -418,8 +418,8 @@ export function PricingComponent() {
                                     </Button>
                                 </td>
                                 <td className="p-4 bg-foreground/[0.01]">
-                                    <Button variant="default" size="sm" className="w-full max-w-[120px]">
-                                        Install now
+                                    <Button variant="default" size="sm" className="w-full max-w-[120px]" asChild>
+                                        <a href="/dashboard">Install now</a>
                                     </Button>
                                 </td>
                                 <td className="p-4">
