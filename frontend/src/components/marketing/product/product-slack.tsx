@@ -12,7 +12,7 @@ const ProductSlack = () => {
     const isInView = useInView(ref, { once: true, margin: "-100px" });
 
     return (
-        <section ref={ref} className="py-20 lg:py-32 bg-muted/20">
+        <section ref={ref} className="py-20 lg:py-32">
             <Container>
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
