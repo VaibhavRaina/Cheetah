@@ -141,9 +141,9 @@ export function PricingComponent() {
                                     variant={plan.id === "developer" ? "accent" : "outline"}
                                     size="lg"
                                     className="w-full"
-                                    asChild={plan.buttonText === "Contact sales" || plan.buttonText === "Start free trial"}
+                                    asChild={plan.buttonText === "Contact sales" || plan.buttonText === "Start Coding"}
                                 >
-                                    {plan.buttonText === "Contact sales" || plan.buttonText === "Start free trial" ? (
+                                    {plan.buttonText === "Contact sales" || plan.buttonText === "Start Coding" ? (
                                         <a href={plan.link}>{plan.buttonText}</a>
                                     ) : (
                                         plan.buttonText

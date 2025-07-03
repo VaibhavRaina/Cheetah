@@ -173,7 +173,7 @@ export default function DashboardPage() {
             desc: "For individuals or small teams that want to ship to production, fast.",
             monthlyPrice: 50,
             annuallyPrice: 500,
-            buttonText: "Start free trial",
+            buttonText: "Start Coding",
             features: [
                 "Everything in community",
                 "Up to 600 user messages",

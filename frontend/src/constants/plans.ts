@@ -35,7 +35,7 @@ export const PLANS: PLAN[] = [
         desc: "For individuals or small teams that want to ship to production, fast.",
         monthlyPrice: 50,
         annuallyPrice: 500,
-        buttonText: "Start free trial",
+        buttonText: "Start Coding",
         features: [
             "Everything in community",
             "Up to 600 user messages",
@@ -121,7 +121,7 @@ export const PLANS_TABLE = [
         title: 'Growth Starter',
         priceMonthly: '$29',
         priceYearly: "$290",
-        buttonText: 'Start free trial',
+        buttonText: 'Start Coding',
         usage: {
             members: '2 members',
             contentGeneration: '1,000 words/mo',
