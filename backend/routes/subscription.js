@@ -180,6 +180,8 @@ router.post('/change-plan', [
 
         // Handle downgrade to free plan
         if (planId === 'community') {
+            const previousPlan = PLAN_CONFIGS[user.plan];
+
             user.plan = planId;
             user.subscription.status = 'active';
             user.subscription.cancelAtPeriodEnd = false;
@@ -189,6 +191,24 @@ router.post('/change-plan', [
             user.usage.messagesLimit = planLimits.messages;
 
             await user.save();
+
+            // Send downgrade confirmation email
+            const downgradeDetails = {
+                previousPlan: previousPlan.name,
+                newPlan: newPlanConfig.name,
+                downgradeDate: new Date(),
+                newLimits: {
+                    messages: planLimits.messages
+                },
+                effectiveImmediately: true
+            };
+
+            const emailResult = await emailService.sendPlanDowngradeEmail(user, downgradeDetails);
+            if (emailResult.success) {
+                console.log('Plan downgrade email sent successfully:', emailResult.messageId);
+            } else {
+                console.error('Failed to send plan downgrade email:', emailResult.error);
+            }
 
             return res.json(
                 createResponse(
@@ -228,14 +248,22 @@ router.post('/change-plan', [
             currentPeriodStart: now,
             currentPeriodEnd: periodEnd,
             status: 'active',
-            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A'
+            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A',
+            previousPlan: currentPlanConfig.name
         };
 
-        const emailResult = await emailService.sendPremiumPurchaseEmail(user, subscriptionDetails);
-        if (emailResult.success) {
-            console.log('Premium purchase email sent successfully:', emailResult.messageId);
-        } else {
-            console.error('Failed to send premium purchase email:', emailResult.error);
+        // Send email notification
+        try {
+            const emailResult = await emailService.sendPremiumPurchaseEmail(user, subscriptionDetails);
+            if (emailResult.success) {
+                console.log('Premium purchase email sent successfully:', emailResult.messageId);
+            } else {
+                console.error('Failed to send premium purchase email:', emailResult.error);
+                // Don't fail the subscription change if email fails
+            }
+        } catch (emailError) {
+            console.error('Error sending premium purchase email:', emailError);
+            // Continue with the subscription change even if email fails
         }
 
         // In a real implementation, you would:
@@ -313,14 +341,21 @@ router.post('/cancel', [
             accessUntil: user.subscription.currentPeriodEnd,
             reason: reason || 'Not specified',
             refundStatus: 'No refund applicable',
-            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A'
+            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A',
+            feedback: feedback || 'No feedback provided'
         };
 
-        const emailResult = await emailService.sendPremiumCancellationEmail(user, cancellationDetails);
-        if (emailResult.success) {
-            console.log('Premium cancellation email sent successfully:', emailResult.messageId);
-        } else {
-            console.error('Failed to send premium cancellation email:', emailResult.error);
+        try {
+            const emailResult = await emailService.sendPremiumCancellationEmail(user, cancellationDetails);
+            if (emailResult.success) {
+                console.log('Premium cancellation email sent successfully:', emailResult.messageId);
+            } else {
+                console.error('Failed to send premium cancellation email:', emailResult.error);
+                // Don't fail the cancellation if email fails
+            }
+        } catch (emailError) {
+            console.error('Error sending premium cancellation email:', emailError);
+            // Continue with the cancellation even if email fails
         }
 
         // In a real implementation, you would:
@@ -372,9 +407,29 @@ router.post('/reactivate', authenticate, async (req, res) => {
         user.subscription.cancelAtPeriodEnd = false;
         await user.save();
 
+        // Send reactivation confirmation email
+        const reactivationDetails = {
+            plan: PLAN_CONFIGS[user.plan].name,
+            reactivationDate: new Date(),
+            nextBillingDate: user.subscription.currentPeriodEnd,
+            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A'
+        };
+
+        try {
+            const emailResult = await emailService.sendPremiumReactivationEmail(user, reactivationDetails);
+            if (emailResult.success) {
+                console.log('Premium reactivation email sent successfully:', emailResult.messageId);
+            } else {
+                console.error('Failed to send premium reactivation email:', emailResult.error);
+                // Don't fail the reactivation if email fails
+            }
+        } catch (emailError) {
+            console.error('Error sending premium reactivation email:', emailError);
+            // Continue with the reactivation even if email fails
+        }
+
         // In a real implementation, you would:
         // 1. Update Stripe subscription to continue
-        // 2. Send reactivation confirmation email
 
         res.json(
             createResponse(

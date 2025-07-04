@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import {
     Accordion,
     AccordionContent,
@@ -58,6 +59,12 @@ const faqItems = [
 ];
 
 export function PricingComponent() {
+    const router = useRouter();
+
+    const handleDeveloperPlanClick = () => {
+        router.push('/dashboard');
+    };
+
     return (
         <section className="py-16 md:py-24">
             <Container>
@@ -133,10 +140,13 @@ export function PricingComponent() {
                                     variant={plan.id === "developer" ? "accent" : "outline"}
                                     size="lg"
                                     className="w-full"
+                                    onClick={plan.id === "developer" ? handleDeveloperPlanClick : undefined}
                                     asChild={plan.buttonText === "Contact sales" || plan.buttonText === "Start Coding"}
                                 >
                                     {plan.buttonText === "Contact sales" || plan.buttonText === "Start Coding" ? (
                                         <a href={plan.link}>{plan.buttonText}</a>
+                                    ) : plan.id === "developer" ? (
+                                        plan.buttonText
                                     ) : (
                                         plan.buttonText
                                     )}
@@ -410,8 +420,13 @@ export function PricingComponent() {
                                     </Button>
                                 </td>
                                 <td className="p-4 bg-foreground/[0.01]">
-                                    <Button variant="default" size="sm" className="w-full max-w-[120px]" asChild>
-                                        <a href="/dashboard">Install now</a>
+                                    <Button
+                                        variant="default"
+                                        size="sm"
+                                        className="w-full max-w-[120px]"
+                                        onClick={handleDeveloperPlanClick}
+                                    >
+                                        Install now
                                     </Button>
                                 </td>
                                 <td className="p-4">

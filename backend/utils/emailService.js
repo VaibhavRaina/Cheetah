@@ -128,7 +128,7 @@ class EmailService {
 
             const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
             console.log('Welcome email sent successfully:', result);
-            return { success: true, messageId: result.messageId };
+            return { success: true, messageId: result.body.messageId };
         } catch (error) {
             console.error('Error sending welcome email:', error);
             if (error.response && error.response.body) {
@@ -153,16 +153,18 @@ class EmailService {
                 name: user.name
             }];
 
-            sendSmtpEmail.subject = `Premium Plan Activated - Welcome to ${subscriptionDetails.plan}! 🎉`;
+            const isUpgrade = subscriptionDetails.previousPlan && subscriptionDetails.previousPlan !== 'Community';
+            const actionWord = isUpgrade ? 'Upgraded' : 'Activated';
+            sendSmtpEmail.subject = `${actionWord} to ${subscriptionDetails.plan} Plan - Welcome! 🎉`;
 
-            const planFeatures = this.getPlanFeatures(subscriptionDetails.plan);
+            const planFeatures = this.getPlanFeatures(subscriptionDetails.plan.toLowerCase());
 
             sendSmtpEmail.htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <meta charset="UTF-8">
-                    <title>Premium Plan Activated</title>
+                    <title>Premium Plan ${actionWord}</title>
                     <style>
                         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -171,27 +173,32 @@ class EmailService {
                         .button { display: inline-block; padding: 12px 30px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
                         .info-box { background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745; }
                         .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+                        .highlight { background: #fff3cd; padding: 10px; border-radius: 5px; margin: 10px 0; }
                     </style>
                 </head>
                 <body>
                     <div class="container">
                         <div class="header">
-                            <h1>🎉 Premium Plan Activated!</h1>
+                            <h1>🎉 ${subscriptionDetails.plan} Plan ${actionWord}!</h1>
                         </div>
                         <div class="content">
                             <h2>Congratulations ${user.name}!</h2>
-                            <p>Your premium subscription has been successfully activated. You now have access to all the enhanced features and increased limits.</p>
+                            <p>Your ${subscriptionDetails.plan} subscription has been successfully ${actionWord.toLowerCase()}. You now have access to all enhanced features and increased limits.</p>
+                            
+                            ${isUpgrade ? `<div class="highlight">
+                                <strong>Upgrade Details:</strong> You've upgraded from ${subscriptionDetails.previousPlan} to ${subscriptionDetails.plan}
+                            </div>` : ''}
                             
                             <div class="info-box">
                                 <h3>📋 Subscription Details:</h3>
                                 <ul>
                                     <li><strong>Plan:</strong> ${subscriptionDetails.plan}</li>
                                     <li><strong>Price:</strong> $${subscriptionDetails.price}/${subscriptionDetails.billingCycle}</li>
-                                    <li><strong>Message Limit:</strong> ${subscriptionDetails.messages === -1 ? 'Unlimited' : subscriptionDetails.messages} messages</li>
+                                    <li><strong>Message Limit:</strong> ${subscriptionDetails.messages === -1 ? 'Unlimited' : subscriptionDetails.messages.toLocaleString()} messages</li>
                                     <li><strong>Start Date:</strong> ${new Date(subscriptionDetails.currentPeriodStart).toLocaleDateString()}</li>
                                     <li><strong>Next Billing:</strong> ${new Date(subscriptionDetails.currentPeriodEnd).toLocaleDateString()}</li>
                                     <li><strong>Status:</strong> ${subscriptionDetails.status}</li>
-                                    <li><strong>Subscription ID:</strong> ${subscriptionDetails.subscriptionId || 'N/A'}</li>
+                                    <li><strong>Subscription ID:</strong> ${subscriptionDetails.subscriptionId}</li>
                                 </ul>
                             </div>
                             
@@ -201,15 +208,24 @@ class EmailService {
                             </ul>
                             
                             <div style="text-align: center;">
-                                <a href="${process.env.FRONTEND_URL}/dashboard" class="button">Access Your Dashboard</a>
+                                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard" class="button">Access Your Dashboard</a>
                             </div>
                             
-                            <p><strong>Important:</strong> Your subscription will automatically renew on ${new Date(subscriptionDetails.currentPeriodEnd).toLocaleDateString()} unless you cancel before then.</p>
+                            <div class="info-box">
+                                <h3>📅 Important Billing Information:</h3>
+                                <ul>
+                                    <li>Your subscription will automatically renew on ${new Date(subscriptionDetails.currentPeriodEnd).toLocaleDateString()}</li>
+                                    <li>You can cancel or modify your subscription anytime from your dashboard</li>
+                                    <li>Your enhanced features are active immediately</li>
+                                </ul>
+                            </div>
                             
-                            <p>Thank you for upgrading to premium! We're committed to providing you with the best experience possible.</p>
+                            <p>Thank you for ${isUpgrade ? 'upgrading' : 'choosing'} our premium plan! We're committed to providing you with the best experience possible.</p>
+                            
+                            <p>If you have any questions about your subscription or need help getting started, our support team is here to assist you.</p>
                         </div>
                         <div class="footer">
-                            <p>Questions about your subscription? Contact our support team.</p>
+                            <p>Questions about your subscription? <a href="mailto:${this.supportEmail}">Contact our support team</a></p>
                             <p>Best regards,<br>The Cheetah Team</p>
                         </div>
                     </div>
@@ -219,7 +235,7 @@ class EmailService {
 
             const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
             console.log('Premium purchase email sent successfully:', result);
-            return { success: true, messageId: result.messageId };
+            return { success: true, messageId: result.body.messageId };
         } catch (error) {
             console.error('Error sending premium purchase email:', error);
             if (error.response && error.response.body) {
@@ -260,6 +276,7 @@ class EmailService {
                         .button { display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
                         .info-box { background: #f8d7da; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc3545; }
                         .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+                        .highlight { background: #fff3cd; padding: 10px; border-radius: 5px; margin: 10px 0; }
                     </style>
                 </head>
                 <body>
@@ -277,32 +294,42 @@ class EmailService {
                                     <li><strong>Cancelled Plan:</strong> ${cancellationDetails.plan}</li>
                                     <li><strong>Cancellation Date:</strong> ${new Date(cancellationDetails.cancellationDate).toLocaleDateString()}</li>
                                     <li><strong>Access Until:</strong> ${new Date(cancellationDetails.accessUntil).toLocaleDateString()}</li>
-                                    <li><strong>Reason:</strong> ${cancellationDetails.reason || 'Not specified'}</li>
-                                    <li><strong>Refund Status:</strong> ${cancellationDetails.refundStatus || 'No refund applicable'}</li>
-                                    <li><strong>Subscription ID:</strong> ${cancellationDetails.subscriptionId || 'N/A'}</li>
+                                    <li><strong>Reason:</strong> ${cancellationDetails.reason}</li>
+                                    <li><strong>Refund Status:</strong> ${cancellationDetails.refundStatus}</li>
+                                    <li><strong>Subscription ID:</strong> ${cancellationDetails.subscriptionId}</li>
                                 </ul>
                             </div>
                             
-                            <p><strong>Important:</strong> You'll continue to have access to premium features until ${new Date(cancellationDetails.accessUntil).toLocaleDateString()}. After this date, your account will be moved to our Community plan.</p>
+                            ${cancellationDetails.feedback && cancellationDetails.feedback !== 'No feedback provided' ? `
+                            <div class="highlight">
+                                <h3>📝 Your Feedback:</h3>
+                                <p><em>"${cancellationDetails.feedback}"</em></p>
+                                <p>Thank you for sharing your feedback. We take all feedback seriously and use it to improve our service.</p>
+                            </div>` : ''}
                             
-                            <h3>What Happens Next:</h3>
+                            <div class="highlight">
+                                <strong>Important:</strong> You'll continue to have access to premium features until ${new Date(cancellationDetails.accessUntil).toLocaleDateString()}. After this date, your account will be moved to our Community plan.
+                            </div>
+                            
+                            <h3>📅 What Happens Next:</h3>
                             <ul>
                                 <li>Your premium features remain active until ${new Date(cancellationDetails.accessUntil).toLocaleDateString()}</li>
                                 <li>No further charges will be made to your payment method</li>
                                 <li>You'll automatically be moved to our Community plan</li>
                                 <li>Your account data and settings will be preserved</li>
+                                <li>You can reactivate your subscription anytime before ${new Date(cancellationDetails.accessUntil).toLocaleDateString()}</li>
                             </ul>
                             
                             <div style="text-align: center;">
-                                <a href="${process.env.FRONTEND_URL}/dashboard" class="button">Access Your Dashboard</a>
+                                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard" class="button">Access Your Dashboard</a>
                             </div>
                             
-                            <p>We'd love to hear your feedback about your experience. If there's anything we could have done better, please don't hesitate to reach out.</p>
+                            <p>We'd love to hear more about your experience and how we can improve. If there's anything specific we could have done better, please don't hesitate to reach out to our support team.</p>
                             
-                            <p>Thank you for being part of the Cheetah community!</p>
+                            <p>Thank you for being part of the Cheetah community! We hope to see you again in the future.</p>
                         </div>
                         <div class="footer">
-                            <p>Want to reactivate? You can upgrade anytime from your dashboard.</p>
+                            <p>Want to reactivate? You can <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/subscription">reactivate your subscription</a> anytime before ${new Date(cancellationDetails.accessUntil).toLocaleDateString()}.</p>
                             <p>Best regards,<br>The Cheetah Team</p>
                         </div>
                     </div>
@@ -312,7 +339,7 @@ class EmailService {
 
             const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
             console.log('Premium cancellation email sent successfully:', result);
-            return { success: true, messageId: result.messageId };
+            return { success: true, messageId: result.body.messageId };
         } catch (error) {
             console.error('Error sending premium cancellation email:', error);
             if (error.response && error.response.body) {
@@ -451,8 +478,8 @@ class EmailService {
             console.log('Support form emails sent successfully');
             return {
                 success: true,
-                adminMessageId: adminResult.messageId,
-                userMessageId: userResult.messageId
+                adminMessageId: adminResult.body.messageId,
+                userMessageId: userResult.body.messageId
             };
         } catch (error) {
             console.error('Error sending support form emails:', error);
@@ -601,8 +628,8 @@ class EmailService {
             console.log('Contact sales form emails sent successfully');
             return {
                 success: true,
-                adminMessageId: adminResult.messageId,
-                userMessageId: userResult.messageId
+                adminMessageId: adminResult.body.messageId,
+                userMessageId: userResult.body.messageId
             };
         } catch (error) {
             console.error('Error sending contact sales form emails:', error);
@@ -613,9 +640,212 @@ class EmailService {
         }
     }
 
+    // Send plan downgrade confirmation email
+    async sendPlanDowngradeEmail(user, downgradeDetails) {
+        try {
+            const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+            sendSmtpEmail.sender = {
+                email: this.fromEmail,
+                name: this.fromName
+            };
+
+            sendSmtpEmail.to = [{
+                email: user.email,
+                name: user.name
+            }];
+
+            sendSmtpEmail.subject = `Plan Changed - Now on ${downgradeDetails.newPlan} Plan`;
+
+            sendSmtpEmail.htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Plan Downgrade Confirmation</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+                        .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+                        .button { display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+                        .info-box { background: #e2e3e5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #6c757d; }
+                        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+                        .highlight { background: #fff3cd; padding: 10px; border-radius: 5px; margin: 10px 0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>Plan Changed Successfully</h1>
+                        </div>
+                        <div class="content">
+                            <h2>Hello ${user.name}!</h2>
+                            <p>Your subscription plan has been successfully changed. You are now on the ${downgradeDetails.newPlan} plan.</p>
+                            
+                            <div class="info-box">
+                                <h3>📋 Plan Change Details:</h3>
+                                <ul>
+                                    <li><strong>Previous Plan:</strong> ${downgradeDetails.previousPlan}</li>
+                                    <li><strong>New Plan:</strong> ${downgradeDetails.newPlan}</li>
+                                    <li><strong>Change Date:</strong> ${new Date(downgradeDetails.downgradeDate).toLocaleDateString()}</li>
+                                    <li><strong>Message Limit:</strong> ${downgradeDetails.newLimits.messages.toLocaleString()} messages per month</li>
+                                    <li><strong>Status:</strong> ${downgradeDetails.effectiveImmediately ? 'Effective Immediately' : 'Effective at Period End'}</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="highlight">
+                                <strong>Important:</strong> Your plan change is effective immediately. You now have access to ${downgradeDetails.newPlan} features.
+                            </div>
+                            
+                            <h3>🔄 What This Means:</h3>
+                            <ul>
+                                <li>Your message limit has been adjusted to ${downgradeDetails.newLimits.messages.toLocaleString()} messages per month</li>
+                                <li>You have access to ${downgradeDetails.newPlan} features</li>
+                                <li>No further billing charges for premium features</li>
+                                <li>You can upgrade back to a premium plan anytime</li>
+                            </ul>
+                            
+                            <div style="text-align: center;">
+                                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard" class="button">Access Your Dashboard</a>
+                            </div>
+                            
+                            <p>Thank you for using Cheetah! If you decide to upgrade in the future, you can do so anytime from your dashboard.</p>
+                            
+                            <p>If you have any questions about your plan change or need assistance, our support team is here to help.</p>
+                        </div>
+                        <div class="footer">
+                            <p>Want to upgrade again? <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/subscription">View our plans</a></p>
+                            <p>Best regards,<br>The Cheetah Team</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+            console.log('Plan downgrade email sent successfully:', result);
+            return { success: true, messageId: result.body.messageId };
+        } catch (error) {
+            console.error('Error sending plan downgrade email:', error);
+            if (error.response && error.response.body) {
+                console.error('Brevo API Error Details:', error.response.body);
+            }
+            return { success: false, error: error.message || 'Failed to send plan downgrade email' };
+        }
+    }
+
+    // Send premium reactivation confirmation email
+    async sendPremiumReactivationEmail(user, reactivationDetails) {
+        try {
+            const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+            sendSmtpEmail.sender = {
+                email: this.fromEmail,
+                name: this.fromName
+            };
+
+            sendSmtpEmail.to = [{
+                email: user.email,
+                name: user.name
+            }];
+
+            sendSmtpEmail.subject = `Subscription Reactivated - Welcome Back! 🎉`;
+
+            const planFeatures = this.getPlanFeatures(reactivationDetails.plan.toLowerCase());
+
+            sendSmtpEmail.htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Subscription Reactivated</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+                        .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+                        .button { display: inline-block; padding: 12px 30px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+                        .info-box { background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745; }
+                        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+                        .highlight { background: #d4edda; padding: 10px; border-radius: 5px; margin: 10px 0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🎉 Welcome Back!</h1>
+                        </div>
+                        <div class="content">
+                            <h2>Great news, ${user.name}!</h2>
+                            <p>Your ${reactivationDetails.plan} subscription has been successfully reactivated. Your cancellation has been reversed and you'll continue to enjoy all premium features.</p>
+                            
+                            <div class="highlight">
+                                <strong>Subscription Status:</strong> Your ${reactivationDetails.plan} plan is now active and will continue as scheduled.
+                            </div>
+                            
+                            <div class="info-box">
+                                <h3>📋 Reactivation Details:</h3>
+                                <ul>
+                                    <li><strong>Plan:</strong> ${reactivationDetails.plan}</li>
+                                    <li><strong>Reactivation Date:</strong> ${new Date(reactivationDetails.reactivationDate).toLocaleDateString()}</li>
+                                    <li><strong>Next Billing Date:</strong> ${new Date(reactivationDetails.nextBillingDate).toLocaleDateString()}</li>
+                                    <li><strong>Subscription ID:</strong> ${reactivationDetails.subscriptionId}</li>
+                                    <li><strong>Status:</strong> Active</li>
+                                </ul>
+                            </div>
+                            
+                            <h3>🚀 Your ${reactivationDetails.plan} Plan Features:</h3>
+                            <ul>
+                                ${planFeatures.map(feature => `<li>${feature}</li>`).join('')}
+                            </ul>
+                            
+                            <div style="text-align: center;">
+                                <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard" class="button">Access Your Dashboard</a>
+                            </div>
+                            
+                            <h3>📅 Billing Information:</h3>
+                            <ul>
+                                <li>Your subscription will continue to renew automatically</li>
+                                <li>Next billing date: ${new Date(reactivationDetails.nextBillingDate).toLocaleDateString()}</li>
+                                <li>You can manage your subscription anytime from your dashboard</li>
+                            </ul>
+                            
+                            <p>We're thrilled to have you back! Thank you for choosing to continue with Cheetah. If you have any questions or need assistance, our support team is here to help.</p>
+                        </div>
+                        <div class="footer">
+                            <p>Questions about your subscription? <a href="mailto:${this.supportEmail}">Contact our support team</a></p>
+                            <p>Best regards,<br>The Cheetah Team</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+            console.log('Premium reactivation email sent successfully:', result);
+            return { success: true, messageId: result.body.messageId };
+        } catch (error) {
+            console.error('Error sending premium reactivation email:', error);
+            if (error.response && error.response.body) {
+                console.error('Brevo API Error Details:', error.response.body);
+            }
+            return { success: false, error: error.message || 'Failed to send premium reactivation email' };
+        }
+    }
+
     // Helper method to get plan features
     getPlanFeatures(plan) {
+        // Normalize plan name to lowercase
+        const planKey = plan.toLowerCase();
+
         const features = {
+            community: [
+                '50 messages per month',
+                'Basic support',
+                'Community access',
+                'Standard features'
+            ],
             developer: [
                 '600 messages per month',
                 'Priority support',
@@ -644,21 +874,18 @@ class EmailService {
                 'Custom workflows'
             ],
             enterprise: [
-                'Unlimited messages',
-                '24/7 dedicated support',
-                'Advanced team collaboration',
-                'Custom analytics and reporting',
-                'Full API access',
-                'Custom integrations',
-                'SOC2 compliance',
-                'Dedicated account manager',
-                'Custom workflows',
-                'On-premise deployment options',
-                'SLA guarantees'
+                'Custom user pricing',
+                'Bespoke user message limit',
+                'Slack integration',
+                'Volume based annual discounts',
+                'SSO, OIDC, & SCIM support',
+                'SOC 2 & Security Reports',
+                'Dedicated support',
+                'No AI training allowed'
             ]
         };
 
-        return features[plan] || features.developer;
+        return features[planKey] || features.community;
     }
 }
 

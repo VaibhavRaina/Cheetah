@@ -10,6 +10,7 @@ const {
     paginate,
     generatePaginationMeta
 } = require('../utils/helpers');
+const emailService = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -495,6 +496,8 @@ router.put('/plan', [
         };
 
         const planConfig = getPlanConfig(planId);
+        const previousPlan = user.plan;
+        const previousPlanConfig = getPlanConfig(previousPlan);
 
         // Update user plan
         user.plan = planId;
@@ -542,6 +545,52 @@ router.put('/plan', [
 
         await user.save();
 
+        // Send email notification for plan changes
+        try {
+            if (planId === 'community' && previousPlan !== 'community') {
+                // Send downgrade email
+                const downgradeDetails = {
+                    previousPlan: previousPlanConfig.name,
+                    newPlan: planConfig.name,
+                    downgradeDate: new Date(),
+                    newLimits: {
+                        messages: planConfig.messages
+                    },
+                    effectiveImmediately: true
+                };
+
+                const emailResult = await emailService.sendPlanDowngradeEmail(user, downgradeDetails);
+                if (emailResult.success) {
+                    console.log('Plan downgrade email sent successfully:', emailResult.messageId);
+                } else {
+                    console.error('Failed to send plan downgrade email:', emailResult.error);
+                }
+            } else if (planId !== 'community' && previousPlan !== planId) {
+                // Send premium purchase/upgrade email
+                const subscriptionDetails = {
+                    plan: planConfig.name,
+                    price: planConfig.price,
+                    billingCycle: user.subscription.billingCycle,
+                    messages: planConfig.messages,
+                    currentPeriodStart: user.subscription.currentPeriodStart,
+                    currentPeriodEnd: user.subscription.currentPeriodEnd,
+                    status: user.subscription.status,
+                    subscriptionId: user.subscription.stripeSubscriptionId || 'N/A',
+                    previousPlan: previousPlanConfig.name
+                };
+
+                const emailResult = await emailService.sendPremiumPurchaseEmail(user, subscriptionDetails);
+                if (emailResult.success) {
+                    console.log('Premium purchase email sent successfully:', emailResult.messageId);
+                } else {
+                    console.error('Failed to send premium purchase email:', emailResult.error);
+                }
+            }
+        } catch (emailError) {
+            console.error('Error sending plan change email:', emailError);
+            // Continue with the plan change even if email fails
+        }
+
         // Return updated user data
         const updatedUser = formatUserResponse(user);
 
@@ -582,6 +631,15 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
 
         // Store current plan info for response
         const currentPlan = user.plan;
+        const currentPlanConfig = {
+            community: { id: 'community', name: 'Community', messages: 50, price: 0 },
+            developer: { id: 'developer', name: 'Developer', messages: 600, price: 50 },
+            pro: { id: 'pro', name: 'Pro', messages: 1500, price: 100 },
+            max: { id: 'max', name: 'Max', messages: 4500, price: 250 },
+            enterprise: { id: 'enterprise', name: 'Enterprise', messages: -1, price: 'custom' }
+        };
+
+        const planConfig = currentPlanConfig[currentPlan] || currentPlanConfig.community;
 
         // Downgrade to community plan
         user.plan = 'community';
@@ -612,6 +670,29 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
         user.subscription.stripeSubscriptionId = undefined;
 
         await user.save();
+
+        // Send cancellation email
+        try {
+            const cancellationDetails = {
+                plan: planConfig.name,
+                cancellationDate: new Date(),
+                accessUntil: new Date(), // Immediate cancellation
+                reason: 'User requested cancellation',
+                refundStatus: 'No refund applicable',
+                subscriptionId: user.subscription.stripeSubscriptionId || 'N/A',
+                feedback: 'No feedback provided'
+            };
+
+            const emailResult = await emailService.sendPremiumCancellationEmail(user, cancellationDetails);
+            if (emailResult.success) {
+                console.log('Premium cancellation email sent successfully:', emailResult.messageId);
+            } else {
+                console.error('Failed to send premium cancellation email:', emailResult.error);
+            }
+        } catch (emailError) {
+            console.error('Error sending premium cancellation email:', emailError);
+            // Continue with the cancellation even if email fails
+        }
 
         // Return updated user data
         const updatedUser = formatUserResponse(user);
