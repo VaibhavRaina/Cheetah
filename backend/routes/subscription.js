@@ -8,6 +8,7 @@ const {
     calculateSubscriptionEndDate,
     isSubscriptionActive
 } = require('../utils/helpers');
+const emailService = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -218,11 +219,29 @@ router.post('/change-plan', [
 
         await user.save();
 
+        // Send premium purchase email
+        const subscriptionDetails = {
+            plan: newPlanConfig.name,
+            price: newPlanConfig.price,
+            billingCycle: billingCycle,
+            messages: newPlanConfig.messages,
+            currentPeriodStart: now,
+            currentPeriodEnd: periodEnd,
+            status: 'active',
+            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A'
+        };
+
+        const emailResult = await emailService.sendPremiumPurchaseEmail(user, subscriptionDetails);
+        if (emailResult.success) {
+            console.log('Premium purchase email sent successfully:', emailResult.messageId);
+        } else {
+            console.error('Failed to send premium purchase email:', emailResult.error);
+        }
+
         // In a real implementation, you would:
         // 1. Create or update Stripe subscription
         // 2. Handle prorations
         // 3. Update payment method if needed
-        // 4. Send confirmation email
 
         res.json(
             createResponse(
@@ -287,11 +306,27 @@ router.post('/cancel', [
 
         await user.save();
 
+        // Send premium cancellation email
+        const cancellationDetails = {
+            plan: PLAN_CONFIGS[user.plan].name,
+            cancellationDate: new Date(),
+            accessUntil: user.subscription.currentPeriodEnd,
+            reason: reason || 'Not specified',
+            refundStatus: 'No refund applicable',
+            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A'
+        };
+
+        const emailResult = await emailService.sendPremiumCancellationEmail(user, cancellationDetails);
+        if (emailResult.success) {
+            console.log('Premium cancellation email sent successfully:', emailResult.messageId);
+        } else {
+            console.error('Failed to send premium cancellation email:', emailResult.error);
+        }
+
         // In a real implementation, you would:
         // 1. Update Stripe subscription to cancel at period end
-        // 2. Send cancellation confirmation email
-        // 3. Store cancellation feedback
-        // 4. Potentially offer retention incentives
+        // 2. Store cancellation feedback
+        // 3. Potentially offer retention incentives
 
         res.json(
             createResponse(

@@ -17,6 +17,7 @@ const {
     createResponse,
     sanitizeInput
 } = require('../utils/helpers');
+const emailService = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -81,9 +82,13 @@ router.post('/register', [
         // Generate verification URL
         const verificationUrl = generateEmailVerificationUrl(emailVerificationToken);
 
-        // TODO: Send verification email using Brevo
-        // For now, we'll log it (you can implement email sending later)
-        console.log('Email verification URL:', verificationUrl);
+        // Send welcome email using Brevo
+        const emailResult = await emailService.sendWelcomeEmail(user);
+        if (emailResult.success) {
+            console.log('Welcome email sent successfully:', emailResult.messageId);
+        } else {
+            console.error('Failed to send welcome email:', emailResult.error);
+        }
 
         // Format user response
         const userResponse = formatUserResponse(user);

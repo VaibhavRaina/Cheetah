@@ -100,6 +100,7 @@ app.use('/api/user', require('./routes/user'));
 app.use('/api/subscription', require('./routes/subscription'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/billing', require('./routes/billing'));
+app.use('/api/contact', require('./routes/contact'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

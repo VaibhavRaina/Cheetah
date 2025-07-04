@@ -7,18 +7,56 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Clock, CheckCircle, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, CheckCircle, ArrowRight, AlertCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const ContactPage = () => {
     const [submitted, setSubmitted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Mock form submission
-        setTimeout(() => {
-            setSubmitted(true);
-        }, 1000);
+        setIsLoading(true);
+        setError(null);
+
+        const formData = new FormData(e.target as HTMLFormElement);
+        const firstName = formData.get('firstName') as string;
+        const lastName = formData.get('lastName') as string;
+        const email = formData.get('email') as string;
+        const subject = formData.get('subject') as string;
+        const message = formData.get('message') as string;
+        const priority = formData.get('priority') as string || 'Normal';
+        const category = formData.get('category') as string || 'General';
+
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: `${firstName} ${lastName}`.trim(),
+                    email,
+                    subject,
+                    message,
+                    priority,
+                    category
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSubmitted(true);
+            } else {
+                setError(data.message || 'Failed to send message. Please try again.');
+            }
+        } catch (err) {
+            setError('Network error. Please check your connection and try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -127,18 +165,39 @@ const ContactPage = () => {
                     >
                         {!submitted ? (
                             <form className="space-y-6" onSubmit={handleSubmit}>
+                                {error && (
+                                    <div className="flex items-center space-x-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                                        <AlertCircle className="h-4 w-4 text-destructive" />
+                                        <span className="text-sm text-destructive">{error}</span>
+                                    </div>
+                                )}
+
                                 <div className="flex flex-wrap -mx-3 mb-6">
                                     <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                                         <Label htmlFor="grid-first-name" className="block mb-2">
                                             First Name
                                         </Label>
-                                        <Input id="grid-first-name" type="text" placeholder="John" required />
+                                        <Input
+                                            id="grid-first-name"
+                                            name="firstName"
+                                            type="text"
+                                            placeholder="John"
+                                            required
+                                            disabled={isLoading}
+                                        />
                                     </div>
                                     <div className="w-full md:w-1/2 px-3">
                                         <Label htmlFor="grid-last-name" className="block mb-2">
                                             Last Name
                                         </Label>
-                                        <Input id="grid-last-name" type="text" placeholder="Doe" required />
+                                        <Input
+                                            id="grid-last-name"
+                                            name="lastName"
+                                            type="text"
+                                            placeholder="Doe"
+                                            required
+                                            disabled={isLoading}
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap -mx-3 mb-6">
@@ -146,15 +205,66 @@ const ContactPage = () => {
                                         <Label htmlFor="grid-email" className="block mb-2">
                                             Email
                                         </Label>
-                                        <Input id="grid-email" type="email" placeholder="john.doe@example.com" required />
+                                        <Input
+                                            id="grid-email"
+                                            name="email"
+                                            type="email"
+                                            placeholder="john.doe@example.com"
+                                            required
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap -mx-3 mb-6">
+                                    <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                        <Label htmlFor="grid-subject" className="block mb-2">
+                                            Subject
+                                        </Label>
+                                        <Input
+                                            id="grid-subject"
+                                            name="subject"
+                                            type="text"
+                                            placeholder="How can we help you?"
+                                            required
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                    <div className="w-full md:w-1/2 px-3">
+                                        <Label htmlFor="grid-priority" className="block mb-2">
+                                            Priority
+                                        </Label>
+                                        <select
+                                            id="grid-priority"
+                                            name="priority"
+                                            defaultValue="Normal"
+                                            className="w-full p-2 border border-border rounded-md bg-background"
+                                            disabled={isLoading}
+                                        >
+                                            <option value="Low">Low</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="High">High</option>
+                                            <option value="Urgent">Urgent</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap -mx-3 mb-6">
                                     <div className="w-full px-3">
-                                        <Label htmlFor="grid-subject" className="block mb-2">
-                                            Subject
+                                        <Label htmlFor="grid-category" className="block mb-2">
+                                            Category
                                         </Label>
-                                        <Input id="grid-subject" type="text" placeholder="How can we help you?" required />
+                                        <select
+                                            id="grid-category"
+                                            name="category"
+                                            defaultValue="General"
+                                            className="w-full p-2 border border-border rounded-md bg-background"
+                                            disabled={isLoading}
+                                        >
+                                            <option value="General">General</option>
+                                            <option value="Technical">Technical</option>
+                                            <option value="Billing">Billing</option>
+                                            <option value="Feature Request">Feature Request</option>
+                                            <option value="Bug Report">Bug Report</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap -mx-3 mb-6">
@@ -164,9 +274,11 @@ const ContactPage = () => {
                                         </Label>
                                         <Textarea
                                             id="grid-message"
+                                            name="message"
                                             placeholder="Your message..."
                                             className="h-32"
                                             required
+                                            disabled={isLoading}
                                         />
                                     </div>
                                 </div>
@@ -174,9 +286,19 @@ const ContactPage = () => {
                                     <Button
                                         type="submit"
                                         className="group"
+                                        disabled={isLoading}
                                     >
-                                        Send Message
-                                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        {isLoading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Sending...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Send Message
+                                                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                            </>
+                                        )}
                                     </Button>
                                 </div>
                             </form>

@@ -24,7 +24,9 @@ import {
     Zap,
     Shield,
     HeadphonesIcon,
-    Calendar
+    Calendar,
+    AlertCircle,
+    Loader2
 } from "lucide-react";
 
 const containerVariants = {
@@ -62,17 +64,61 @@ const ContactSalesPage = () => {
         message: "",
     });
     const [submitted, setSubmitted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Mock form submission
-        setTimeout(() => {
-            setSubmitted(true);
-        }, 1000);
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch('/api/contact/sales', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: `${formData.firstName} ${formData.lastName}`.trim(),
+                    email: formData.email,
+                    company: formData.company,
+                    phone: formData.phone,
+                    companySize: formData.teamSize,
+                    interestLevel: 'Ready to Buy', // Default value
+                    budget: 'Not specified',
+                    timeline: 'Not specified',
+                    jobTitle: 'Not specified',
+                    message: formData.message
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSubmitted(true);
+                // Reset form
+                setFormData({
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    company: "",
+                    phone: "",
+                    teamSize: "",
+                    useCase: "",
+                    message: "",
+                });
+            } else {
+                setError(data.message || 'Failed to send message. Please try again.');
+            }
+        } catch (err) {
+            setError('Network error. Please check your connection and try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const benefits = [
@@ -209,6 +255,13 @@ const ContactSalesPage = () => {
                                     </div>
 
                                     <form onSubmit={handleSubmit} className="space-y-6">
+                                        {error && (
+                                            <div className="flex items-center space-x-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                                                <AlertCircle className="h-4 w-4 text-destructive" />
+                                                <span className="text-sm text-destructive">{error}</span>
+                                            </div>
+                                        )}
+
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="firstName">First Name *</Label>
@@ -217,6 +270,7 @@ const ContactSalesPage = () => {
                                                     value={formData.firstName}
                                                     onChange={(e) => handleInputChange("firstName", e.target.value)}
                                                     required
+                                                    disabled={isLoading}
                                                     className="border-border/50 focus:border-accent"
                                                 />
                                             </div>
@@ -227,6 +281,7 @@ const ContactSalesPage = () => {
                                                     value={formData.lastName}
                                                     onChange={(e) => handleInputChange("lastName", e.target.value)}
                                                     required
+                                                    disabled={isLoading}
                                                     className="border-border/50 focus:border-accent"
                                                 />
                                             </div>
@@ -241,6 +296,7 @@ const ContactSalesPage = () => {
                                                     value={formData.email}
                                                     onChange={(e) => handleInputChange("email", e.target.value)}
                                                     required
+                                                    disabled={isLoading}
                                                     className="border-border/50 focus:border-accent"
                                                 />
                                             </div>
@@ -251,6 +307,7 @@ const ContactSalesPage = () => {
                                                     value={formData.company}
                                                     onChange={(e) => handleInputChange("company", e.target.value)}
                                                     required
+                                                    disabled={isLoading}
                                                     className="border-border/50 focus:border-accent"
                                                 />
                                             </div>
@@ -264,12 +321,13 @@ const ContactSalesPage = () => {
                                                     type="tel"
                                                     value={formData.phone}
                                                     onChange={(e) => handleInputChange("phone", e.target.value)}
+                                                    disabled={isLoading}
                                                     className="border-border/50 focus:border-accent"
                                                 />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="teamSize">Team Size</Label>
-                                                <Select onValueChange={(value) => handleInputChange("teamSize", value)}>
+                                                <Select onValueChange={(value) => handleInputChange("teamSize", value)} disabled={isLoading}>
                                                     <SelectTrigger className="border-border/50 focus:border-accent">
                                                         <SelectValue placeholder="Select team size" />
                                                     </SelectTrigger>
@@ -286,7 +344,7 @@ const ContactSalesPage = () => {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="useCase">Primary Use Case</Label>
-                                            <Select onValueChange={(value) => handleInputChange("useCase", value)}>
+                                            <Select onValueChange={(value) => handleInputChange("useCase", value)} disabled={isLoading}>
                                                 <SelectTrigger className="border-border/50 focus:border-accent">
                                                     <SelectValue placeholder="Select primary use case" />
                                                 </SelectTrigger>
@@ -310,17 +368,27 @@ const ContactSalesPage = () => {
                                                 onChange={(e) => handleInputChange("message", e.target.value)}
                                                 placeholder="Describe your team's needs, current challenges, and what you're looking for in an AI coding assistant..."
                                                 rows={4}
+                                                disabled={isLoading}
                                                 className="border-border/50 focus:border-accent"
                                             />
                                         </div>
 
                                         <motion.div
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
+                                            whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                                            whileTap={{ scale: isLoading ? 1 : 0.98 }}
                                         >
-                                            <Button type="submit" size="lg" className="w-full">
-                                                Send Message
-                                                <ArrowRight className="ml-2 h-4 w-4" />
+                                            <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+                                                {isLoading ? (
+                                                    <>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Sending...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Send Message
+                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                    </>
+                                                )}
                                             </Button>
                                         </motion.div>
                                     </form>
