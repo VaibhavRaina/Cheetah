@@ -8,7 +8,8 @@ const {
     calculateSubscriptionEndDate,
     isSubscriptionActive,
     generateTransactionId,
-    createTransaction
+    createTransaction,
+    saveSubscriptionUpdate
 } = require('../utils/helpers');
 const emailService = require('../utils/emailService');
 

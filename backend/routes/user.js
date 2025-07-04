@@ -10,7 +10,10 @@ const {
     paginate,
     generatePaginationMeta,
     generateTransactionId,
-    createTransaction
+    generateSubscriptionId,
+    createTransaction,
+    createSubscriptionHistory,
+    saveSubscriptionUpdate
 } = require('../utils/helpers');
 const emailService = require('../utils/emailService');
 
@@ -545,55 +548,28 @@ router.put('/plan', [
         // Clear usage history (optional - you might want to keep it for analytics)
         user.usageHistory = [];
 
-        // Generate transaction ID and create transaction record
-        const transactionId = generateTransactionId(planId === 'community' ? 'downgrade' : 'upgrade');
-
-        // Create transaction record
-        const transaction = createTransaction(
-            planId === 'community' ? 'downgrade' : 'upgrade',
-            `Plan ${planId === 'community' ? 'downgraded' : 'upgraded'} from ${previousPlanConfig.name} to ${planConfig.name}`,
-            planConfig.price,
-            previousPlan,
-            planId,
-            {
+        // Use the comprehensive helper to save all subscription data
+        const subscriptionAction = planId === 'community' ? 'downgraded' :
+            previousPlan === 'community' ? 'upgraded' : 'upgraded';
+        const savedData = await saveSubscriptionUpdate(user, {
+            action: subscriptionAction,
+            fromPlan: previousPlan,
+            toPlan: planId,
+            fromStatus: 'active',
+            toStatus: planId === 'community' ? 'cancelled' : 'active',
+            amount: planConfig.price,
+            description: `Plan ${subscriptionAction} from ${previousPlanConfig.name} to ${planConfig.name}`,
+            reason: `Plan ${subscriptionAction} by user`,
+            metadata: {
                 billingCycle: user.subscription.billingCycle,
                 effectiveDate: now,
                 previousMessagesLimit: previousPlanConfig.messages,
-                newMessagesLimit: planConfig.messages
+                newMessagesLimit: planConfig.messages,
+                previousPlanConfig: previousPlanConfig,
+                newPlanConfig: planConfig,
+                priceChange: planConfig.price - previousPlanConfig.price
             }
-        );
-
-        // Add transaction to user's transaction history
-        if (!user.transactions) {
-            user.transactions = [];
-        }
-        user.transactions.push(transaction);
-
-        // Create invoice for paid plans
-        if (planId !== 'community' && planConfig.price > 0) {
-            const invoiceId = generateTransactionId('invoice');
-            const invoice = {
-                id: invoiceId,
-                date: now,
-                amount: planConfig.price,
-                status: 'paid', // Assuming payment is processed
-                description: `Invoice for ${planConfig.name} plan`,
-                items: [
-                    {
-                        description: `${planConfig.name} Plan - ${user.subscription.billingCycle}`,
-                        quantity: 1,
-                        amount: planConfig.price
-                    }
-                ]
-            };
-
-            if (!user.invoices) {
-                user.invoices = [];
-            }
-            user.invoices.push(invoice);
-        }
-
-        await user.save();
+        });
 
         // Send email notification for plan changes
         try {
@@ -625,7 +601,9 @@ router.put('/plan', [
                     currentPeriodStart: user.subscription.currentPeriodStart,
                     currentPeriodEnd: user.subscription.currentPeriodEnd,
                     status: user.subscription.status,
-                    subscriptionId: transactionId,
+                    subscriptionId: savedData.subscriptionId,
+                    transactionId: savedData.transactionId,
+                    invoiceId: savedData.invoiceId || 'N/A',
                     previousPlan: previousPlanConfig.name
                 };
 
@@ -655,7 +633,10 @@ router.put('/plan', [
                     messagesLimit: planConfig.messages,
                     messagesUsed: 0,
                     messagesRemaining: planConfig.messages
-                }
+                },
+                transactionId: savedData.transactionId,
+                subscriptionId: savedData.subscriptionId,
+                invoiceId: savedData.invoiceId
             }
         ));
 
@@ -707,10 +688,10 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
             user.subscription = {};
         }
         user.subscription.plan = 'community';
-        user.subscription.status = 'inactive';
+        user.subscription.status = 'cancelled'; // Use 'cancelled' instead of 'inactive' for clarity
         user.subscription.currentPeriodStart = null;
         user.subscription.currentPeriodEnd = null;
-        user.subscription.endDate = null;
+        user.subscription.endDate = new Date(); // Set cancellation date
         user.subscription.billingCycle = 'monthly';
         user.subscription.messagesRemaining = 50;
         user.subscription.cancelAtPeriodEnd = false;
@@ -719,33 +700,25 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
         user.subscription.stripeCustomerId = undefined;
         user.subscription.stripeSubscriptionId = undefined;
 
-        // Generate transaction ID and create transaction record
-        const transactionId = generateTransactionId('cancellation');
-
-        // Create transaction record
-        const transaction = createTransaction(
-            'cancellation',
-            `Subscription cancelled - downgraded from ${planConfig.name} to Community`,
-            0, // No charge for cancellation
-            currentPlan,
-            'community',
-            {
+        // Use the comprehensive helper to save all subscription data
+        const savedData = await saveSubscriptionUpdate(user, {
+            action: 'cancelled',
+            fromPlan: currentPlan,
+            toPlan: 'community',
+            fromStatus: 'active',
+            toStatus: 'cancelled',
+            amount: 0,
+            description: `Subscription cancelled - downgraded from ${planConfig.name} to Community`,
+            reason: 'User requested cancellation',
+            metadata: {
                 billingCycle: 'monthly',
                 cancellationDate: new Date(),
-                reason: 'User requested cancellation'
+                accessRevokedImmediately: true,
+                previousPlanConfig: planConfig
             }
-        );
+        });
 
-        // Add transaction to user's transaction history
-        if (!user.transactions) {
-            user.transactions = [];
-        }
-        user.transactions.push(transaction);
-
-        // Save user changes to database
-        await user.save();
-
-        // Send cancellation email
+        // Send cancellation email with all proper IDs
         try {
             const cancellationDetails = {
                 plan: planConfig.name,
@@ -753,7 +726,9 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
                 accessUntil: new Date(), // Immediate cancellation
                 reason: 'User requested cancellation',
                 refundStatus: 'No refund applicable',
-                subscriptionId: transactionId,
+                subscriptionId: savedData.subscriptionId,
+                transactionId: savedData.transactionId,
+                invoiceId: savedData.invoiceId || 'N/A',
                 feedback: 'No feedback provided'
             };
 
@@ -783,7 +758,9 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
                     messagesLimit: 50,
                     messagesUsed: user.usage.messagesUsed,
                     messagesRemaining: 50 - user.usage.messagesUsed
-                }
+                },
+                transactionId: savedData.transactionId,
+                subscriptionId: savedData.subscriptionId
             }
         ));
 

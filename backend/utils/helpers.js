@@ -265,7 +265,7 @@ const calculateUsageStats = (usageHistory, period = 'daily') => {
 
 // Generate invoice data structure
 const generateInvoiceData = (user, amount, items = []) => {
-    const invoiceId = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const invoiceId = generateTransactionId('invoice');
 
     return {
         id: invoiceId,
@@ -285,7 +285,7 @@ const generateInvoiceData = (user, amount, items = []) => {
 
 // Create and save invoice to user account
 const createInvoice = (user, amount, description = '', items = []) => {
-    const invoiceId = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const invoiceId = generateTransactionId('invoice');
 
     const invoice = {
         id: invoiceId,
@@ -371,11 +371,33 @@ const generateTransactionId = (type = 'txn') => {
     return `${type}_${timestamp}_${random}`;
 };
 
+// Generate subscription ID
+const generateSubscriptionId = (userId) => {
+    const timestamp = Date.now().toString();
+    const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+    const userIdShort = userId.toString().slice(-8); // Last 8 characters of user ID
+    return `sub_${userIdShort}_${timestamp}_${random}`;
+};
+
+// Map subscription history actions to transaction types
+const mapActionToTransactionType = (action) => {
+    const mapping = {
+        'created': 'subscription',
+        'upgraded': 'upgrade',
+        'downgraded': 'downgrade',
+        'cancelled': 'cancellation',
+        'reactivated': 'reactivation',
+        'renewed': 'subscription'
+    };
+    return mapping[action] || 'subscription';
+};
+
 // Create transaction record
-const createTransaction = (type, description, amount, fromPlan = null, toPlan = null, metadata = {}) => {
+const createTransaction = (action, description, amount, fromPlan = null, toPlan = null, metadata = {}) => {
+    const transactionType = mapActionToTransactionType(action);
     return {
-        id: generateTransactionId(type),
-        type,
+        id: generateTransactionId(transactionType),
+        type: transactionType,
         description,
         amount,
         currency: 'USD',
@@ -385,6 +407,130 @@ const createTransaction = (type, description, amount, fromPlan = null, toPlan = 
         status: 'completed',
         billingCycle: 'monthly',
         metadata
+    };
+};
+
+// Create subscription history record
+const createSubscriptionHistory = (action, fromPlan, toPlan, fromStatus, toStatus, reason = '', transactionId = '', subscriptionId = '', metadata = {}) => {
+    return {
+        action,
+        fromPlan,
+        toPlan,
+        fromStatus,
+        toStatus,
+        date: new Date(),
+        reason,
+        transactionId,
+        subscriptionId,
+        metadata
+    };
+};
+
+// Comprehensive function to save all subscription/transaction data to database
+const saveSubscriptionUpdate = async (user, updateData) => {
+    const {
+        action, // 'upgraded', 'downgraded', 'cancelled', 'reactivated', etc.
+        fromPlan,
+        toPlan,
+        fromStatus,
+        toStatus,
+        amount = 0,
+        description,
+        reason = '',
+        metadata = {}
+    } = updateData;
+
+    // Generate all required IDs
+    const transactionType = mapActionToTransactionType(action);
+    const transactionId = generateTransactionId(transactionType);
+    const subscriptionId = user.subscription?.stripeSubscriptionId || generateSubscriptionId(user._id);
+    const invoiceId = (amount > 0) ? generateTransactionId('invoice') : null;
+
+    // Ensure user has required arrays
+    if (!user.transactions) user.transactions = [];
+    if (!user.subscriptionHistory) user.subscriptionHistory = [];
+    if (!user.invoices) user.invoices = [];
+
+    // Create and save transaction record
+    const transaction = createTransaction(
+        action, // Pass the subscription action, it will be mapped internally
+        description,
+        amount,
+        fromPlan,
+        toPlan,
+        {
+            ...metadata,
+            subscriptionId,
+            invoiceId,
+            timestamp: new Date().toISOString()
+        }
+    );
+    user.transactions.push(transaction);
+
+    // Create and save subscription history record
+    const subscriptionHistoryRecord = createSubscriptionHistory(
+        action,
+        fromPlan,
+        toPlan,
+        fromStatus,
+        toStatus,
+        reason,
+        transactionId,
+        subscriptionId,
+        {
+            ...metadata,
+            invoiceId,
+            effectiveDate: new Date(),
+            timestamp: new Date().toISOString()
+        }
+    );
+    user.subscriptionHistory.push(subscriptionHistoryRecord);
+
+    // Create and save invoice if there's a charge
+    if (amount > 0 && invoiceId) {
+        const invoice = {
+            id: invoiceId,
+            date: new Date(),
+            amount,
+            status: 'paid', // Assuming payment is processed
+            description: description || `Invoice for ${toPlan} plan`,
+            subscriptionId,
+            transactionId,
+            items: [
+                {
+                    description: `${toPlan} Plan Subscription`,
+                    quantity: 1,
+                    amount: amount
+                }
+            ],
+            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            currency: 'USD',
+            metadata: {
+                ...metadata,
+                planChange: `${fromPlan} → ${toPlan}`,
+                timestamp: new Date().toISOString()
+            }
+        };
+        user.invoices.push(invoice);
+    }
+
+    // Update subscription fields with proper IDs
+    if (!user.subscription) user.subscription = {};
+    if (!user.subscription.stripeSubscriptionId) {
+        user.subscription.stripeSubscriptionId = subscriptionId;
+    }
+
+    // Save all changes to database
+    await user.save();
+
+    // Return all generated IDs for reference
+    return {
+        transactionId,
+        subscriptionId,
+        invoiceId,
+        transaction,
+        subscriptionHistory: subscriptionHistoryRecord,
+        invoice: invoiceId ? user.invoices[user.invoices.length - 1] : null
     };
 };
 
@@ -413,5 +559,9 @@ module.exports = {
     createInvoice,
     generateInvoicePDF,
     generateTransactionId,
-    createTransaction
+    generateSubscriptionId,
+    mapActionToTransactionType,
+    createTransaction,
+    createSubscriptionHistory,
+    saveSubscriptionUpdate
 };

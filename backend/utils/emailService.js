@@ -199,6 +199,8 @@ class EmailService {
                                     <li><strong>Next Billing:</strong> ${new Date(subscriptionDetails.currentPeriodEnd).toLocaleDateString()}</li>
                                     <li><strong>Status:</strong> ${subscriptionDetails.status}</li>
                                     <li><strong>Subscription ID:</strong> ${subscriptionDetails.subscriptionId}</li>
+                                    ${subscriptionDetails.invoiceId ? `<li><strong>Invoice ID:</strong> ${subscriptionDetails.invoiceId}</li>` : ''}
+                                    ${subscriptionDetails.transactionId ? `<li><strong>Transaction ID:</strong> ${subscriptionDetails.transactionId}</li>` : ''}
                                 </ul>
                             </div>
                             
@@ -297,6 +299,7 @@ class EmailService {
                                     <li><strong>Reason:</strong> ${cancellationDetails.reason}</li>
                                     <li><strong>Refund Status:</strong> ${cancellationDetails.refundStatus}</li>
                                     <li><strong>Subscription ID:</strong> ${cancellationDetails.subscriptionId}</li>
+                                    ${cancellationDetails.transactionId ? `<li><strong>Transaction ID:</strong> ${cancellationDetails.transactionId}</li>` : ''}
                                 </ul>
                             </div>
                             

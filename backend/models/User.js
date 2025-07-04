@@ -208,6 +208,28 @@ const userSchema = new mongoose.Schema({
             default: {}
         }
     }],
+    subscriptionHistory: [{
+        action: {
+            type: String,
+            enum: ['created', 'upgraded', 'downgraded', 'cancelled', 'reactivated', 'renewed'],
+            required: true
+        },
+        fromPlan: String,
+        toPlan: String,
+        fromStatus: String,
+        toStatus: String,
+        date: {
+            type: Date,
+            default: Date.now
+        },
+        reason: String,
+        transactionId: String,
+        subscriptionId: String,
+        metadata: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {}
+        }
+    }],
     preferences: {
         emailNotifications: {
             type: Boolean,
