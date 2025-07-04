@@ -1,7 +1,7 @@
-# Vetra Information
+# Cheetah AI Information
 
 ## Summary
-Vetra is an AI-powered marketing automation platform that transforms marketing workflows. It offers a sleek interface for managing marketing campaigns, content generation, and performance analytics, built with modern web technologies.
+Cheetah AI is an AI-powered marketing automation platform that transforms marketing workflows. It offers a sleek interface for managing marketing campaigns, content generation, and performance analytics, built with modern web technologies.
 
 ## Structure
 - **src/app**: Next.js application routes and pages
