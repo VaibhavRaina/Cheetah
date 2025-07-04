@@ -8,7 +8,9 @@ const {
     createResponse,
     sanitizeInput,
     paginate,
-    generatePaginationMeta
+    generatePaginationMeta,
+    generateTransactionId,
+    createTransaction
 } = require('../utils/helpers');
 const emailService = require('../utils/emailService');
 
@@ -543,6 +545,54 @@ router.put('/plan', [
         // Clear usage history (optional - you might want to keep it for analytics)
         user.usageHistory = [];
 
+        // Generate transaction ID and create transaction record
+        const transactionId = generateTransactionId(planId === 'community' ? 'downgrade' : 'upgrade');
+
+        // Create transaction record
+        const transaction = createTransaction(
+            planId === 'community' ? 'downgrade' : 'upgrade',
+            `Plan ${planId === 'community' ? 'downgraded' : 'upgraded'} from ${previousPlanConfig.name} to ${planConfig.name}`,
+            planConfig.price,
+            previousPlan,
+            planId,
+            {
+                billingCycle: user.subscription.billingCycle,
+                effectiveDate: now,
+                previousMessagesLimit: previousPlanConfig.messages,
+                newMessagesLimit: planConfig.messages
+            }
+        );
+
+        // Add transaction to user's transaction history
+        if (!user.transactions) {
+            user.transactions = [];
+        }
+        user.transactions.push(transaction);
+
+        // Create invoice for paid plans
+        if (planId !== 'community' && planConfig.price > 0) {
+            const invoiceId = generateTransactionId('invoice');
+            const invoice = {
+                id: invoiceId,
+                date: now,
+                amount: planConfig.price,
+                status: 'paid', // Assuming payment is processed
+                description: `Invoice for ${planConfig.name} plan`,
+                items: [
+                    {
+                        description: `${planConfig.name} Plan - ${user.subscription.billingCycle}`,
+                        quantity: 1,
+                        amount: planConfig.price
+                    }
+                ]
+            };
+
+            if (!user.invoices) {
+                user.invoices = [];
+            }
+            user.invoices.push(invoice);
+        }
+
         await user.save();
 
         // Send email notification for plan changes
@@ -575,7 +625,7 @@ router.put('/plan', [
                     currentPeriodStart: user.subscription.currentPeriodStart,
                     currentPeriodEnd: user.subscription.currentPeriodEnd,
                     status: user.subscription.status,
-                    subscriptionId: user.subscription.stripeSubscriptionId || 'N/A',
+                    subscriptionId: transactionId,
                     previousPlan: previousPlanConfig.name
                 };
 
@@ -669,6 +719,30 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
         user.subscription.stripeCustomerId = undefined;
         user.subscription.stripeSubscriptionId = undefined;
 
+        // Generate transaction ID and create transaction record
+        const transactionId = generateTransactionId('cancellation');
+
+        // Create transaction record
+        const transaction = createTransaction(
+            'cancellation',
+            `Subscription cancelled - downgraded from ${planConfig.name} to Community`,
+            0, // No charge for cancellation
+            currentPlan,
+            'community',
+            {
+                billingCycle: 'monthly',
+                cancellationDate: new Date(),
+                reason: 'User requested cancellation'
+            }
+        );
+
+        // Add transaction to user's transaction history
+        if (!user.transactions) {
+            user.transactions = [];
+        }
+        user.transactions.push(transaction);
+
+        // Save user changes to database
         await user.save();
 
         // Send cancellation email
@@ -679,7 +753,7 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
                 accessUntil: new Date(), // Immediate cancellation
                 reason: 'User requested cancellation',
                 refundStatus: 'No refund applicable',
-                subscriptionId: user.subscription.stripeSubscriptionId || 'N/A',
+                subscriptionId: transactionId,
                 feedback: 'No feedback provided'
             };
 
@@ -716,6 +790,136 @@ router.put('/cancel-subscription', authenticate, async (req, res) => {
     } catch (error) {
         console.error('Cancel subscription error:', error);
         res.status(500).json(createResponse(false, 'Server error cancelling subscription'));
+    }
+});
+
+// @route   GET /api/user/transactions
+// @desc    Get user transaction history
+// @access  Private
+router.get('/transactions', authenticate, async (req, res) => {
+    try {
+        const { page = 1, limit = 10, type } = req.query;
+        const { skip, limit: limitNum, page: pageNum } = paginate(page, limit);
+
+        const user = await User.findById(req.user.id).select('transactions');
+
+        if (!user) {
+            return res.status(404).json(createResponse(false, 'User not found'));
+        }
+
+        let transactions = user.transactions || [];
+
+        // Filter by type if specified
+        if (type) {
+            transactions = transactions.filter(t => t.type === type);
+        }
+
+        // Sort by date (newest first)
+        transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Apply pagination
+        const total = transactions.length;
+        const paginatedTransactions = transactions.slice(skip, skip + limitNum);
+
+        const paginationMeta = generatePaginationMeta(total, pageNum, limitNum);
+
+        res.json(createResponse(
+            true,
+            'Transaction history retrieved successfully',
+            {
+                transactions: paginatedTransactions,
+                summary: {
+                    total,
+                    totalAmount: transactions.reduce((sum, t) => sum + t.amount, 0),
+                    typeBreakdown: transactions.reduce((acc, t) => {
+                        acc[t.type] = (acc[t.type] || 0) + 1;
+                        return acc;
+                    }, {})
+                }
+            },
+            paginationMeta
+        ));
+
+    } catch (error) {
+        console.error('Get transactions error:', error);
+        res.status(500).json(createResponse(false, 'Server error retrieving transactions'));
+    }
+});
+
+// @route   GET /api/user/billing-history
+// @desc    Get user billing history (invoices + transactions)
+// @access  Private
+router.get('/billing-history', authenticate, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('transactions invoices subscription plan');
+
+        if (!user) {
+            return res.status(404).json(createResponse(false, 'User not found'));
+        }
+
+        // Get plan configuration for current subscription
+        const getPlanConfig = (plan) => {
+            const PLAN_CONFIGS = {
+                community: { id: 'community', name: 'Community', messages: 50, price: 0 },
+                developer: { id: 'developer', name: 'Developer', messages: 600, price: 50 },
+                pro: { id: 'pro', name: 'Pro', messages: 1500, price: 100 },
+                max: { id: 'max', name: 'Max', messages: 4500, price: 250 },
+                enterprise: { id: 'enterprise', name: 'Enterprise', messages: -1, price: 'custom' }
+            };
+            return PLAN_CONFIGS[plan] || PLAN_CONFIGS.community;
+        };
+
+        const currentPlan = getPlanConfig(user.plan);
+
+        // Combine transactions and invoices
+        const transactions = (user.transactions || []).map(t => ({
+            ...t.toObject(),
+            itemType: 'transaction'
+        }));
+
+        const invoices = (user.invoices || []).map(i => ({
+            ...i.toObject(),
+            itemType: 'invoice'
+        }));
+
+        // If user has a current subscription, add it as a recurring item
+        if (user.plan !== 'community' && user.subscription.status === 'active') {
+            invoices.push({
+                id: `current_subscription_${user.plan}`,
+                date: user.subscription.currentPeriodStart || new Date(),
+                description: `${currentPlan.name} Plan - Monthly`,
+                amount: currentPlan.price,
+                status: 'active',
+                itemType: 'subscription',
+                nextBillingDate: user.subscription.currentPeriodEnd
+            });
+        }
+
+        // Combine and sort by date
+        const allItems = [...transactions, ...invoices].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        res.json(createResponse(
+            true,
+            'Billing history retrieved successfully',
+            {
+                billingHistory: allItems,
+                currentSubscription: {
+                    plan: currentPlan,
+                    status: user.subscription.status,
+                    nextBillingDate: user.subscription.currentPeriodEnd,
+                    billingCycle: user.subscription.billingCycle
+                },
+                summary: {
+                    totalTransactions: transactions.length,
+                    totalInvoices: invoices.length,
+                    totalSpent: allItems.reduce((sum, item) => sum + (item.amount || 0), 0)
+                }
+            }
+        ));
+
+    } catch (error) {
+        console.error('Get billing history error:', error);
+        res.status(500).json(createResponse(false, 'Server error retrieving billing history'));
     }
 });
 

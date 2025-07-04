@@ -165,6 +165,49 @@ const userSchema = new mongoose.Schema({
         downloadUrl: String,
         stripeInvoiceId: String
     }],
+    transactions: [{
+        id: {
+            type: String,
+            required: true
+        },
+        type: {
+            type: String,
+            enum: ['subscription', 'upgrade', 'downgrade', 'cancellation', 'reactivation'],
+            required: true
+        },
+        description: {
+            type: String,
+            required: true
+        },
+        amount: {
+            type: Number,
+            required: true
+        },
+        currency: {
+            type: String,
+            default: 'USD'
+        },
+        fromPlan: String,
+        toPlan: String,
+        date: {
+            type: Date,
+            default: Date.now
+        },
+        status: {
+            type: String,
+            enum: ['completed', 'pending', 'failed', 'refunded'],
+            default: 'completed'
+        },
+        billingCycle: {
+            type: String,
+            enum: ['monthly', 'yearly'],
+            default: 'monthly'
+        },
+        metadata: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {}
+        }
+    }],
     preferences: {
         emailNotifications: {
             type: Boolean,

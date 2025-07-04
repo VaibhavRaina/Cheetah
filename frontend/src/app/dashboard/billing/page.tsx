@@ -63,15 +63,44 @@ interface BillingData {
     }>;
 }
 
+interface Transaction {
+    id: string;
+    type: 'upgrade' | 'downgrade' | 'cancellation' | 'payment' | 'refund';
+    amount: number;
+    description: string;
+    date: string;
+    status: 'completed' | 'pending' | 'failed';
+    fromPlan?: string;
+    toPlan?: string;
+    metadata?: Record<string, any>;
+}
+
+interface TransactionData {
+    transactions: Transaction[];
+    pagination: {
+        currentPage: number;
+        totalPages: number;
+        totalItems: number;
+        itemsPerPage: number;
+    };
+    summary: {
+        totalAmount: number;
+        typeBreakdown: Record<string, number>;
+    };
+}
+
 const BillingPage = () => {
     const router = useRouter();
     const { toast } = useToast();
     const [billingData, setBillingData] = useState<BillingData | null>(null);
+    const [transactionData, setTransactionData] = useState<TransactionData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [transactionLoading, setTransactionLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchBillingData();
+        fetchTransactionData();
     }, []);
 
     const fetchBillingData = async () => {
@@ -90,6 +119,19 @@ const BillingPage = () => {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchTransactionData = async (page: number = 1, limit: number = 10, type?: string) => {
+        try {
+            setTransactionLoading(true);
+            const response = await userAPI.getTransactions(page, limit, type);
+            setTransactionData(response.data);
+        } catch (err) {
+            console.error('Error fetching transactions:', err);
+            // Don't set error state for transaction fetch failure
+        } finally {
+            setTransactionLoading(false);
         }
     };
 
@@ -277,9 +319,10 @@ const BillingPage = () => {
                     transition={{ delay: 0.2 }}
                 >
                     <Tabs defaultValue="overview" className="space-y-6">
-                        <TabsList className="grid w-full grid-cols-3">
+                        <TabsList className="grid w-full grid-cols-4">
                             <TabsTrigger value="overview">Overview</TabsTrigger>
                             <TabsTrigger value="usage">Usage History</TabsTrigger>
+                            <TabsTrigger value="transactions">Transactions</TabsTrigger>
                             <TabsTrigger value="invoices">Invoice History</TabsTrigger>
                         </TabsList>
 
@@ -557,6 +600,183 @@ const BillingPage = () => {
                                         </div>
                                         <h4 className="text-lg font-medium text-foreground mb-2">No usage data available</h4>
                                         <p className="text-sm text-muted-foreground">Start using Cheetah AI to see your usage history</p>
+                                    </div>
+                                )}
+                            </Card>
+                        </TabsContent>
+
+                        {/* Transaction History Tab */}
+                        <TabsContent value="transactions" className="space-y-6">
+                            <Card className="p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-semibold text-foreground">Transaction History</h3>
+                                    {transactionData && transactionData.pagination && (
+                                        <Badge variant="secondary">
+                                            {transactionData.pagination.totalItems} transactions
+                                        </Badge>
+                                    )}
+                                </div>
+
+                                {transactionLoading ? (
+                                    <div className="flex justify-center items-center py-12">
+                                        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                ) : !transactionData || !transactionData.transactions || transactionData.transactions.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Activity className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                                        <p className="text-lg text-muted-foreground">No transactions yet</p>
+                                        <p className="text-sm text-muted-foreground">Your plan changes and payments will appear here</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {/* Transaction Summary */}
+                                        {transactionData && transactionData.summary && transactionData.pagination && (
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                                <div className="bg-muted/50 rounded-lg p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <DollarSign className="w-5 h-5 text-green-600" />
+                                                        <span className="text-sm font-medium">Total Amount</span>
+                                                    </div>
+                                                    <p className="text-2xl font-bold text-foreground mt-2">
+                                                        ${transactionData.summary.totalAmount.toFixed(2)}
+                                                    </p>
+                                                </div>
+                                                <div className="bg-muted/50 rounded-lg p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <TrendingUp className="w-5 h-5 text-blue-600" />
+                                                        <span className="text-sm font-medium">Total Transactions</span>
+                                                    </div>
+                                                    <p className="text-2xl font-bold text-foreground mt-2">
+                                                        {transactionData.pagination.totalItems}
+                                                    </p>
+                                                </div>
+                                                <div className="bg-muted/50 rounded-lg p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <Clock className="w-5 h-5 text-orange-600" />
+                                                        <span className="text-sm font-medium">This Month</span>
+                                                    </div>
+                                                    <p className="text-2xl font-bold text-foreground mt-2">
+                                                        {transactionData.transactions.filter(t =>
+                                                            new Date(t.date).getMonth() === new Date().getMonth() &&
+                                                            new Date(t.date).getFullYear() === new Date().getFullYear()
+                                                        ).length}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Transaction List */}
+                                        {transactionData && transactionData.transactions && transactionData.transactions.length > 0 && (
+                                            <div className="overflow-x-auto">
+                                                <Table>
+                                                    <TableHeader>
+                                                        <TableRow>
+                                                            <TableHead>Date</TableHead>
+                                                            <TableHead>Type</TableHead>
+                                                            <TableHead>Description</TableHead>
+                                                            <TableHead>Amount</TableHead>
+                                                            <TableHead>Status</TableHead>
+                                                        </TableRow>
+                                                    </TableHeader>
+                                                    <TableBody>
+                                                        {transactionData.transactions.map((transaction, index) => (
+                                                            <motion.tr
+                                                                key={transaction.id}
+                                                                initial={{ opacity: 0, y: 10 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ delay: index * 0.05 }}
+                                                                className="border-b"
+                                                            >
+                                                                <TableCell>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-sm font-medium">
+                                                                            {new Date(transaction.date).toLocaleDateString()}
+                                                                        </span>
+                                                                        <span className="text-xs text-muted-foreground">
+                                                                            {new Date(transaction.date).toLocaleTimeString()}
+                                                                        </span>
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Badge
+                                                                        variant={
+                                                                            transaction.type === 'upgrade' ? 'default' :
+                                                                                transaction.type === 'downgrade' ? 'secondary' :
+                                                                                    transaction.type === 'cancellation' ? 'destructive' :
+                                                                                        transaction.type === 'payment' ? 'default' :
+                                                                                            'outline'
+                                                                        }
+                                                                        className="capitalize"
+                                                                    >
+                                                                        {transaction.type}
+                                                                    </Badge>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-sm font-medium">
+                                                                            {transaction.description}
+                                                                        </span>
+                                                                        {transaction.fromPlan && transaction.toPlan && (
+                                                                            <span className="text-xs text-muted-foreground">
+                                                                                {transaction.fromPlan} → {transaction.toPlan}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <span className={`font-medium ${transaction.amount > 0 ? 'text-green-600' :
+                                                                            transaction.amount < 0 ? 'text-red-600' :
+                                                                                'text-muted-foreground'
+                                                                        }`}>
+                                                                        {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
+                                                                    </span>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Badge
+                                                                        variant={
+                                                                            transaction.status === 'completed' ? 'default' :
+                                                                                transaction.status === 'pending' ? 'secondary' :
+                                                                                    'destructive'
+                                                                        }
+                                                                        className="gap-1"
+                                                                    >
+                                                                        {transaction.status === 'completed' && <CheckCircle className="w-3 h-3" />}
+                                                                        {transaction.status === 'pending' && <Clock className="w-3 h-3" />}
+                                                                        {transaction.status === 'failed' && <AlertCircle className="w-3 h-3" />}
+                                                                        {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                                                                    </Badge>
+                                                                </TableCell>
+                                                            </motion.tr>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </div>
+                                        )}
+
+                                        {/* Pagination (if needed) */}
+                                        {transactionData && transactionData.pagination && transactionData.pagination.totalPages > 1 && (
+                                            <div className="flex justify-center items-center gap-2 mt-6">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => fetchTransactionData(transactionData.pagination.currentPage - 1)}
+                                                    disabled={transactionData.pagination.currentPage === 1}
+                                                >
+                                                    Previous
+                                                </Button>
+                                                <span className="text-sm text-muted-foreground">
+                                                    Page {transactionData.pagination.currentPage} of {transactionData.pagination.totalPages}
+                                                </span>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => fetchTransactionData(transactionData.pagination.currentPage + 1)}
+                                                    disabled={transactionData.pagination.currentPage === transactionData.pagination.totalPages}
+                                                >
+                                                    Next
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </Card>

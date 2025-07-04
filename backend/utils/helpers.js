@@ -283,20 +283,109 @@ const generateInvoiceData = (user, amount, items = []) => {
     };
 };
 
-// Generate PDF invoice (placeholder - you'll need to implement actual PDF generation)
-const generateInvoicePDF = async (invoice, user) => {
-    // This is a placeholder. You'll need to implement actual PDF generation
-    // using libraries like puppeteer, pdfkit, or jsPDF
-    const content = `
-        Invoice: ${invoice.id}
-        Customer: ${user.name}
-        Email: ${user.email}
-        Amount: $${invoice.amount}
-        Date: ${invoice.date}
-        Status: ${invoice.status}
-    `;
+// Create and save invoice to user account
+const createInvoice = (user, amount, description = '', items = []) => {
+    const invoiceId = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    return Buffer.from(content, 'utf8');
+    const invoice = {
+        id: invoiceId,
+        date: new Date(),
+        amount,
+        status: 'pending',
+        description,
+        items,
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        currency: 'USD'
+    };
+
+    return invoice;
+};
+
+const PDFDocument = require('pdfkit');
+
+// Generate PDF invoice
+const generateInvoicePDF = async (invoice, user) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const doc = new PDFDocument({ margin: 50 });
+            const buffers = [];
+
+            doc.on('data', buffers.push.bind(buffers));
+            doc.on('end', () => {
+                const pdfBuffer = Buffer.concat(buffers);
+                resolve(pdfBuffer);
+            });
+
+            // Header
+            doc.fontSize(20).text('INVOICE', 50, 50);
+            doc.fontSize(10).text('Cheetah AI Platform', 50, 80);
+
+            // Invoice details
+            doc.fontSize(12).text(`Invoice ID: ${invoice.id}`, 50, 120);
+            doc.text(`Date: ${new Date(invoice.date).toLocaleDateString()}`, 50, 140);
+            doc.text(`Status: ${invoice.status.toUpperCase()}`, 50, 160);
+
+            // Customer details
+            doc.text('Bill To:', 50, 200);
+            doc.text(`${user.name}`, 50, 220);
+            doc.text(`${user.email}`, 50, 240);
+
+            // Invoice items
+            doc.text('Description', 50, 300);
+            doc.text('Amount', 400, 300);
+            doc.moveTo(50, 320).lineTo(550, 320).stroke();
+
+            let yPosition = 340;
+            if (invoice.items && invoice.items.length > 0) {
+                invoice.items.forEach(item => {
+                    doc.text(item.description, 50, yPosition);
+                    doc.text(`$${item.amount.toFixed(2)}`, 400, yPosition);
+                    yPosition += 20;
+                });
+            } else {
+                doc.text(invoice.description || 'Plan subscription', 50, yPosition);
+                doc.text(`$${invoice.amount.toFixed(2)}`, 400, yPosition);
+                yPosition += 20;
+            }
+
+            // Total
+            doc.moveTo(50, yPosition + 10).lineTo(550, yPosition + 10).stroke();
+            doc.fontSize(14).text('Total:', 300, yPosition + 30);
+            doc.text(`$${invoice.amount.toFixed(2)}`, 400, yPosition + 30);
+
+            // Footer
+            doc.fontSize(8).text('Thank you for your business!', 50, yPosition + 80);
+            doc.text('For questions about this invoice, please contact support@cheetahai.co', 50, yPosition + 100);
+
+            doc.end();
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+// Generate transaction ID
+const generateTransactionId = (type = 'txn') => {
+    const timestamp = Date.now().toString();
+    const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+    return `${type}_${timestamp}_${random}`;
+};
+
+// Create transaction record
+const createTransaction = (type, description, amount, fromPlan = null, toPlan = null, metadata = {}) => {
+    return {
+        id: generateTransactionId(type),
+        type,
+        description,
+        amount,
+        currency: 'USD',
+        fromPlan,
+        toPlan,
+        date: new Date(),
+        status: 'completed',
+        billingCycle: 'monthly',
+        metadata
+    };
 };
 
 module.exports = {
@@ -321,5 +410,8 @@ module.exports = {
     isSubscriptionActive,
     calculateUsageStats,
     generateInvoiceData,
-    generateInvoicePDF
+    createInvoice,
+    generateInvoicePDF,
+    generateTransactionId,
+    createTransaction
 };

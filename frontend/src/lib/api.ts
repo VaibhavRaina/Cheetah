@@ -129,6 +129,29 @@ export const userAPI = {
         const response = await api.get('/user/profile');
         return response.data;
     },
+
+    // Get transaction history
+    getTransactions: async (page: number = 1, limit: number = 10, type?: string) => {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString()
+        });
+        if (type) params.append('type', type);
+
+        const response = await api.get(`/user/transactions?${params}`);
+        return response.data;
+    },
+
+    // Get billing history
+    getBillingHistory: async (page: number = 1, limit: number = 10) => {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString()
+        });
+
+        const response = await api.get(`/user/billing-history?${params}`);
+        return response.data;
+    },
 };
 
 // Subscription API functions

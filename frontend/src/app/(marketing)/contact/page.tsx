@@ -102,8 +102,8 @@ const ContactPage = () => {
                             </div>
                             <div>
                                 <h3 className="font-medium">Email</h3>
-                                <p className="text-sm text-muted-foreground mt-1">contact@cheetah.ai</p>
-                                <p className="text-sm text-muted-foreground">support@cheetah.ai</p>
+                                <p className="text-sm text-muted-foreground mt-1">support@cheetahai.co</p>
+                                <p className="text-sm text-muted-foreground">support@cheetahai.co</p>
                             </div>
                         </motion.div>
 

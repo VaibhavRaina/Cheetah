@@ -6,7 +6,9 @@ const { handleValidationErrors } = require('../middleware/validation');
 const {
     createResponse,
     calculateSubscriptionEndDate,
-    isSubscriptionActive
+    isSubscriptionActive,
+    generateTransactionId,
+    createTransaction
 } = require('../utils/helpers');
 const emailService = require('../utils/emailService');
 
@@ -237,6 +239,9 @@ router.post('/change-plan', [
         const planLimits = user.getPlanLimits();
         user.usage.messagesLimit = planLimits.messages === -1 ? 999999 : planLimits.messages;
 
+        // Generate transaction ID for this subscription change
+        const transactionId = generateTransactionId('upgrade');
+
         await user.save();
 
         // Send premium purchase email
@@ -248,7 +253,7 @@ router.post('/change-plan', [
             currentPeriodStart: now,
             currentPeriodEnd: periodEnd,
             status: 'active',
-            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A',
+            subscriptionId: transactionId,
             previousPlan: currentPlanConfig.name
         };
 
@@ -334,6 +339,9 @@ router.post('/cancel', [
 
         await user.save();
 
+        // Generate transaction ID for cancellation
+        const transactionId = generateTransactionId('cancellation');
+
         // Send premium cancellation email
         const cancellationDetails = {
             plan: PLAN_CONFIGS[user.plan].name,
@@ -341,7 +349,7 @@ router.post('/cancel', [
             accessUntil: user.subscription.currentPeriodEnd,
             reason: reason || 'Not specified',
             refundStatus: 'No refund applicable',
-            subscriptionId: user.subscription.stripeSubscriptionId || 'N/A',
+            subscriptionId: transactionId,
             feedback: feedback || 'No feedback provided'
         };
 
