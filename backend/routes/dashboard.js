@@ -16,9 +16,11 @@ router.get('/overview', authenticate, async (req, res) => {
         const user = req.user;
         const planLimits = user.getPlanLimits();
 
-        // Calculate usage statistics
-        const messageUsagePercentage = planLimits.messages === -1 ? 0 :
-            Math.min(100, (user.usage.messagesUsed / planLimits.messages) * 100);
+        // Calculate usage statistics including recharge balance
+        const rechargeBalance = user.recharge ? user.recharge.balance : 0;
+        const totalAvailable = planLimits.messages === -1 ? -1 : planLimits.messages + rechargeBalance;
+        const messageUsagePercentage = totalAvailable === -1 ? 0 :
+            Math.min(100, (user.usage.messagesUsed / totalAvailable) * 100);
 
         // Get recent activity (mock data for now)
         const recentActivity = [
@@ -57,11 +59,13 @@ router.get('/overview', authenticate, async (req, res) => {
             usage: {
                 messages: {
                     used: user.usage.messagesUsed,
-                    limit: planLimits.messages === -1 ? 'unlimited' : planLimits.messages,
-                    remaining: planLimits.messages === -1 ? 'unlimited' :
-                        Math.max(0, planLimits.messages - user.usage.messagesUsed),
+                    limit: totalAvailable === -1 ? 'unlimited' : totalAvailable,
+                    remaining: totalAvailable === -1 ? 'unlimited' :
+                        Math.max(0, totalAvailable - user.usage.messagesUsed),
                     percentage: messageUsagePercentage,
-                    resetDate: user.usage.resetDate
+                    resetDate: user.usage.resetDate,
+                    planLimit: planLimits.messages === -1 ? 'unlimited' : planLimits.messages,
+                    rechargeBalance: rechargeBalance
                 }
             },
             subscription: {

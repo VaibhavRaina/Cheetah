@@ -387,10 +387,14 @@ export default function DashboardPage() {
                                             <MessageSquare className="h-5 w-5 text-muted-foreground" />
                                             <div>
                                                 <div className="text-2xl font-semibold text-foreground">
-                                                    {Math.max(0, user.usage.messagesLimit - user.usage.messagesUsed)} available
+                                                    {dashboardData?.usage?.messages?.remaining === 'unlimited'
+                                                        ? 'Unlimited'
+                                                        : (dashboardData?.usage?.messages?.remaining || Math.max(0, user.usage.messagesLimit - user.usage.messagesUsed))} available
                                                 </div>
                                                 <div className="text-sm text-muted-foreground">
-                                                    {user.usage.messagesLimit === -1 ? 'Unlimited' : `${user.usage.messagesLimit} renew monthly`}
+                                                    {dashboardData?.usage?.messages?.limit === 'unlimited'
+                                                        ? 'Unlimited messages'
+                                                        : `${dashboardData?.usage?.messages?.limit || user.usage.messagesLimit} total (${dashboardData?.usage?.messages?.planLimit || user.usage.messagesLimit} plan + ${dashboardData?.usage?.messages?.rechargeBalance || 0} topped up)`}
                                                 </div>
                                             </div>
                                         </div>
@@ -403,21 +407,21 @@ export default function DashboardPage() {
                                     </div>
 
                                     {/* Progress Bar */}
-                                    {user.usage.messagesLimit !== -1 && (
+                                    {(dashboardData?.usage?.messages?.limit !== 'unlimited' && dashboardData?.usage?.messages?.limit) && (
                                         <div className="w-full bg-muted rounded-full h-2">
                                             <div
                                                 className="bg-blue-500 h-2 rounded-full"
                                                 style={{
-                                                    width: `${Math.min(100, (user.usage.messagesUsed / user.usage.messagesLimit) * 100)}%`
+                                                    width: `${Math.min(100, ((dashboardData?.usage?.messages?.used || user.usage.messagesUsed) / (dashboardData?.usage?.messages?.limit || user.usage.messagesLimit)) * 100)}%`
                                                 }}
                                             ></div>
                                         </div>
                                     )}
 
                                     <p className="text-sm text-muted-foreground">
-                                        {user.usage.messagesLimit === -1
-                                            ? `Used ${user.usage.messagesUsed} messages this month`
-                                            : `Used ${user.usage.messagesUsed} of ${user.usage.messagesLimit} this month`
+                                        {dashboardData?.usage?.messages?.limit === 'unlimited'
+                                            ? `Used ${dashboardData?.usage?.messages?.used || user.usage.messagesUsed} messages this month`
+                                            : `Used ${dashboardData?.usage?.messages?.used || user.usage.messagesUsed} of ${dashboardData?.usage?.messages?.limit || user.usage.messagesLimit} this month`
                                         }
                                     </p>
 
