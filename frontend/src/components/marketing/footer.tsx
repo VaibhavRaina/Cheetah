@@ -1,164 +1,85 @@
 import Link from "next/link";
 import Container from "../global/container";
-import Icons from "../global/icons";
 
 const Footer = () => {
     return (
-        <footer className="flex flex-col relative items-center justify-center border-t border-foreground/5 pt-16 pb-8 px-6 lg:px-8 w-full max-w-6xl mx-auto lg:pt-32">
-            <div className="grid gap-8 xl:grid-cols-3 xl:gap-8 w-full">
-                <Container>
-                    <div className="flex flex-col items-start justify-start md:max-w-[200px]">
-                        <div className="flex items-center gap-2">
-                            <Icons.icon className="w-auto h-5" />
-                            <span className="text-base md:text-lg font-medium text-foreground">
-                                Cheetah&nbsp;AI
-                            </span>
+        <footer className="w-full border-t border-foreground/10">
+            <div className="max-w-6xl mx-auto px-6 lg:px-8">
+                {/* Main Footer Content */}
+                <Container delay={0.1} className="w-full py-6">
+                    <div className="flex flex-col items-center space-y-4">
+                        {/* Navigation Links */}
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 lg:gap-8">
+                            {/* Legal Links */}
+                            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                                <Link
+                                    href="/privacy-policy"
+                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                                >
+                                    Privacy Policy
+                                </Link>
+                                <Link
+                                    href="/professional-terms-of-service"
+                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                                >
+                                    Terms of Service
+                                </Link>
+                                <Link
+                                    href="/cancellation-policy"
+                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                                >
+                                    Cancellation Policy
+                                </Link>
+                            </div>
+
+                            {/* Separator */}
+                            <div className="hidden sm:block w-px h-4 bg-border"></div>
+
+                            {/* Contact Links */}
+                            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                                <Link
+                                    href="/contact"
+                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                                >
+                                    Contact us
+                                </Link>
+                                <Link
+                                    href="/contact-sales"
+                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                                >
+                                    Contact Sales
+                                </Link>
+                            </div>
                         </div>
-                        <p className="text-muted-foreground mt-4 text-sm text-start">
-                            AI-powered platform that accelerates your development workflow.
-                        </p>
+
+                        {/* Social Media */}
+                        <div className="flex items-center justify-center">
+                            <Link
+                                href="https://x.com/cheetahai"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-foreground transition-colors duration-200"
+                                aria-label="Follow us on X (Twitter)"
+                            >
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                </svg>
+                            </Link>
+                        </div>
                     </div>
                 </Container>
 
-                <div className="md:grid md:grid-cols-2 md:gap-8">
-                    <Container delay={0.1} className="h-auto">
-                        <h3 className="text-base font-medium text-foreground">
-                            Product
-                        </h3>
-                        <ul className="mt-4 text-sm text-muted-foreground space-y-4">
-                            <li className="mt-2">
-                                <Link href="/agent" className="link hover:text-foreground transition-all duration-300">
-                                    Agent
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/chat" className="link hover:text-foreground transition-all duration-300">
-                                    Chat
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/next-edit" className="link hover:text-foreground transition-all duration-300">
-                                    Next Edit
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/completions" className="link hover:text-foreground transition-all duration-300">
-                                    Completions
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/slack" className="link hover:text-foreground transition-all duration-300">
-                                    Slack
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/pricing" className="link hover:text-foreground transition-all duration-300">
-                                    Pricing
-                                </Link>
-                            </li>
-                        </ul>
-                    </Container>
-
-                    <div className="mt-10 md:mt-0 flex flex-col">
-                        <h3 className="text-base font-medium text-foreground">
-                            Resources
-                        </h3>
-                        <ul className="mt-4 text-sm text-muted-foreground space-y-4">
-                            <li className="mt-2">
-                                <Link href="/docs" className="link hover:text-foreground transition-all duration-300">
-                                    Docs
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/blog" className="link hover:text-foreground transition-all duration-300">
-                                    Blog
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/privacy-security" className="link hover:text-foreground transition-all duration-300">
-                                    Privacy & Security
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/trust-center" className="link hover:text-foreground transition-all duration-300">
-                                    Trust Center
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/status-page" className="link hover:text-foreground transition-all duration-300">
-                                    Status Page
-                                </Link>
-                            </li>
-                        </ul>
+                {/* Copyright Section */}
+                <Container delay={0.3} className="w-full">
+                    <div className="border-t border-foreground/5 py-3">
+                        <div className="flex items-center justify-center">
+                            <p className="text-xs text-muted-foreground/80">
+                                &copy; {new Date().getFullYear()} Cheetah AI. All rights reserved.
+                            </p>
+                        </div>
                     </div>
-                </div>
-
-                <div className="md:grid md:grid-cols-2 md:gap-8">
-                    <Container delay={0.3} className="h-auto">
-                        <h3 className="text-base font-medium text-foreground">
-                            Company
-                        </h3>
-                        <ul className="mt-4 text-sm text-muted-foreground space-y-4">
-                            <li className="mt-2">
-                                <Link href="/careers" className="link hover:text-foreground transition-all duration-300">
-                                    Careers
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/press-inquiries" className="link hover:text-foreground transition-all duration-300">
-                                    Press Inquiries
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/contact-sales" className="link hover:text-foreground transition-all duration-300">
-                                    Contact Sales
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/contact" className="link hover:text-foreground transition-all duration-300">
-                                    Contact Support
-                                </Link>
-                            </li>
-                        </ul>
-                    </Container>
-
-                    <div className="mt-10 md:mt-0 flex flex-col">
-                        <h3 className="text-base font-medium text-foreground">
-                            Legal
-                        </h3>
-                        <ul className="mt-4 text-sm text-muted-foreground space-y-4">
-                            <li className="mt-2">
-                                <Link href="/cookie-policy" className="link hover:text-foreground transition-all duration-300">
-                                    Cookie Policy
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/privacy-policy" className="link hover:text-foreground transition-all duration-300">
-                                    Privacy Policy
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/community-terms-of-service" className="link hover:text-foreground transition-all duration-300">
-                                    Community Terms of Service
-                                </Link>
-                            </li>
-                            <li className="mt-2">
-                                <Link href="/professional-terms-of-service" className="link hover:text-foreground transition-all duration-300">
-                                    Professional Terms of Service
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                </Container>
             </div>
-
-            <Container delay={0.5} className="w-full relative mt-12 lg:mt-20">
-                <div className="mt-8 md:flex md:items-center justify-center footer w-full">
-                    <p className="text-sm text-muted-foreground mt-8 md:mt-0">
-                        &copy; {new Date().getFullYear()} Cheetah AI. All rights reserved.
-                    </p>
-                </div>
-            </Container>
         </footer>
     );
 };

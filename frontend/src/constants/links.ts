@@ -12,10 +12,6 @@ export const NAV_LINKS = [
         href: "/about"
     },
     {
-        name: "Blog",
-        href: "/blog"
-    },
-    {
         name: "Support",
         href: "/contact"
     },

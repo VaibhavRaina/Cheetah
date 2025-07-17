@@ -63,7 +63,7 @@ class EmailService {
                         </div>
                         <div class="content">
                             <h2>Hello!</h2>
-                            <p>You're trying to ${actionText} Cheetah. Please use the verification code below to continue:</p>
+                            <p>You're trying to ${actionText} Cheetah AI. Please use the verification code below to continue:</p>
                             
                             <div class="code-box">
                                 <div class="code">${verificationCode}</div>
@@ -96,7 +96,7 @@ class EmailService {
                 
                 Hello!
                 
-                You're trying to ${actionText} Cheetah. Please use the verification code below to continue:
+                You're trying to ${actionText} Cheetah AI. Please use the verification code below to continue:
                 
                 ${verificationCode}
                 
