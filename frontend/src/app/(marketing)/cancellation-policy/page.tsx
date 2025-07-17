@@ -50,7 +50,7 @@ export default function CancellationPolicyPage() {
                                     </div>
                                     <div>
                                         <h3 className="text-lg font-medium text-foreground mb-2">Contact Support:</h3>
-                                        <p>Email us at <a href="mailto:support@cheetah.ai" className="text-accent hover:underline">support@cheetah.ai</a> with your cancellation request.</p>
+                                        <p>Email us at <a href="mailto:support@cheetahai.co" className="text-accent hover:underline">support@cheetahai.co</a> with your cancellation request.</p>
                                     </div>
                                 </div>
                             </section>
@@ -58,15 +58,35 @@ export default function CancellationPolicyPage() {
                             <section>
                                 <h2 className="text-2xl font-semibold mb-4">Refund Policy</h2>
                                 <div className="space-y-4 text-muted-foreground">
+                                    <div className="bg-white dark:bg-white border border-red-200 dark:border-red-300 rounded-lg p-4">
+                                        <h3 className="text-lg font-medium text-red-600 dark:text-red-600 mb-2">Important: No Refund Policy</h3>
+                                        <p className="text-red-500 dark:text-red-500">
+                                            CheetahAI operates a strict no-refund policy. All subscription payments are final and non-refundable.
+                                        </p>
+                                    </div>
+
+                                    <h3 className="text-lg font-medium text-foreground">Exceptions to No-Refund Policy</h3>
                                     <p>
-                                        We offer a 30-day money-back guarantee for new subscribers. If you're not satisfied with Cheetah AI within the first 30 days of your initial subscription, you may request a full refund.
+                                        Refunds will only be considered in the following circumstances:
                                     </p>
                                     <ul className="list-disc pl-6 space-y-2">
-                                        <li>Refunds are only available for the first 30 days of your initial subscription</li>
-                                        <li>Refunds do not apply to subscription renewals</li>
-                                        <li>Refund requests must be submitted within 30 days of the original purchase</li>
-                                        <li>Refunds will be processed within 5-10 business days</li>
+                                        <li><strong>Service Outages:</strong> Extended service unavailability due to technical issues on our end</li>
+                                        <li><strong>Billing Errors:</strong> Incorrect charges or duplicate payments caused by our billing system</li>
+                                        <li><strong>Service Defects:</strong> Major functionality failures that prevent normal use of our services</li>
+                                        <li><strong>Legal Requirements:</strong> Where refunds are mandated by applicable consumer protection laws</li>
                                     </ul>
+
+                                    <h3 className="text-lg font-medium text-foreground">What This Means</h3>
+                                    <ul className="list-disc pl-6 space-y-2">
+                                        <li>No refunds for change of mind or dissatisfaction with features</li>
+                                        <li>No partial refunds for unused portions of subscription periods</li>
+                                        <li>No refunds for account suspensions due to terms of service violations</li>
+                                        <li>Refunds are only provided when the issue originates from CheetahAI's systems or services</li>
+                                    </ul>
+
+                                    <p className="text-sm bg-muted/50 p-3 rounded">
+                                        <strong>Recommendation:</strong> We encourage you to try our free tier or contact our sales team for a demo before subscribing to ensure our services meet your needs.
+                                    </p>
                                 </div>
                             </section>
 
@@ -89,7 +109,7 @@ export default function CancellationPolicyPage() {
                                     If you have any questions about our cancellation policy or need assistance with canceling your subscription, please contact our support team:
                                 </p>
                                 <div className="mt-4 space-y-2 text-muted-foreground">
-                                    <p>Email: <a href="mailto:support@cheetah.ai" className="text-accent hover:underline">support@cheetah.ai</a></p>
+                                    <p>Email: <a href="mailto:support@cheetahai.co" className="text-accent hover:underline">support@cheetahai.co</a></p>
                                     <p>Response time: Within 24 hours</p>
                                 </div>
                             </section>

@@ -33,49 +33,66 @@ function PrivacyPolicyComponent() {
             {/* Content Section */}
             <Container delay={0.2} className="mt-16">
                 <div className="max-w-4xl mx-auto prose prose-lg dark:prose-invert prose-headings:font-heading prose-headings:text-foreground prose-p:text-muted-foreground">
-                    <h2>Introduction</h2>
+                    <div className="bg-muted/30 p-6 rounded-lg mb-8">
+                        <p className="text-sm text-muted-foreground mb-2">Effective Date: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                        <p className="text-sm text-muted-foreground">
+                            This Privacy Policy describes how CheetahAI ("we," "our," or "us") collects, uses, and shares your personal information when you use our AI-powered development tools and services.
+                        </p>
+                    </div>
+
+                    <h2>1. Introduction</h2>
                     <p>
-                        At Cheetah AI, we respect your privacy and are committed to protecting your personal data.
-                        This privacy policy will inform you about how we look after your personal data when you visit our website
-                        and tell you about your privacy rights and how the law protects you.
+                        At CheetahAI, we are committed to protecting your privacy and ensuring the security of your personal information.
+                        This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our
+                        AI-powered development tools, website, and related services (collectively, the "Services").
+                    </p>
+                    <p>
+                        By using our Services, you consent to the data practices described in this Privacy Policy.
+                        If you do not agree with the practices described in this policy, please do not use our Services.
                     </p>
 
-                    <h2>Information We Collect</h2>
+                    <h2>2. Information We Collect</h2>
                     <p>
-                        We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows:
+                        We collect information you provide directly to us, information we obtain automatically when you use our Services, and information from third-party sources.
                     </p>
+
+                    <h3>Information You Provide to Us</h3>
                     <ul>
-                        <li><strong>Identity Data</strong> includes first name, last name, username or similar identifier.</li>
-                        <li><strong>Contact Data</strong> includes email address and telephone numbers.</li>
-                        <li><strong>Technical Data</strong> includes internet protocol (IP) address, your login data, browser type and version, time zone setting and location, browser plug-in types and versions, operating system and platform, and other technology on the devices you use to access this website.</li>
-                        <li><strong>Usage Data</strong> includes information about how you use our website, products and services.</li>
-                        <li><strong>Marketing and Communications Data</strong> includes your preferences in receiving marketing from us and our third parties and your communication preferences.</li>
+                        <li><strong>Account Information:</strong> Name, email address, username, and password when you create an account</li>
+                        <li><strong>Profile Information:</strong> Optional profile details, preferences, and settings</li>
+                        <li><strong>Payment Information:</strong> Billing details and payment method information (processed securely by our payment processors)</li>
+                        <li><strong>Communications:</strong> Messages, feedback, and support requests you send to us</li>
+                        <li><strong>Code and Content:</strong> Source code, documentation, and other content you input into our AI tools</li>
                     </ul>
 
-                    <h2>How We Use Your Information</h2>
-                    <p>
-                        We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:
-                    </p>
+                    <h3>Information We Collect Automatically</h3>
                     <ul>
-                        <li>Where we need to perform the contract we are about to enter into or have entered into with you.</li>
-                        <li>Where it is necessary for our legitimate interests (or those of a third party) and your interests and fundamental rights do not override those interests.</li>
-                        <li>Where we need to comply with a legal obligation.</li>
+                        <li><strong>Usage Data:</strong> How you interact with our Services, features used, time spent, and usage patterns</li>
+                        <li><strong>Device Information:</strong> IP address, browser type, operating system, device identifiers</li>
+                        <li><strong>Log Data:</strong> Server logs, error reports, and performance metrics</li>
+                        <li><strong>Cookies and Tracking:</strong> Information collected through cookies and similar technologies</li>
                     </ul>
 
-                    <h3>Purposes for which we will use your personal data</h3>
+                    <h2>3. How We Use Your Information</h2>
                     <p>
-                        We have set out below a description of all the ways we plan to use your personal data:
+                        We use the information we collect for the following purposes:
                     </p>
                     <ul>
-                        <li>To register you as a new customer</li>
-                        <li>To process and deliver your order</li>
-                        <li>To manage our relationship with you</li>
-                        <li>To enable you to participate in a prize draw, competition or complete a survey</li>
-                        <li>To administer and protect our business and this website</li>
-                        <li>To deliver relevant website content and advertisements to you</li>
-                        <li>To use data analytics to improve our website, products/services, marketing, customer relationships and experiences</li>
-                        <li>To make suggestions and recommendations to you about goods or services that may be of interest to you</li>
+                        <li><strong>Provide and Improve Services:</strong> To operate, maintain, and enhance our AI development tools</li>
+                        <li><strong>Account Management:</strong> To create and manage your account, authenticate users, and provide customer support</li>
+                        <li><strong>AI Model Training:</strong> To improve our AI models and algorithms (using anonymized and aggregated data only)</li>
+                        <li><strong>Communication:</strong> To send service updates, security alerts, and respond to your inquiries</li>
+                        <li><strong>Payment Processing:</strong> To process subscription payments and manage billing</li>
+                        <li><strong>Security and Compliance:</strong> To detect fraud, ensure security, and comply with legal obligations</li>
+                        <li><strong>Analytics:</strong> To understand usage patterns and improve user experience</li>
                     </ul>
+
+                    <h3>Code Processing and AI Training</h3>
+                    <p>
+                        <strong>Important:</strong> We do not use your private code or proprietary content to train our AI models.
+                        Your code remains private and is only processed to provide you with AI-powered suggestions and assistance.
+                        We may use anonymized, aggregated usage patterns to improve our services.
+                    </p>
 
                     <h2>Data Security</h2>
                     <p>
@@ -123,7 +140,7 @@ function PrivacyPolicyComponent() {
                         If you have any questions about this privacy policy or our privacy practices, please contact us at:
                     </p>
                     <p>
-                        Email: <a href="mailto:privacy@cheetah.ai" className="text-amber-500 hover:text-amber-600 transition-colors">privacy@cheetah.ai</a>
+                        Email: <a href="mailto:support@cheetahai.co" className="text-amber-500 hover:text-amber-600 transition-colors">support@cheetahai.co</a>
                     </p>
 
                     <p className="text-sm text-muted-foreground mt-12">

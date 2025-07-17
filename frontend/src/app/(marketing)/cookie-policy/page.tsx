@@ -91,7 +91,7 @@ function CookiePolicyComponent() {
                         If you have any questions about our Cookie Policy, please contact us at:
                     </p>
                     <p>
-                        Email: <a href="mailto:privacy@cheetah.ai" className="text-amber-500 hover:text-amber-600 transition-colors">privacy@cheetah.ai</a>
+                        Email: <a href="mailto:support@cheetahai.co" className="text-amber-500 hover:text-amber-600 transition-colors">support@cheetahai.co</a>
                     </p>
 
                     <p className="text-sm text-muted-foreground mt-12">

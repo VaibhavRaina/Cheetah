@@ -33,24 +33,33 @@ function ProfessionalTermsComponent() {
             {/* Content Section */}
             <Container delay={0.2} className="mt-16">
                 <div className="max-w-4xl mx-auto prose prose-lg dark:prose-invert prose-headings:font-heading prose-headings:text-foreground prose-p:text-muted-foreground">
-                    <h2>Introduction</h2>
+                    <div className="bg-muted/30 p-6 rounded-lg mb-8">
+                        <p className="text-sm text-muted-foreground mb-2">Effective Date: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                        <p className="text-sm text-muted-foreground">
+                            These Terms of Service govern your use of CheetahAI's AI-powered development tools and services.
+                        </p>
+                    </div>
+
+                    <h2>1. Acceptance of Terms</h2>
                     <p>
-                        These Professional Terms of Service ("Professional Terms") govern your access to and use of Cheetah AI's professional services, including our paid subscription plans, API access, and enterprise solutions (collectively, the "Professional Services").
+                        By accessing or using CheetahAI's services, website, or applications (collectively, the "Services"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Services.
                     </p>
                     <p>
-                        By accessing or using our Professional Services, you agree to be bound by these Professional Terms. If you are using our Professional Services on behalf of an organization, you represent and warrant that you have the authority to bind that organization to these terms.
+                        If you are using our Services on behalf of an organization, you represent and warrant that you have the authority to bind that organization to these Terms, and your agreement to these Terms will be treated as the agreement of the organization.
                     </p>
 
-                    <h2>Service Description</h2>
+                    <h2>2. Service Description</h2>
                     <p>
-                        Cheetah AI provides AI-powered marketing automation tools and services designed to help businesses optimize their marketing workflows. Our Professional Services may include:
+                        CheetahAI provides AI-powered development tools and services designed to enhance developer productivity and code quality. Our Services include:
                     </p>
                     <ul>
-                        <li>Subscription-based access to premium features</li>
-                        <li>API access for integration with your systems</li>
+                        <li>AI-powered code completion and suggestions</li>
+                        <li>Code analysis and optimization recommendations</li>
+                        <li>Automated documentation generation</li>
+                        <li>Code review and quality assessment tools</li>
+                        <li>API access for integration with development environments</li>
                         <li>Enterprise solutions with custom configurations</li>
                         <li>Professional support and consulting services</li>
-                        <li>Training and onboarding assistance</li>
                     </ul>
 
                     <h2>Subscription and Billing</h2>
@@ -158,7 +167,7 @@ function ProfessionalTermsComponent() {
                         If you have any questions about these Professional Terms, please contact us at:
                     </p>
                     <p>
-                        Email: <a href="mailto:legal@cheetah.ai" className="text-amber-500 hover:text-amber-600 transition-colors">legal@cheetah.ai</a>
+                        Email: <a href="mailto:support@cheetahai.co" className="text-amber-500 hover:text-amber-600 transition-colors">support@cheetahai.co</a>
                     </p>
 
                     <p className="text-sm text-muted-foreground mt-12">
