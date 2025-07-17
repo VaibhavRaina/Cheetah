@@ -15,7 +15,9 @@ import {
     AlertCircle,
     FileText,
     DollarSign,
-    Activity
+    Activity,
+    Zap,
+    Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -49,6 +51,11 @@ interface BillingData {
         nextBillingDate: string | null;
         daysUntilRenewal: number | null;
         status: string;
+    };
+    recharge?: {
+        balance: number;
+        totalPurchased: number;
+        lastRechargeDate: string | null;
     };
     usageHistory: Array<{
         date: string;
@@ -304,10 +311,32 @@ const BillingPage = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 mt-6 p-4 bg-card rounded-lg border">
-                            <MessageSquare className="w-5 h-5 text-accent" />
-                            <span className="text-sm text-muted-foreground">Credit balance:</span>
-                            <span className="font-semibold text-foreground">{billingData.creditBalance} User Messages</span>
+                        <div className="grid md:grid-cols-2 gap-4 mt-6">
+                            <div className="flex items-center gap-2 p-4 bg-card rounded-lg border">
+                                <MessageSquare className="w-5 h-5 text-accent" />
+                                <div>
+                                    <span className="text-sm text-muted-foreground block">Plan Messages Remaining</span>
+                                    <span className="font-semibold text-foreground">{billingData.creditBalance} Messages</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 p-4 bg-card rounded-lg border">
+                                <Zap className="w-5 h-5 text-green-500" />
+                                <div>
+                                    <span className="text-sm text-muted-foreground block">Recharge Balance</span>
+                                    <span className="font-semibold text-foreground">{billingData.recharge?.balance || 0} Messages</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-4">
+                            <Button
+                                onClick={() => router.push('/dashboard/recharge')}
+                                variant="outline"
+                                className="gap-2"
+                            >
+                                <Plus className="w-4 h-4" />
+                                Recharge Messages
+                            </Button>
                         </div>
                     </Card>
                 </motion.div>
@@ -725,8 +754,8 @@ const BillingPage = () => {
                                                                 </TableCell>
                                                                 <TableCell>
                                                                     <span className={`font-medium ${transaction.amount > 0 ? 'text-green-600' :
-                                                                            transaction.amount < 0 ? 'text-red-600' :
-                                                                                'text-muted-foreground'
+                                                                        transaction.amount < 0 ? 'text-red-600' :
+                                                                            'text-muted-foreground'
                                                                         }`}>
                                                                         {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
                                                                     </span>

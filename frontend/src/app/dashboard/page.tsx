@@ -382,16 +382,24 @@ export default function DashboardPage() {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <MessageSquare className="h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <div className="text-2xl font-semibold text-foreground">
-                                                {Math.max(0, user.usage.messagesLimit - user.usage.messagesUsed)} available
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">
-                                                {user.usage.messagesLimit === -1 ? 'Unlimited' : `${user.usage.messagesLimit} renew monthly`}
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <MessageSquare className="h-5 w-5 text-muted-foreground" />
+                                            <div>
+                                                <div className="text-2xl font-semibold text-foreground">
+                                                    {Math.max(0, user.usage.messagesLimit - user.usage.messagesUsed)} available
+                                                </div>
+                                                <div className="text-sm text-muted-foreground">
+                                                    {user.usage.messagesLimit === -1 ? 'Unlimited' : `${user.usage.messagesLimit} renew monthly`}
+                                                </div>
                                             </div>
                                         </div>
+                                        <Link href="/dashboard/recharge">
+                                            <Button variant="outline" size="sm" className="gap-2">
+                                                <Zap className="w-4 h-4" />
+                                                Recharge
+                                            </Button>
+                                        </Link>
                                     </div>
 
                                     {/* Progress Bar */}
@@ -532,8 +540,8 @@ export default function DashboardPage() {
                                             <AlertDialogTrigger asChild>
                                                 <button
                                                     className={`text-sm hover:underline transition-colors ${user.plan === 'community'
-                                                            ? 'text-muted-foreground cursor-not-allowed'
-                                                            : 'text-red-600 hover:text-red-700'
+                                                        ? 'text-muted-foreground cursor-not-allowed'
+                                                        : 'text-red-600 hover:text-red-700'
                                                         }`}
                                                     disabled={user.plan === 'community'}
                                                 >

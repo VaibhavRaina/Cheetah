@@ -134,6 +134,43 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    recharge: {
+        balance: {
+            type: Number,
+            default: 0 // Additional messages purchased
+        },
+        totalPurchased: {
+            type: Number,
+            default: 0 // Total messages ever purchased
+        },
+        lastRechargeDate: {
+            type: Date,
+            default: null
+        },
+        rechargeHistory: [{
+            amount: {
+                type: Number,
+                required: true
+            },
+            price: {
+                type: Number,
+                required: true
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            },
+            transactionId: {
+                type: String,
+                required: true
+            },
+            status: {
+                type: String,
+                enum: ['completed', 'pending', 'failed'],
+                default: 'completed'
+            }
+        }]
+    },
     usageHistory: [{
         date: {
             type: Date,
@@ -172,7 +209,7 @@ const userSchema = new mongoose.Schema({
         },
         type: {
             type: String,
-            enum: ['subscription', 'upgrade', 'downgrade', 'cancellation', 'reactivation'],
+            enum: ['subscription', 'upgrade', 'downgrade', 'cancellation', 'reactivation', 'recharge'],
             required: true
         },
         description: {
@@ -344,7 +381,10 @@ userSchema.methods.canUseFeature = function (feature) {
 userSchema.methods.hasMessagesRemaining = function () {
     const limits = this.getPlanLimits();
     if (limits.messages === -1) return true; // Unlimited
-    return this.usage.messagesUsed < limits.messages;
+
+    // Check both plan limit and recharge balance
+    const totalAvailable = limits.messages + (this.recharge?.balance || 0);
+    return this.usage.messagesUsed < totalAvailable;
 };
 
 // Method to increment message usage
@@ -354,6 +394,15 @@ userSchema.methods.incrementMessageUsage = function () {
     if (now > this.usage.resetDate) {
         this.usage.messagesUsed = 0;
         this.usage.resetDate = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+    }
+
+    const limits = this.getPlanLimits();
+
+    // If user has exceeded plan limit, use recharge balance
+    if (this.usage.messagesUsed >= limits.messages && limits.messages !== -1) {
+        if (this.recharge && this.recharge.balance > 0) {
+            this.recharge.balance -= 1;
+        }
     }
 
     this.usage.messagesUsed += 1;

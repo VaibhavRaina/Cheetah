@@ -27,9 +27,11 @@ router.get('/overview', authenticate, async (req, res) => {
         // Get actual messages used from usage object
         const actualMessagesUsed = user.usage ? user.usage.messagesUsed : 0;
 
-        // Calculate remaining messages
+        // Calculate remaining messages including recharge balance
         const planConfig = getPlanConfig(user.subscription.plan);
-        const messagesRemaining = planConfig.messages - actualMessagesUsed;
+        const rechargeBalance = user.recharge ? user.recharge.balance : 0;
+        const totalAvailable = planConfig.messages === -1 ? -1 : planConfig.messages + rechargeBalance;
+        const messagesRemaining = totalAvailable === -1 ? -1 : Math.max(0, totalAvailable - actualMessagesUsed);
 
         // Calculate next billing date and days until renewal
         let nextBillingDate;
@@ -88,6 +90,11 @@ router.get('/overview', authenticate, async (req, res) => {
                 nextBillingDate: nextBillingDate ? nextBillingDate.toISOString() : null,
                 daysUntilRenewal: daysUntilRenewal,
                 status: user.subscription.status
+            },
+            recharge: {
+                balance: rechargeBalance,
+                totalPurchased: user.recharge ? user.recharge.totalPurchased : 0,
+                lastRechargeDate: user.recharge ? user.recharge.lastRechargeDate : null
             },
             usageHistory: usageHistory,
             invoices: invoices

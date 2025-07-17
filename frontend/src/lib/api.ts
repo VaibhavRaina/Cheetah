@@ -207,4 +207,36 @@ export const billingAPI = {
     },
 };
 
+// Recharge API functions
+export const rechargeAPI = {
+    getConfig: async () => {
+        const response = await api.get('/recharge/config');
+        return response.data;
+    },
+
+    calculatePrice: async (messages: number) => {
+        const response = await api.post('/recharge/calculate', { messages });
+        return response.data;
+    },
+
+    purchaseRecharge: async (messages: number, paymentMethodId?: string) => {
+        const response = await api.post('/recharge/purchase', { messages, paymentMethodId });
+        return response.data;
+    },
+
+    getHistory: async (page: number = 1, limit: number = 10) => {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString()
+        });
+        const response = await api.get(`/recharge/history?${params}`);
+        return response.data;
+    },
+
+    getBalance: async () => {
+        const response = await api.get('/recharge/balance');
+        return response.data;
+    },
+};
+
 export default api;
