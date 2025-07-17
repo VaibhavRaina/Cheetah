@@ -103,7 +103,6 @@ const ContactPage = () => {
                             <div>
                                 <h3 className="font-medium">Email</h3>
                                 <p className="text-sm text-muted-foreground mt-1">support@cheetahai.co</p>
-                                <p className="text-sm text-muted-foreground">support@cheetahai.co</p>
                             </div>
                         </motion.div>
 
@@ -134,8 +133,8 @@ const ContactPage = () => {
                             </div>
                             <div>
                                 <h3 className="font-medium">Location</h3>
-                                <p className="text-sm text-muted-foreground mt-1">123 Innovation Drive</p>
-                                <p className="text-sm text-muted-foreground">San Francisco, CA 94103</p>
+                                <p className="text-sm text-muted-foreground mt-1">6, 7th Main Rd, M S Ramaiah Nagar</p>
+                                <p className="text-sm text-muted-foreground">Mathikere, Bengaluru, Karnataka 560054</p>
                             </div>
                         </motion.div>
 
@@ -336,7 +335,7 @@ const ContactPage = () => {
             >
                 <div className="w-full h-64 md:h-96 rounded-xl overflow-hidden border border-border">
                     <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50470.56851978834!2d-122.43130174684274!3d37.75890275569452!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80859a6d00690021%3A0x4a501367f076adff!2sSan%20Francisco%2C%20CA!5e0!3m2!1sen!2sus!4v1718971941633!5m2!1sen!2sus"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.8267!2d77.5946!3d13.0827!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae17d6b2b5b5b5%3A0x1234567890abcdef!2s6%2C%207th%20Main%20Rd%2C%20M%20S%20Ramaiah%20Nagar%2C%20Mathikere%2C%20Bengaluru%2C%20Karnataka%20560054%2C%20India!5e0!3m2!1sen!2sin!4v1647000000000!5m2!1sen!2sin"
                         width="100%"
                         height="100%"
                         style={{ border: 0 }}
