@@ -12,11 +12,11 @@ const router = express.Router();
 
 // Recharge configuration
 const RECHARGE_CONFIG = {
-    basePrice: 30, // $30 for 10 messages
-    baseMessages: 10,
-    pricePerMessage: 3, // $3 per message
-    minMessages: 10,
-    maxMessages: 1000
+    pricePerPack: 10, // $10 per pack
+    messagesPerPack: 100, // 100 messages per pack
+    minMessages: 100, // Minimum 1 pack (100 messages)
+    maxMessages: 1000, // Maximum 10 packs (1000 messages)
+    increment: 100 // Must be in increments of 100
 };
 
 // @route   GET /api/recharge/config
@@ -32,11 +32,11 @@ router.get('/config', authenticate, (req, res) => {
                 'Recharge configuration retrieved successfully',
                 {
                     pricing: {
-                        basePrice: RECHARGE_CONFIG.basePrice,
-                        baseMessages: RECHARGE_CONFIG.baseMessages,
-                        pricePerMessage: RECHARGE_CONFIG.pricePerMessage,
+                        pricePerPack: RECHARGE_CONFIG.pricePerPack,
+                        messagesPerPack: RECHARGE_CONFIG.messagesPerPack,
                         minMessages: RECHARGE_CONFIG.minMessages,
-                        maxMessages: RECHARGE_CONFIG.maxMessages
+                        maxMessages: RECHARGE_CONFIG.maxMessages,
+                        increment: RECHARGE_CONFIG.increment
                     },
                     currentBalance: user.recharge?.balance || 0,
                     totalPurchased: user.recharge?.totalPurchased || 0,
@@ -57,21 +57,21 @@ router.get('/config', authenticate, (req, res) => {
 // @access  Private
 router.post('/calculate', [
     body('messages')
-        .isInt({ min: 1, max: 1000 })
-        .withMessage('Messages must be between 1 and 1000')
+        .isInt({ min: 100, max: 1000 })
+        .withMessage('Messages must be between 100 and 1000')
+        .custom((value) => {
+            if (value % RECHARGE_CONFIG.increment !== 0) {
+                throw new Error(`Messages must be in increments of ${RECHARGE_CONFIG.increment}`);
+            }
+            return true;
+        })
 ], handleValidationErrors, authenticate, (req, res) => {
     try {
         const { messages } = req.body;
 
-        // Calculate price based on quantity
-        let totalPrice;
-        if (messages <= RECHARGE_CONFIG.baseMessages) {
-            totalPrice = RECHARGE_CONFIG.basePrice;
-        } else {
-            // Base price for first 10 messages, then $3 per additional message
-            const additionalMessages = messages - RECHARGE_CONFIG.baseMessages;
-            totalPrice = RECHARGE_CONFIG.basePrice + (additionalMessages * RECHARGE_CONFIG.pricePerMessage);
-        }
+        // Calculate price based on packs (100 messages = $10 per pack)
+        const numberOfPacks = messages / RECHARGE_CONFIG.messagesPerPack;
+        const totalPrice = numberOfPacks * RECHARGE_CONFIG.pricePerPack;
 
         res.json(
             createResponse(
@@ -80,9 +80,9 @@ router.post('/calculate', [
                 {
                     messages,
                     totalPrice,
-                    pricePerMessage: totalPrice / messages,
-                    savings: messages > RECHARGE_CONFIG.baseMessages ?
-                        (messages * RECHARGE_CONFIG.pricePerMessage) - totalPrice : 0
+                    numberOfPacks,
+                    pricePerPack: RECHARGE_CONFIG.pricePerPack,
+                    messagesPerPack: RECHARGE_CONFIG.messagesPerPack
                 }
             )
         );
@@ -99,8 +99,8 @@ router.post('/calculate', [
 // @access  Private
 router.post('/purchase', [
     body('messages')
-        .isInt({ min: 10, max: 1000 })
-        .withMessage('Messages must be between 10 and 1000'),
+        .isInt({ min: 100, max: 1000 })
+        .withMessage('Messages must be between 100 and 1000'),
     body('paymentMethodId')
         .optional()
         .isString()
@@ -110,14 +110,16 @@ router.post('/purchase', [
         const { messages, paymentMethodId } = req.body;
         const user = req.user;
 
-        // Calculate price
-        let totalPrice;
-        if (messages <= RECHARGE_CONFIG.baseMessages) {
-            totalPrice = RECHARGE_CONFIG.basePrice;
-        } else {
-            const additionalMessages = messages - RECHARGE_CONFIG.baseMessages;
-            totalPrice = RECHARGE_CONFIG.basePrice + (additionalMessages * RECHARGE_CONFIG.pricePerMessage);
+        // Validate messages is in correct increments
+        if (messages % RECHARGE_CONFIG.increment !== 0) {
+            return res.status(400).json(
+                createResponse(false, `Messages must be in increments of ${RECHARGE_CONFIG.increment}`)
+            );
         }
+
+        // Calculate price based on packs (100 messages = $10 per pack)
+        const numberOfPacks = messages / RECHARGE_CONFIG.messagesPerPack;
+        const totalPrice = numberOfPacks * RECHARGE_CONFIG.pricePerPack;
 
         // Generate transaction ID
         const transactionId = generateTransactionId('recharge');

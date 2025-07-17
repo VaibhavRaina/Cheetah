@@ -36,11 +36,11 @@ import { useToast } from "@/hooks/use-toast";
 
 interface RechargeConfig {
     pricing: {
-        basePrice: number;
-        baseMessages: number;
-        pricePerMessage: number;
+        pricePerPack: number;
+        messagesPerPack: number;
         minMessages: number;
         maxMessages: number;
+        increment: number;
     };
     currentBalance: number;
     totalPurchased: number;
@@ -50,8 +50,9 @@ interface RechargeConfig {
 interface PriceCalculation {
     messages: number;
     totalPrice: number;
-    pricePerMessage: number;
-    savings: number;
+    numberOfPacks: number;
+    pricePerPack: number;
+    messagesPerPack: number;
 }
 
 interface RechargeHistory {
@@ -68,7 +69,7 @@ const RechargePage = () => {
     const [config, setConfig] = useState<RechargeConfig | null>(null);
     const [loading, setLoading] = useState(true);
     const [purchasing, setPurchasing] = useState(false);
-    const [messages, setMessages] = useState(10);
+    const [messages, setMessages] = useState(100);
     const [priceCalculation, setPriceCalculation] = useState<PriceCalculation | null>(null);
     const [history, setHistory] = useState<RechargeHistory[]>([]);
     const [historyLoading, setHistoryLoading] = useState(false);
@@ -79,7 +80,7 @@ const RechargePage = () => {
     }, []);
 
     useEffect(() => {
-        if (messages >= 10) {
+        if (messages >= 100) {
             calculatePrice();
         }
     }, [messages]);
@@ -147,7 +148,7 @@ const RechargePage = () => {
                 await fetchHistory();
 
                 // Reset form
-                setMessages(10);
+                setMessages(100);
             } else {
                 throw new Error(response.message || 'Purchase failed');
             }
@@ -267,8 +268,8 @@ const RechargePage = () => {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => setMessages(Math.max(10, messages - 10))}
-                                                disabled={messages <= 10}
+                                                onClick={() => setMessages(Math.max(100, messages - 100))}
+                                                disabled={messages <= 100}
                                             >
                                                 <Minus className="w-4 h-4" />
                                             </Button>
@@ -276,15 +277,20 @@ const RechargePage = () => {
                                                 id="messages"
                                                 type="number"
                                                 value={messages}
-                                                onChange={(e) => setMessages(Math.max(10, Math.min(1000, parseInt(e.target.value) || 10)))}
-                                                min={10}
+                                                onChange={(e) => {
+                                                    const value = parseInt(e.target.value) || 100;
+                                                    const roundedValue = Math.round(value / 100) * 100;
+                                                    setMessages(Math.max(100, Math.min(1000, roundedValue)));
+                                                }}
+                                                min={100}
                                                 max={1000}
+                                                step={100}
                                                 className="text-center"
                                             />
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => setMessages(Math.min(1000, messages + 10))}
+                                                onClick={() => setMessages(Math.min(1000, messages + 100))}
                                                 disabled={messages >= 1000}
                                             >
                                                 <Plus className="w-4 h-4" />
@@ -297,7 +303,7 @@ const RechargePage = () => {
 
                                     {/* Quick Select Buttons */}
                                     <div className="grid grid-cols-3 gap-2">
-                                        {[10, 50, 100].map((amount) => (
+                                        {[100, 300, 500].map((amount) => (
                                             <Button
                                                 key={amount}
                                                 variant={messages === amount ? "default" : "outline"}
@@ -321,22 +327,20 @@ const RechargePage = () => {
                                                 <span className="text-2xl font-bold text-foreground">${priceCalculation.totalPrice}</span>
                                             </div>
                                             <div className="flex items-center justify-between text-sm">
-                                                <span className="text-muted-foreground">Price per message</span>
-                                                <span className="text-foreground">${priceCalculation.pricePerMessage.toFixed(2)}</span>
+                                                <span className="text-muted-foreground">Number of packs</span>
+                                                <span className="text-foreground">{priceCalculation.numberOfPacks} × ${priceCalculation.pricePerPack}</span>
                                             </div>
-                                            {priceCalculation.savings > 0 && (
-                                                <div className="flex items-center justify-between text-sm mt-1">
-                                                    <span className="text-muted-foreground">You save</span>
-                                                    <span className="text-green-600 font-medium">${priceCalculation.savings.toFixed(2)}</span>
-                                                </div>
-                                            )}
+                                            <div className="flex items-center justify-between text-sm mt-1">
+                                                <span className="text-muted-foreground">Price per message</span>
+                                                <span className="text-foreground">${(priceCalculation.totalPrice / priceCalculation.messages).toFixed(2)}</span>
+                                            </div>
                                         </motion.div>
                                     )}
 
                                     {/* Purchase Button */}
                                     <Button
                                         onClick={handlePurchase}
-                                        disabled={purchasing || !priceCalculation || messages < 10}
+                                        disabled={purchasing || !priceCalculation || messages < 100}
                                         className="w-full"
                                         size="lg"
                                     >
@@ -374,23 +378,23 @@ const RechargePage = () => {
                                             <span className="font-medium text-foreground">Base Package</span>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-1">
-                                            {config.pricing.baseMessages} messages for ${config.pricing.basePrice}
+                                            {config.pricing.messagesPerPack} messages for ${config.pricing.pricePerPack}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
-                                            Best value for small top-ups
+                                            Simple pack-based pricing
                                         </p>
                                     </div>
 
                                     <div className="p-4 bg-card rounded-lg border">
                                         <div className="flex items-center gap-2 mb-2">
                                             <Plus className="w-4 h-4 text-green-500" />
-                                            <span className="font-medium text-foreground">Additional Messages</span>
+                                            <span className="font-medium text-foreground">Pack-Based Pricing</span>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-1">
-                                            ${config.pricing.pricePerMessage} per message above {config.pricing.baseMessages}
+                                            Every {config.pricing.messagesPerPack} messages = ${config.pricing.pricePerPack}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
-                                            Linear pricing for larger purchases
+                                            Simple and consistent pricing
                                         </p>
                                     </div>
 
