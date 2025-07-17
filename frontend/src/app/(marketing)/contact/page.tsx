@@ -117,7 +117,7 @@ const ContactPage = () => {
                             </div>
                             <div>
                                 <h3 className="font-medium">Phone</h3>
-                                <p className="text-sm text-muted-foreground mt-1">+1 (555) 123-4567</p>
+                                <p className="text-sm text-muted-foreground mt-1">+91 9797027481</p>
                                 <p className="text-sm text-muted-foreground">Mon-Fri from 8am to 5pm</p>
                             </div>
                         </motion.div>

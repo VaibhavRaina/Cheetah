@@ -165,7 +165,7 @@ const ContactSalesPage = () => {
         {
             icon: Phone,
             title: "Call Sales",
-            content: "+1 (555) 123-4567",
+            content: "+91 9797027481",
             description: "Speak directly with our team"
         },
         {
