@@ -40,7 +40,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
                 email: profile.emails[0].value,
                 googleId: profile.id,
                 avatar: profile.photos[0].value,
-                isEmailVerified: true // Google emails are verified
+                isEmailVerified: true, // Google emails are verified
+                authMethod: 'google'
             });
 
             await user.save();
@@ -92,7 +93,8 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
                 name: profile.displayName || profile.username,
                 githubId: profile.id,
                 avatar: profile.photos[0] ? profile.photos[0].value : null,
-                isEmailVerified: !!email // Only verified if email is provided
+                isEmailVerified: !!email, // Only verified if email is provided
+                authMethod: 'github'
             };
 
             // Only add email if it exists (to avoid validation error)

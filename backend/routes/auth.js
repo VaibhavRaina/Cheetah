@@ -21,6 +21,281 @@ const emailService = require('../utils/emailService');
 
 const router = express.Router();
 
+// Store verification codes temporarily (in production, use Redis or database)
+const verificationCodes = new Map();
+
+// Generate 6-digit verification code
+const generateVerificationCode = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// @route   POST /api/auth/send-verification-code
+// @desc    Send verification code to email for login/register
+// @access  Public
+router.post('/send-verification-code', [
+    body('email')
+        .isEmail()
+        .normalizeEmail()
+        .withMessage('Please provide a valid email')
+], handleValidationErrors, async (req, res) => {
+    try {
+        const { email } = req.body;
+        const sanitizedEmail = sanitizeInput(email.toLowerCase());
+
+        // Check if user exists
+        const existingUser = await User.findOne({ email: sanitizedEmail });
+        const isExistingUser = !!existingUser;
+
+        // Generate verification code
+        const verificationCode = generateVerificationCode();
+        const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        // Store verification code
+        verificationCodes.set(sanitizedEmail, {
+            code: verificationCode,
+            expiresAt,
+            attempts: 0
+        });
+
+        // Send verification code via email
+        const emailResult = await emailService.sendVerificationCodeEmail(sanitizedEmail, verificationCode, isExistingUser);
+
+        if (emailResult.success) {
+            console.log('Verification code sent successfully:', emailResult.messageId);
+            res.json(
+                createResponse(
+                    true,
+                    'Verification code sent successfully',
+                    {
+                        isExistingUser,
+                        expiresIn: 600 // 10 minutes in seconds
+                    }
+                )
+            );
+        } else {
+            console.error('Failed to send verification code:', emailResult.error);
+            res.status(500).json(
+                createResponse(false, 'Failed to send verification code. Please try again.')
+            );
+        }
+
+    } catch (error) {
+        console.error('Send verification code error:', error);
+        res.status(500).json(
+            createResponse(false, 'Server error sending verification code')
+        );
+    }
+});
+
+// @route   POST /api/auth/verify-and-login
+// @desc    Verify code and login existing user
+// @access  Public
+router.post('/verify-and-login', [
+    body('email')
+        .isEmail()
+        .normalizeEmail()
+        .withMessage('Please provide a valid email'),
+    body('verificationCode')
+        .isLength({ min: 6, max: 6 })
+        .isNumeric()
+        .withMessage('Verification code must be 6 digits')
+], handleValidationErrors, async (req, res) => {
+    try {
+        const { email, verificationCode } = req.body;
+        const sanitizedEmail = sanitizeInput(email.toLowerCase());
+
+        // Check verification code
+        const storedData = verificationCodes.get(sanitizedEmail);
+        if (!storedData) {
+            return res.status(400).json(
+                createResponse(false, 'Verification code not found or expired')
+            );
+        }
+
+        if (Date.now() > storedData.expiresAt) {
+            verificationCodes.delete(sanitizedEmail);
+            return res.status(400).json(
+                createResponse(false, 'Verification code has expired')
+            );
+        }
+
+        if (storedData.code !== verificationCode) {
+            storedData.attempts += 1;
+            if (storedData.attempts >= 3) {
+                verificationCodes.delete(sanitizedEmail);
+                return res.status(400).json(
+                    createResponse(false, 'Too many failed attempts. Please request a new code.')
+                );
+            }
+            return res.status(400).json(
+                createResponse(false, 'Invalid verification code')
+            );
+        }
+
+        // Find user
+        const user = await User.findOne({ email: sanitizedEmail });
+        if (!user) {
+            return res.status(400).json(
+                createResponse(false, 'User not found')
+            );
+        }
+
+        // Check if account is locked or inactive
+        if (user.isLocked) {
+            return res.status(423).json(
+                createResponse(false, 'Account is temporarily locked. Please try again later.')
+            );
+        }
+
+        if (!user.isActive) {
+            return res.status(401).json(
+                createResponse(false, 'Account has been deactivated. Please contact support.')
+            );
+        }
+
+        // Clear verification code
+        verificationCodes.delete(sanitizedEmail);
+
+        // Reset login attempts on successful login
+        if (user.loginAttempts && user.loginAttempts > 0) {
+            await user.resetLoginAttempts();
+        }
+
+        // Update last login
+        user.lastLogin = new Date();
+        await user.save();
+
+        // Generate JWT token
+        const token = generateToken({ id: user._id });
+
+        // Format user response
+        const userResponse = formatUserResponse(user);
+
+        res.json(
+            createResponse(
+                true,
+                'Login successful',
+                {
+                    user: userResponse,
+                    token
+                }
+            )
+        );
+
+    } catch (error) {
+        console.error('Verify and login error:', error);
+        res.status(500).json(
+            createResponse(false, 'Server error during login')
+        );
+    }
+});
+
+// @route   POST /api/auth/verify-and-register
+// @desc    Verify code and register new user
+// @access  Public
+router.post('/verify-and-register', [
+    body('email')
+        .isEmail()
+        .normalizeEmail()
+        .withMessage('Please provide a valid email'),
+    body('verificationCode')
+        .isLength({ min: 6, max: 6 })
+        .isNumeric()
+        .withMessage('Verification code must be 6 digits'),
+    body('name')
+        .trim()
+        .isLength({ min: 2, max: 50 })
+        .withMessage('Name must be between 2 and 50 characters')
+        .matches(/^[a-zA-Z\s]+$/)
+        .withMessage('Name can only contain letters and spaces')
+], handleValidationErrors, async (req, res) => {
+    try {
+        const { email, verificationCode, name } = req.body;
+        const sanitizedEmail = sanitizeInput(email.toLowerCase());
+        const sanitizedName = sanitizeInput(name);
+
+        // Check verification code
+        const storedData = verificationCodes.get(sanitizedEmail);
+        if (!storedData) {
+            return res.status(400).json(
+                createResponse(false, 'Verification code not found or expired')
+            );
+        }
+
+        if (Date.now() > storedData.expiresAt) {
+            verificationCodes.delete(sanitizedEmail);
+            return res.status(400).json(
+                createResponse(false, 'Verification code has expired')
+            );
+        }
+
+        if (storedData.code !== verificationCode) {
+            storedData.attempts += 1;
+            if (storedData.attempts >= 3) {
+                verificationCodes.delete(sanitizedEmail);
+                return res.status(400).json(
+                    createResponse(false, 'Too many failed attempts. Please request a new code.')
+                );
+            }
+            return res.status(400).json(
+                createResponse(false, 'Invalid verification code')
+            );
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: sanitizedEmail });
+        if (existingUser) {
+            return res.status(400).json(
+                createResponse(false, 'User with this email already exists')
+            );
+        }
+
+        // Clear verification code
+        verificationCodes.delete(sanitizedEmail);
+
+        // Create user (email is already verified since they used the code)
+        const user = new User({
+            name: sanitizedName,
+            email: sanitizedEmail,
+            isEmailVerified: true,
+            authMethod: 'email'
+        });
+
+        await user.save();
+
+        // Generate JWT token
+        const token = generateToken({ id: user._id });
+
+        // Send welcome email using Brevo
+        const emailResult = await emailService.sendWelcomeEmail(user);
+        if (emailResult.success) {
+            console.log('Welcome email sent successfully:', emailResult.messageId);
+        } else {
+            console.error('Failed to send welcome email:', emailResult.error);
+        }
+
+        // Format user response
+        const userResponse = formatUserResponse(user);
+
+        res.status(201).json(
+            createResponse(
+                true,
+                'User registered successfully',
+                {
+                    user: userResponse,
+                    token
+                }
+            )
+        );
+
+    } catch (error) {
+        console.error('Verify and register error:', error);
+        res.status(500).json(
+            createResponse(false, 'Server error during registration')
+        );
+    }
+});
+
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
@@ -564,12 +839,25 @@ router.get('/google/callback', (req, res, next) => {
         }
 
         try {
+            // Check if this is a new user (first login)
+            const isNewUser = !user.lastLogin || user.lastLogin.getTime() === user.createdAt.getTime();
+
             // Generate JWT token
             const token = generateToken({ id: user._id });
 
             // Update last login
             user.lastLogin = new Date();
             await user.save();
+
+            // Send welcome email for new OAuth users
+            if (isNewUser) {
+                const emailResult = await emailService.sendWelcomeEmail(user);
+                if (emailResult.success) {
+                    console.log('Welcome email sent to new Google user:', emailResult.messageId);
+                } else {
+                    console.error('Failed to send welcome email to new Google user:', emailResult.error);
+                }
+            }
 
             // Redirect to frontend with token
             const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?token=${token}&success=true`;
@@ -618,12 +906,25 @@ router.get('/github/callback', (req, res, next) => {
         }
 
         try {
+            // Check if this is a new user (first login)
+            const isNewUser = !user.lastLogin || user.lastLogin.getTime() === user.createdAt.getTime();
+
             // Generate JWT token
             const token = generateToken({ id: user._id });
 
             // Update last login
             user.lastLogin = new Date();
             await user.save();
+
+            // Send welcome email for new OAuth users
+            if (isNewUser) {
+                const emailResult = await emailService.sendWelcomeEmail(user);
+                if (emailResult.success) {
+                    console.log('Welcome email sent to new GitHub user:', emailResult.messageId);
+                } else {
+                    console.error('Failed to send welcome email to new GitHub user:', emailResult.error);
+                }
+            }
 
             // Redirect to frontend with token
             const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/callback?token=${token}&success=true`;

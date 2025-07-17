@@ -61,9 +61,14 @@ const slideInFromRight = {
 
 export default function SignUpClient() {
     const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [verificationCode, setVerificationCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [step, setStep] = useState<'email' | 'verification' | 'name'>('email');
+    const [isLogin, setIsLogin] = useState(false);
+    const [countdown, setCountdown] = useState(0);
     const { toast } = useToast();
-    const { user, loading } = useAuth();
+    const { user, loading, login } = useAuth();
     const router = useRouter();
 
     // Redirect if already authenticated
@@ -72,6 +77,15 @@ export default function SignUpClient() {
             router.push('/dashboard');
         }
     }, [user, loading, router]);
+
+    // Countdown timer for resend verification
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (countdown > 0) {
+            timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [countdown]);
 
     const handleGoogleLogin = () => {
         setIsLoading(true);
@@ -83,25 +97,151 @@ export default function SignUpClient() {
         authAPI.githubLogin();
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleEmailSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!email.trim()) return;
+
         setIsLoading(true);
 
         try {
-            // For now, just show a message about traditional signup coming soon
-            toast({
-                title: "Coming Soon",
-                description: "Traditional email signup will be available soon. Please use Google or GitHub for now.",
-            });
-        } catch (error) {
+            const response = await authAPI.sendVerificationCode(email);
+
+            if (response.success) {
+                setIsLogin(response.data.isExistingUser);
+                setStep('verification');
+                setCountdown(60); // 60 second countdown
+                toast({
+                    title: "Verification Code Sent",
+                    description: `We've sent a verification code to ${email}. Please check your inbox.`,
+                });
+            } else {
+                toast({
+                    title: "Error",
+                    description: response.message || "Failed to send verification code.",
+                    variant: "destructive",
+                });
+            }
+        } catch (error: any) {
             toast({
                 title: "Error",
-                description: "Something went wrong. Please try again.",
+                description: error.response?.data?.message || "Something went wrong. Please try again.",
                 variant: "destructive",
             });
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleVerificationSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!verificationCode.trim()) return;
+
+        setIsLoading(true);
+
+        try {
+            if (isLogin) {
+                // Login flow
+                const response = await authAPI.verifyCodeAndLogin({
+                    email,
+                    verificationCode
+                });
+
+                if (response.success) {
+                    login(response.data.token);
+                    toast({
+                        title: "Welcome back!",
+                        description: "You've been successfully logged in.",
+                    });
+                    router.push('/dashboard');
+                } else {
+                    toast({
+                        title: "Invalid Code",
+                        description: response.message || "Please check your verification code and try again.",
+                        variant: "destructive",
+                    });
+                }
+            } else {
+                // Registration flow - need name first
+                setStep('name');
+            }
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error.response?.data?.message || "Invalid verification code.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleRegistrationSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+
+        setIsLoading(true);
+
+        try {
+            const response = await authAPI.verifyCodeAndRegister({
+                email,
+                verificationCode,
+                name: name.trim()
+            });
+
+            if (response.success) {
+                login(response.data.token);
+                toast({
+                    title: "Welcome to Cheetah!",
+                    description: "Your account has been created successfully.",
+                });
+                router.push('/dashboard');
+            } else {
+                toast({
+                    title: "Registration Failed",
+                    description: response.message || "Please try again.",
+                    variant: "destructive",
+                });
+            }
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error.response?.data?.message || "Registration failed. Please try again.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        if (countdown > 0) return;
+
+        setIsLoading(true);
+        try {
+            const response = await authAPI.sendVerificationCode(email);
+            if (response.success) {
+                setCountdown(60);
+                toast({
+                    title: "Code Resent",
+                    description: "A new verification code has been sent to your email.",
+                });
+            }
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to resend code. Please try again.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleBackToEmail = () => {
+        setStep('email');
+        setVerificationCode('');
+        setName('');
+        setCountdown(0);
     };
 
     // Show loading if auth is initializing
@@ -194,14 +334,14 @@ export default function SignUpClient() {
                                     <h2 className="text-xl font-semibold">Create your account</h2>
                                 </motion.div>
 
-                                <motion.form
-                                    onSubmit={handleSubmit}
+                                <motion.div
                                     className="space-y-3"
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: 0.8, duration: 0.5 }}
                                 >
+                                    {/* OAuth Buttons */}
                                     <Button
                                         type="button"
                                         variant="outline"
@@ -247,25 +387,115 @@ export default function SignUpClient() {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <Input
-                                            type="email"
-                                            placeholder="Enter your email address"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="w-full transition-colors duration-200 focus:border-accent h-11"
-                                            required
-                                        />
-                                        <Button
-                                            type="submit"
-                                            className="w-full bg-accent hover:bg-accent/90 transition-colors duration-200 h-11"
-                                            size="lg"
-                                            disabled={isLoading}
-                                        >
-                                            {isLoading ? "Creating account..." : "Continue"}
-                                        </Button>
-                                    </div>
-                                </motion.form>
+                                    {/* Email Step */}
+                                    {step === 'email' && (
+                                        <form onSubmit={handleEmailSubmit} className="space-y-3">
+                                            <Input
+                                                type="email"
+                                                placeholder="Enter your email address"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                className="w-full transition-colors duration-200 focus:border-accent h-11"
+                                                required
+                                                disabled={isLoading}
+                                            />
+                                            <Button
+                                                type="submit"
+                                                className="w-full bg-accent hover:bg-accent/90 transition-colors duration-200 h-11"
+                                                size="lg"
+                                                disabled={isLoading || !email.trim()}
+                                            >
+                                                {isLoading ? "Sending code..." : "Continue"}
+                                            </Button>
+                                        </form>
+                                    )}
+
+                                    {/* Verification Step */}
+                                    {step === 'verification' && (
+                                        <div className="space-y-3">
+                                            <div className="text-center text-sm text-muted-foreground">
+                                                {isLogin ? "Welcome back!" : "Almost there!"} We've sent a verification code to:
+                                                <div className="font-medium text-foreground mt-1">{email}</div>
+                                            </div>
+                                            <form onSubmit={handleVerificationSubmit} className="space-y-3">
+                                                <Input
+                                                    type="text"
+                                                    placeholder="Enter 6-digit verification code"
+                                                    value={verificationCode}
+                                                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                                    className="w-full transition-colors duration-200 focus:border-accent h-11 text-center text-lg tracking-widest"
+                                                    required
+                                                    disabled={isLoading}
+                                                    maxLength={6}
+                                                />
+                                                <Button
+                                                    type="submit"
+                                                    className="w-full bg-accent hover:bg-accent/90 transition-colors duration-200 h-11"
+                                                    size="lg"
+                                                    disabled={isLoading || verificationCode.length !== 6}
+                                                >
+                                                    {isLoading ? "Verifying..." : isLogin ? "Sign In" : "Verify Code"}
+                                                </Button>
+                                            </form>
+                                            <div className="text-center space-y-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={handleResendCode}
+                                                    disabled={countdown > 0 || isLoading}
+                                                    className="text-sm text-accent hover:text-accent/80 disabled:text-muted-foreground disabled:cursor-not-allowed"
+                                                >
+                                                    {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
+                                                </button>
+                                                <div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleBackToEmail}
+                                                        className="text-sm text-muted-foreground hover:text-foreground"
+                                                    >
+                                                        ← Change email address
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Name Step (for registration) */}
+                                    {step === 'name' && (
+                                        <div className="space-y-3">
+                                            <div className="text-center text-sm text-muted-foreground">
+                                                Great! Now let's create your account.
+                                            </div>
+                                            <form onSubmit={handleRegistrationSubmit} className="space-y-3">
+                                                <Input
+                                                    type="text"
+                                                    placeholder="Enter your full name"
+                                                    value={name}
+                                                    onChange={(e) => setName(e.target.value)}
+                                                    className="w-full transition-colors duration-200 focus:border-accent h-11"
+                                                    required
+                                                    disabled={isLoading}
+                                                />
+                                                <Button
+                                                    type="submit"
+                                                    className="w-full bg-accent hover:bg-accent/90 transition-colors duration-200 h-11"
+                                                    size="lg"
+                                                    disabled={isLoading || !name.trim()}
+                                                >
+                                                    {isLoading ? "Creating account..." : "Create Account"}
+                                                </Button>
+                                            </form>
+                                            <div className="text-center">
+                                                <button
+                                                    type="button"
+                                                    onClick={handleBackToEmail}
+                                                    className="text-sm text-muted-foreground hover:text-foreground"
+                                                >
+                                                    ← Start over
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </motion.div>
 
                                 <motion.p
                                     className="text-center text-xs text-muted-foreground pt-2"

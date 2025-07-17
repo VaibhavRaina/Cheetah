@@ -21,6 +21,112 @@ class EmailService {
         this.supportEmail = process.env.SUPPORT_EMAIL || 'cheetahai69@gmail.com';
     }
 
+    // Send verification code email
+    async sendVerificationCodeEmail(email, verificationCode, isExistingUser) {
+        try {
+            const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+            sendSmtpEmail.sender = {
+                email: this.fromEmail,
+                name: this.fromName
+            };
+
+            sendSmtpEmail.to = [{
+                email: email,
+                name: email.split('@')[0]
+            }];
+
+            const actionText = isExistingUser ? 'sign in to' : 'create your account on';
+            sendSmtpEmail.subject = `Your Cheetah verification code: ${verificationCode}`;
+
+            sendSmtpEmail.htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Verification Code</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+                        .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+                        .code-box { background: white; border: 2px solid #667eea; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+                        .code { font-size: 32px; font-weight: bold; color: #667eea; letter-spacing: 8px; font-family: monospace; }
+                        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+                        .warning { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin: 20px 0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🔐 Verification Code</h1>
+                        </div>
+                        <div class="content">
+                            <h2>Hello!</h2>
+                            <p>You're trying to ${actionText} Cheetah. Please use the verification code below to continue:</p>
+                            
+                            <div class="code-box">
+                                <div class="code">${verificationCode}</div>
+                            </div>
+                            
+                            <div class="warning">
+                                <strong>⚠️ Important:</strong>
+                                <ul style="margin: 10px 0; padding-left: 20px;">
+                                    <li>This code will expire in 10 minutes</li>
+                                    <li>Don't share this code with anyone</li>
+                                    <li>If you didn't request this code, please ignore this email</li>
+                                </ul>
+                            </div>
+                            
+                            <p>If you're having trouble, you can copy and paste this code: <strong>${verificationCode}</strong></p>
+                            
+                            <p>Welcome to the future of AI-powered development!</p>
+                        </div>
+                        <div class="footer">
+                            <p>This code was sent to ${email}</p>
+                            <p>Best regards,<br>The Cheetah Team</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            sendSmtpEmail.textContent = `
+                Verification Code for Cheetah
+                
+                Hello!
+                
+                You're trying to ${actionText} Cheetah. Please use the verification code below to continue:
+                
+                ${verificationCode}
+                
+                Important:
+                - This code will expire in 10 minutes
+                - Don't share this code with anyone
+                - If you didn't request this code, please ignore this email
+                
+                If you're having trouble, you can copy and paste this code: ${verificationCode}
+                
+                Welcome to the future of AI-powered development!
+                
+                This code was sent to ${email}
+                
+                Best regards,
+                The Cheetah Team
+            `;
+
+            const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+            console.log('Verification code email sent successfully:', result);
+            return { success: true, messageId: result.body.messageId };
+        } catch (error) {
+            console.error('Error sending verification code email:', error);
+            if (error.response && error.response.body) {
+                console.error('Brevo API Error Details:', error.response.body);
+            }
+            return { success: false, error: error.message || 'Failed to send verification code email' };
+        }
+    }
+
     // Send welcome email for new user registration
     async sendWelcomeEmail(user) {
         try {

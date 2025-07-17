@@ -47,6 +47,11 @@ const userSchema = new mongoose.Schema({
         unique: true,
         sparse: true
     },
+    authMethod: {
+        type: String,
+        enum: ['email', 'google', 'github'],
+        default: 'email'
+    },
     avatar: {
         type: String,
         default: null

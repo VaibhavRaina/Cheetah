@@ -49,7 +49,22 @@ export const authAPI = {
         window.location.href = `${API_BASE_URL}/auth/github`;
     },
 
-    // Traditional auth (for later)
+    // Traditional auth with email verification
+    sendVerificationCode: async (email: string) => {
+        const response = await api.post('/auth/send-verification-code', { email });
+        return response.data;
+    },
+
+    verifyCodeAndRegister: async (userData: { email: string; verificationCode: string; name: string }) => {
+        const response = await api.post('/auth/verify-and-register', userData);
+        return response.data;
+    },
+
+    verifyCodeAndLogin: async (credentials: { email: string; verificationCode: string }) => {
+        const response = await api.post('/auth/verify-and-login', credentials);
+        return response.data;
+    },
+
     register: async (userData: { name: string; email: string; password: string }) => {
         const response = await api.post('/auth/register', userData);
         return response.data;
