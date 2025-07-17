@@ -14,7 +14,7 @@ const teamMembers = [
     },
     {
         name: "Yash Budhia",
-        role: "Intern",
+        role: "Co-Founder",
         image: "https://res.cloudinary.com/dtemmbo4i/image/upload/v1747122534/budhia_acuvrv.jpg"
     },
 ];
