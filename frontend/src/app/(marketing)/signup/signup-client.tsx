@@ -64,6 +64,8 @@ export default function SignUpClient() {
     const [name, setName] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+    const [isGitHubLoading, setIsGitHubLoading] = useState(false);
     const [step, setStep] = useState<'email' | 'verification' | 'name'>('email');
     const [isLogin, setIsLogin] = useState(false);
     const [countdown, setCountdown] = useState(0);
@@ -88,12 +90,12 @@ export default function SignUpClient() {
     }, [countdown]);
 
     const handleGoogleLogin = () => {
-        setIsLoading(true);
+        setIsGoogleLoading(true);
         authAPI.googleLogin();
     };
 
     const handleGitHubLogin = () => {
-        setIsLoading(true);
+        setIsGitHubLoading(true);
         authAPI.githubLogin();
     };
 
@@ -348,16 +350,25 @@ export default function SignUpClient() {
                                         className="w-full hover:bg-accent/10 hover:text-accent-foreground transition-colors duration-200 h-11"
                                         size="lg"
                                         onClick={handleGoogleLogin}
-                                        disabled={isLoading}
+                                        disabled={isGoogleLoading || isGitHubLoading || isLoading}
                                     >
-                                        <Image
-                                            src="/icons/google.svg"
-                                            alt="Google"
-                                            width={18}
-                                            height={18}
-                                            className="mr-2"
-                                        />
-                                        Continue with Google
+                                        {isGoogleLoading ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                                                Connecting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Image
+                                                    src="/icons/google.svg"
+                                                    alt="Google"
+                                                    width={18}
+                                                    height={18}
+                                                    className="mr-2"
+                                                />
+                                                Continue with Google
+                                            </>
+                                        )}
                                     </Button>
 
                                     <Button
@@ -366,16 +377,25 @@ export default function SignUpClient() {
                                         className="w-full hover:bg-accent/10 hover:text-accent-foreground transition-colors duration-200 h-11"
                                         size="lg"
                                         onClick={handleGitHubLogin}
-                                        disabled={isLoading}
+                                        disabled={isGoogleLoading || isGitHubLoading || isLoading}
                                     >
-                                        <Image
-                                            src="/images/mcp-servers/github.png"
-                                            alt="GitHub"
-                                            width={18}
-                                            height={18}
-                                            className="mr-2"
-                                        />
-                                        Continue with GitHub
+                                        {isGitHubLoading ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                                                Connecting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Image
+                                                    src="/images/mcp-servers/github.png"
+                                                    alt="GitHub"
+                                                    width={18}
+                                                    height={18}
+                                                    className="mr-2"
+                                                />
+                                                Continue with GitHub
+                                            </>
+                                        )}
                                     </Button>
 
                                     <div className="relative my-4">
