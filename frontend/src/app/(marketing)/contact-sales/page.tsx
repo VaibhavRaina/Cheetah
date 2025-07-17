@@ -17,7 +17,6 @@ import { Separator } from "@/components/ui/separator";
 import {
     Mail,
     Phone,
-    MapPin,
     Clock,
     CheckCircle,
     ArrowRight,
@@ -28,7 +27,8 @@ import {
     HeadphonesIcon,
     Calendar,
     AlertCircle,
-    Loader2
+    Loader2,
+    ExternalLink
 } from "lucide-react";
 
 const containerVariants = {
@@ -439,13 +439,25 @@ const ContactSalesPage = () => {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: index * 0.1 + 0.5 }}
                                                 className="flex items-start space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                                                onClick={() => {
+                                                    if (info.title === "Schedule Demo") {
+                                                        window.open(process.env.NEXT_PUBLIC_CALCOM_SALES_URL || 'https://cal.com/cheetah-ai/sales', '_blank');
+                                                    } else if (info.title === "Email Sales Team") {
+                                                        window.open(`mailto:${info.content}`, '_blank');
+                                                    } else if (info.title === "Call Sales") {
+                                                        window.open(`tel:${info.content}`, '_blank');
+                                                    }
+                                                }}
                                             >
                                                 <div className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center flex-shrink-0">
                                                     <info.icon className="w-4 h-4 text-accent" />
                                                 </div>
-                                                <div>
+                                                <div className="flex-1">
                                                     <h4 className="font-medium text-sm">{info.title}</h4>
-                                                    <p className="text-sm font-medium text-accent">{info.content}</p>
+                                                    <p className="text-sm font-medium text-accent flex items-center">
+                                                        {info.content}
+                                                        {info.title === "Schedule Demo" && <ExternalLink className="w-3 h-3 ml-1" />}
+                                                    </p>
                                                     <p className="text-xs text-muted-foreground">{info.description}</p>
                                                 </div>
                                             </motion.div>
@@ -485,9 +497,15 @@ const ContactSalesPage = () => {
                                     <p className="text-sm text-muted-foreground mb-4">
                                         Schedule a live demo to see CheetahAI in action and get your questions answered in real-time.
                                     </p>
-                                    <Button variant="outline" size="sm" className="w-full">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-full"
+                                        onClick={() => window.open(process.env.NEXT_PUBLIC_CALCOM_SALES_URL || 'https://cal.com/cheetah-ai/sales', '_blank')}
+                                    >
                                         <Calendar className="w-4 h-4 mr-2" />
                                         Schedule Demo
+                                        <ExternalLink className="w-3 h-3 ml-2" />
                                     </Button>
                                 </CardContent>
                             </Card>
