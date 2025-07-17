@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Wrapper from "@/components/global/wrapper";
 import Container from "@/components/global/container";
+import { contactAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -66,6 +68,7 @@ const ContactSalesPage = () => {
     const [submitted, setSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [validationErrors, setValidationErrors] = useState<any[]>([]);
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -75,30 +78,27 @@ const ContactSalesPage = () => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
+        setValidationErrors([]);
+
+        const requestData = {
+            name: `${formData.firstName} ${formData.lastName}`.trim(),
+            email: formData.email,
+            company: formData.company,
+            phone: formData.phone,
+            jobTitle: 'Not specified',
+            companySize: formData.teamSize,
+            interestLevel: 'Ready to Buy',
+            timeline: 'Not specified',
+            message: formData.message || `Primary use case: ${formData.useCase || 'Not specified'}`
+        };
+
+        // Debug: Log the data being sent
+        console.log('Sending data to backend:', requestData);
 
         try {
-            const response = await fetch('/api/contact/sales', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: `${formData.firstName} ${formData.lastName}`.trim(),
-                    email: formData.email,
-                    company: formData.company,
-                    phone: formData.phone,
-                    companySize: formData.teamSize,
-                    interestLevel: 'Ready to Buy', // Default value
-                    budget: 'Not specified',
-                    timeline: 'Not specified',
-                    jobTitle: 'Not specified',
-                    message: formData.message
-                }),
-            });
+            const response = await contactAPI.sendSalesInquiry(requestData);
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (response.success) {
                 setSubmitted(true);
                 // Reset form
                 setFormData({
@@ -112,10 +112,21 @@ const ContactSalesPage = () => {
                     message: "",
                 });
             } else {
-                setError(data.message || 'Failed to send message. Please try again.');
+                setError(response.message || 'Failed to send message. Please try again.');
+                if (response.errors) {
+                    setValidationErrors(response.errors);
+                }
             }
-        } catch (err) {
-            setError('Network error. Please check your connection and try again.');
+        } catch (err: any) {
+            console.error('API Error:', err);
+            const errorData = err.response?.data;
+
+            if (errorData?.errors) {
+                setValidationErrors(errorData.errors);
+                setError(`Validation failed: ${errorData.errors.map((e: any) => `${e.field}: ${e.message}`).join(', ')}`);
+            } else {
+                setError(errorData?.message || 'Network error. Please check your connection and try again.');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -262,6 +273,23 @@ const ContactSalesPage = () => {
                                             </div>
                                         )}
 
+                                        {validationErrors.length > 0 && (
+                                            <div className="space-y-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                                                <div className="flex items-center space-x-2">
+                                                    <AlertCircle className="h-4 w-4 text-destructive" />
+                                                    <span className="text-sm font-medium text-destructive">Validation Errors:</span>
+                                                </div>
+                                                <ul className="list-disc list-inside space-y-1 ml-6">
+                                                    {validationErrors.map((error, index) => (
+                                                        <li key={index} className="text-sm text-destructive">
+                                                            <strong>{error.field}:</strong> {error.message}
+                                                            {error.value && <span className="text-muted-foreground"> (received: "{error.value}")</span>}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="firstName">First Name *</Label>
@@ -316,12 +344,11 @@ const ContactSalesPage = () => {
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="phone">Phone Number</Label>
-                                                <Input
-                                                    id="phone"
-                                                    type="tel"
+                                                <PhoneInput
                                                     value={formData.phone}
-                                                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                                                    onChange={(value) => handleInputChange("phone", value)}
                                                     disabled={isLoading}
+                                                    placeholder="Enter phone number"
                                                     className="border-border/50 focus:border-accent"
                                                 />
                                             </div>

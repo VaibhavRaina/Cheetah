@@ -239,4 +239,33 @@ export const rechargeAPI = {
     },
 };
 
+// Contact API functions
+export const contactAPI = {
+    sendSalesInquiry: async (contactData: {
+        name: string;
+        email: string;
+        company: string;
+        phone?: string;
+        jobTitle?: string;
+        companySize?: string;
+        interestLevel?: string;
+        budget?: string;
+        timeline?: string;
+        message: string;
+    }) => {
+        const response = await api.post('/contact/sales', contactData);
+        return response.data;
+    },
+
+    sendGeneralInquiry: async (contactData: {
+        name: string;
+        email: string;
+        subject: string;
+        message: string;
+    }) => {
+        const response = await api.post('/contact/general', contactData);
+        return response.data;
+    },
+};
+
 export default api;

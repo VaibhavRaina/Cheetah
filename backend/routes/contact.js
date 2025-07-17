@@ -97,7 +97,7 @@ router.post('/sales', [
     body('phone')
         .optional()
         .trim()
-        .matches(/^[\+]?[1-9]?[\d\s\-\(\)\.]{7,15}$/)
+        .matches(/^[\+]?[1-9][\d\s\-\(\)\.]{6,18}$/)
         .withMessage('Please provide a valid phone number'),
     body('jobTitle')
         .optional()
@@ -112,14 +112,11 @@ router.post('/sales', [
         .optional()
         .isIn(['Exploring', 'Interested', 'Ready to Buy', 'Urgent'])
         .withMessage('Interest level must be one of: Exploring, Interested, Ready to Buy, Urgent'),
-    body('budget')
-        .optional()
-        .isIn(['< $1,000', '$1,000 - $5,000', '$5,000 - $10,000', '$10,000 - $50,000', '$50,000+'])
-        .withMessage('Budget must be one of: < $1,000, $1,000 - $5,000, $5,000 - $10,000, $10,000 - $50,000, $50,000+'),
+
     body('timeline')
         .optional()
-        .isIn(['Immediate', 'Within 1 month', '1-3 months', '3-6 months', '6+ months'])
-        .withMessage('Timeline must be one of: Immediate, Within 1 month, 1-3 months, 3-6 months, 6+ months'),
+        .isIn(['Immediate', 'Within 1 month', '1-3 months', '3-6 months', '6+ months', 'Not specified'])
+        .withMessage('Timeline must be one of: Immediate, Within 1 month, 1-3 months, 3-6 months, 6+ months, Not specified'),
     body('message')
         .trim()
         .isLength({ min: 10, max: 2000 })
