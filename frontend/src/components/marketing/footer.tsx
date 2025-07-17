@@ -55,7 +55,7 @@ const Footer = () => {
                         {/* Social Media */}
                         <div className="flex items-center justify-center">
                             <Link
-                                href="https://x.com/cheetahai"
+                                href="https://x.com/YashBudhiya"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-muted-foreground hover:text-foreground transition-colors duration-200"
