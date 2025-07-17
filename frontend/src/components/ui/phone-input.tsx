@@ -134,15 +134,15 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
                             aria-expanded={isOpen}
                             disabled={disabled}
                             className={cn(
-                                "h-10 w-auto justify-between rounded-r-none border-r-0 px-3 flex-shrink-0",
+                                "h-10 min-w-[120px] justify-between rounded-r-none border-r-0 px-3 flex-shrink-0",
                                 !isValid && "border-destructive"
                             )}
                         >
-                            <div className="flex items-center space-x-2">
-                                <span className="text-lg leading-none">{selectedCountry.flag}</span>
-                                <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
+                            <div className="flex items-center space-x-2 min-w-0">
+                                <span className="text-base leading-none flex-shrink-0">{selectedCountry.flag}</span>
+                                <span className="text-sm font-medium whitespace-nowrap">{selectedCountry.dialCode}</span>
                             </div>
-                            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            <ChevronDown className="ml-2 h-4 w-4 flex-shrink-0 opacity-50" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80 p-0" align="start">

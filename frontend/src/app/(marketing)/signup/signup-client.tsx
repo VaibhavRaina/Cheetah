@@ -333,7 +333,7 @@ export default function SignUpClient() {
                                         height={48}
                                         className="mx-auto"
                                     />
-                                    <h2 className="text-xl font-semibold">Create your account</h2>
+                                    <h2 className="text-xl font-semibold">Create Your Account</h2>
                                 </motion.div>
 
                                 <motion.div
