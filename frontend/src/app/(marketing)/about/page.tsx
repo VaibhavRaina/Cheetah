@@ -8,25 +8,15 @@ import { GraduationCap, Users, Rocket, Code } from "lucide-react";
 
 const teamMembers = [
     {
-        name: "Alex Johnson",
-        role: "CEO & Founder",
-        image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3"
+        name: "Vaibhav Raina",
+        role: "Co-Founder",
+        image: "https://res.cloudinary.com/dtemmbo4i/image/upload/v1747122503/WhatsApp_Image_2024-12-23_at_22.24.42_0d25d9ec_kuzgn8.jpg"
     },
     {
-        name: "Sarah Chen",
-        role: "CTO",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3"
+        name: "Yash Budhia",
+        role: "Intern",
+        image: "https://res.cloudinary.com/dtemmbo4i/image/upload/v1747122534/budhia_acuvrv.jpg"
     },
-    {
-        name: "Michael Rodriguez",
-        role: "Lead Engineer",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3"
-    },
-    {
-        name: "Emma Thompson",
-        role: "Product Designer",
-        image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3"
-    }
 ];
 
 function AboutComponent() {
@@ -113,7 +103,7 @@ function AboutComponent() {
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                <div className="flex flex-wrap justify-center gap-8 max-w-4xl mx-auto">
                     {teamMembers.map((member, index) => (
                         <motion.div
                             key={member.name}
@@ -124,18 +114,19 @@ function AboutComponent() {
                                 once: true,
                             }}
                             custom={index}
+                            className="w-full sm:w-80 max-w-sm"
                         >
                             <MagicCard className="h-full">
-                                <div className="relative flex flex-col h-full overflow-hidden rounded-xl p-4">
-                                    <div className="aspect-[3/4] w-full overflow-hidden rounded-lg">
+                                <div className="relative flex flex-col h-full overflow-hidden rounded-xl p-6">
+                                    <div className="aspect-[4/5] w-full overflow-hidden rounded-lg mb-4">
                                         <img
                                             src={member.image}
                                             alt={member.name}
-                                            className="h-full w-full object-cover transition-all duration-300 hover:scale-105"
+                                            className="h-full w-full object-cover object-center transition-all duration-300 hover:scale-105"
                                         />
                                     </div>
-                                    <div className="mt-4 text-center">
-                                        <h3 className="font-semibold">{member.name}</h3>
+                                    <div className="text-center">
+                                        <h3 className="text-lg font-semibold mb-1">{member.name}</h3>
                                         <p className="text-sm text-muted-foreground">{member.role}</p>
                                     </div>
                                 </div>
