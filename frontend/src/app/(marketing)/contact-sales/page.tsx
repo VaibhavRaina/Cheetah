@@ -159,7 +159,7 @@ const ContactSalesPage = () => {
         {
             icon: Mail,
             title: "Email Sales Team",
-            content: "sales@cheetah.ai",
+            content: "sales@cheetahai.co",
             description: "Get in touch with our sales experts"
         },
         {
