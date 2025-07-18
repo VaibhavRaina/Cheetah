@@ -394,8 +394,13 @@ export default function DashboardPage() {
                                                 <div className="text-sm text-muted-foreground">
                                                     {dashboardData?.usage?.messages?.limit === 'unlimited'
                                                         ? 'Unlimited messages'
-                                                        : `${dashboardData?.usage?.messages?.limit || user.usage.messagesLimit} total (${dashboardData?.usage?.messages?.planLimit || user.usage.messagesLimit} plan + ${dashboardData?.usage?.messages?.rechargeBalance || 0} topped up)`}
+                                                        : `${dashboardData?.usage?.messages?.limit || user.usage.messagesLimit} total (${dashboardData?.usage?.messages?.planLimit || user.usage.messagesLimit} plan + ${dashboardData?.usage?.messages?.rechargeBalance || 0} recharged)`}
                                                 </div>
+                                                {dashboardData?.usage?.messages?.rechargeUsed > 0 && (
+                                                    <div className="text-xs text-blue-600 mt-1">
+                                                        Using {dashboardData.usage.messages.rechargeUsed} recharged messages
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <Link href="/dashboard/recharge">

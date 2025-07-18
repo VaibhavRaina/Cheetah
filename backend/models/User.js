@@ -403,13 +403,23 @@ userSchema.methods.incrementMessageUsage = function () {
 
     const limits = this.getPlanLimits();
 
-    // If user has exceeded plan limit, use recharge balance
+    // Check if user has messages remaining (including recharge balance)
+    if (!this.hasMessagesRemaining()) {
+        throw new Error('No messages remaining. Please upgrade your plan or purchase a recharge.');
+    }
+
+    // If user has exceeded plan limit, use recharge balance instead of incrementing messagesUsed
     if (this.usage.messagesUsed >= limits.messages && limits.messages !== -1) {
         if (this.recharge && this.recharge.balance > 0) {
             this.recharge.balance -= 1;
+            // Don't increment messagesUsed when using recharge balance
+            return this.save();
+        } else {
+            throw new Error('Plan limit exceeded and no recharge balance available.');
         }
     }
 
+    // User is still within plan limit, increment messagesUsed
     this.usage.messagesUsed += 1;
     return this.save();
 };
