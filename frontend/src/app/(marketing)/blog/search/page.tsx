@@ -6,11 +6,9 @@ export const metadata: Metadata = {
     description: "Search through our collection of articles and tutorials about AI-powered development",
 };
 
-export default async function BlogSearchPage({
-    searchParams
-}: {
-    searchParams: Promise<{ q?: string, category?: string }>
-}) {
-    const { q, category } = await searchParams;
-    return <BlogSearchClient initialQuery={q || ""} initialCategory={category || "all"} />;
+// Force static generation for IC deployment
+export const dynamic = 'force-static';
+
+export default function BlogSearchPage() {
+    return <BlogSearchClient initialQuery="" initialCategory="all" />;
 }

@@ -104,6 +104,7 @@ cheetah/
 - MongoDB (local or Atlas)
 - Google Cloud Console account
 - GitHub account
+- DFX (Internet Computer SDK) - for IC deployment
 
 ### 1. Clone the Repository
 ```bash
@@ -142,7 +143,7 @@ npm run dev
 ### 4. Frontend Setup
 ```bash
 cd frontend
-npm install --legacy-peer-deps
+npm install --force
 ```
 
 Create `.env.local` file:
@@ -159,6 +160,78 @@ npm run dev
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:5000/api
 - Signup: http://localhost:3000/signup
+
+## Internet Computer (IC) Deployment
+
+### Prerequisites for IC Deployment
+- Install DFX (Internet Computer SDK):
+```bash
+sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
+```
+
+### 1. Set Up DFX Identity
+
+### 2. Build Frontend for IC
+```bash
+cd frontend && npm i --force && npm run build:ic && cd ..
+```
+
+### 3. Deploy to Local IC Network (Testing)
+```bash
+# Start local IC replica
+dfx start --clean --background
+
+# Deploy to local network (no cycles needed)
+dfx deploy --network local
+```
+
+Your local deployment will be available at:
+- `http://[canister-id].localhost:4943/`
+
+### 4. Deploy to IC Mainnet (Production)
+
+**Get Free Cycles:**
+1. Go to https://faucet.dfinity.org/
+2. Use your Internet Identity to claim ~20 trillion cycles (enough for multiple deployments)
+
+**Deploy to Mainnet:**
+```bash
+# Deploy to IC mainnet (requires cycles)
+dfx deploy --network ic
+```
+
+Your production deployment will be available at:
+- `https://[canister-id].ic0.app/`
+
+### 5. IC Deployment Notes
+
+**What gets deployed:**
+- ✅ Frontend (Next.js static export) → IC Canister
+- ❌ Backend (Node.js/Express) → Needs separate hosting
+
+**Backend Options for IC:**
+1. **Keep separate**: Host backend on traditional platforms (AWS, Vercel, Railway)
+2. **Convert to IC**: Rewrite backend in Motoko or Rust as IC canisters
+
+**Costs:**
+- Local deployment: Free
+- IC mainnet: ~1-5 trillion cycles per deployment
+- Free faucet provides: ~20 trillion cycles
+
+### 6. Managing IC Deployment
+```bash
+# Check canister status
+dfx canister status --network ic cheetah_frontend
+
+# Stop canister
+dfx canister stop --network ic cheetah_frontend
+
+# Start canister
+dfx canister start --network ic cheetah_frontend
+
+# Get canister info
+dfx canister id cheetah_frontend
+```
 
 ## API Endpoints
 

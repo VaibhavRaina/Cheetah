@@ -1,6 +1,8 @@
 # Node modules
 node_modules/
 
+.dfx
+
 # Build output
 .next/
 out/
