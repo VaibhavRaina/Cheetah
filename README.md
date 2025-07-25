@@ -1,4 +1,30 @@
-# Cheetah AI - Full Stack Application
+# Cheetah AI - The World's Most Powerful Coding Agent
+
+**Vision**: Revolutionizing software development through advanced AI-powered coding assistance that understands, learns, and evolves with your codebase.
+
+## 🚀 Product Overview
+
+Cheetah AI is an intelligent coding agent designed to accelerate development workflows through cutting-edge AI technology. Built for developers who demand speed, accuracy, and contextual understanding in their coding assistant.
+
+### 🧠 Core AI Features
+- **6-Layer Memory System**: Deep contextual understanding that remembers your coding patterns, preferences, and project history
+- **Advanced Context Engine**: Intelligent code analysis that understands your entire codebase structure and dependencies  
+- **Parallel Agent Engine**: Multiple AI agents working simultaneously to handle complex development tasks
+- **Adaptive Learning**: Continuously learns from your coding style and project requirements
+- **Real-time Code Intelligence**: Instant suggestions, refactoring, and optimization recommendations
+- **Multi-Language Mastery**: Expert-level support across all major programming languages and frameworks
+
+### ⚡ Key Capabilities
+- **Intelligent Code Generation**: Write complete functions, classes, and modules from natural language descriptions
+- **Context-Aware Refactoring**: Understand and improve existing code while maintaining functionality
+- **Bug Detection & Fixing**: Proactive identification and resolution of potential issues
+- **Documentation Generation**: Automatic creation of comprehensive code documentation
+- **Test Suite Creation**: Generate comprehensive test cases for your codebase
+- **Architecture Planning**: High-level system design and implementation guidance
+
+---
+
+## 🛠 Technical Implementation - Website
 
 A modern full-stack application with React/Next.js frontend and Node.js/Express backend, featuring OAuth authentication, MongoDB integration, and subscription management.
 
